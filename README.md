@@ -5,6 +5,6 @@ This is the 'production' repo for the Job Hunter AI Tool.
 ```bash
 python -m venv .venv
 source .venv/bin/activate   # or .\.venv\Scripts\Activate.ps1 on Windows
-pip install -r ml/requirements.txt
-pytest
+python -m pip install -r ml/requirements.txt
+python -m pytest
 ```
