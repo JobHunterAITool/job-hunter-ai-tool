@@ -19,3 +19,8 @@ Backend API Implementation Plan
 - Add tests for valid, invalid, empty, and error scenarios
 - Write README with local setup and run steps
 - Demo /docs, GET /jobs, and POST /search with seed data
+
+
+REQUESTS: (add requests for functionality)
+
+[] - template checklist item 
