@@ -27,8 +27,7 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
         experience level).  Must be a non-empty string.
     jobs : list[dict]
         Job documents retrieved from MongoDB.  Each document is expected to
-        contain at least the following fields (matching the agreed schema in
-        design_architecture.md)::
+        contain at least the following fields, as documented below::
 
             {
                 "_id":         str,
