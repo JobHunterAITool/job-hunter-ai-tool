@@ -19,6 +19,7 @@ class RankJobsTests(unittest.TestCase):
         jobs = [{"_id": "1", "title": "Backend Engineer"}]
 
         ranked = rank_jobs("backend", jobs)
+        print("\nscore field added:", ranked)
 
         self.assertEqual(len(ranked), 1)
         self.assertIn("score", ranked[0])
