@@ -4,29 +4,33 @@ This module ranks job postings against a user's resume/profile text using a base
 
 ## Quick Start
 
-### 1) Create & activate a virtual environment
+### 1. Create & activate a virtual environment
 
-**macOS / Linux**
+#### macOS / Linux
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -U pip
 ```
 
-**Windows (PowerShell)**
+#### Windows (PowerShell)
+
 ```powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -U pip
 ```
 
-### 2) Install dependencies
+### 2. Install dependencies
 
 ```bash
 python -m pip install -r ml/requirements.txt
 ```
 
-### 3) Run tests
+### 3. Run tests
+
+#### Windows
 
 ```bash
 python -m pytest
@@ -89,6 +93,7 @@ If multiple jobs have equal scores, preserve the original order of the input lis
 ### Error handling
 
 Recommended behavior:
+
 - In development: raise exceptions to make issues obvious.
 - In production: if ranking fails unexpectedly, fall back to returning jobs in original order with `match_score = 0.0` and `match_percent = 0`.
 
@@ -101,6 +106,7 @@ This repo includes seed job data for development/testing:
 ## Implementation Notes (Baseline)
 
 Baseline algorithm target:
+
 - Build a TF‑IDF representation of:
   - the user text, and
   - each job’s combined text fields (e.g., title + description + skills)
@@ -108,6 +114,7 @@ Baseline algorithm target:
 - Attach scores and sort
 
 Future improvements (planned):
+
 - Keyword pre-filtering before TF‑IDF scoring for latency
 - Text normalization improvements
 - Optional embedding-based ranking upgrade (sentence-transformers)

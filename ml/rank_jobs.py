@@ -5,10 +5,9 @@ Public interface
 ----------------
     rank_jobs(user_text: str, jobs: list[dict]) -> list[dict]
 
-This module is the only component the backend needs to import.  The backend
-calls rank_jobs() from its POST /search handler after querying MongoDB for
-candidate job documents and passing them here together with the user's
-profile text.
+The backend calls rank_jobs() from its POST /search handler after
+querying MongoDB for candidate job documents and passing them here
+together with the user's profile text.
 """
 
 from __future__ import annotations
@@ -26,7 +25,7 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
         from the manual input form fields (title + skills + location +
         experience level).  Must be a non-empty string.
     jobs : list[dict]
-        Job documents retrieved from MongoDB.  Each document is expected to
+        Job postings retrieved from MongoDB.  Each posting is expected to
         contain at least the following fields, as documented below::
 
             {
@@ -41,14 +40,13 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
                 "normalized":  bool,
             }
 
-        The function tolerates missing fields gracefully; absent fields are
-        treated as empty strings during scoring.
+        Absent fields are treated as empty strings during scoring.
 
     Returns
     -------
     list[dict]
-        A *new* list of job documents sorted in descending order by relevance
-        score.  Each document is a shallow copy of the input document with one
+        A *new* list of job postings sorted in descending order by relevance
+        score. Each posting is a shallow copy of the input posting with one
         additional field injected::
 
             "score": float   # cosine similarity in [0.0, 1.0]
