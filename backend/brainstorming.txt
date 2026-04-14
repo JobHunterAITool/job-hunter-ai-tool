@@ -1,1 +1,21 @@
-Test
+Backend API Implementation Plan
+
+- Set up FastAPI project structure
+- Create virtual environment and install dependencies
+- Add .env support for MongoDB URI and config
+- Build MongoDB connection helper
+- Create jobs collection and seed fake job data if empty
+- Define Pydantic models for search requests/responses and job records
+- Implement GET /jobs with pagination
+- Implement rank_jobs stub in separate service module
+- Implement POST /search to fetch candidate jobs, call ranking stub, and return top results
+- Add CORS for React frontend
+- Add health endpoint and Swagger docs support
+- Add clear error handling and logging
+- Coordinate JSON contract with frontend team
+- Coordinate rank_jobs function signature with ML module
+- Coordinate job document schema with pipeline/data ingestion module
+- Optionally implement POST /upload-resume for PDF/DOCX extraction
+- Add tests for valid, invalid, empty, and error scenarios
+- Write README with local setup and run steps
+- Demo /docs, GET /jobs, and POST /search with seed data
