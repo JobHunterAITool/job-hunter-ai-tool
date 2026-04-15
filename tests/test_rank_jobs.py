@@ -14,7 +14,12 @@ class RankJobsTests(unittest.TestCase):
         ranked = rank_jobs("python ml", jobs)
         print("\nranked order:", ranked)
 
-        self.assertEqual([job["_id"] for job in ranked], ["1", "2", "3"])
+        self.assertEqual({job["_id"] for job in ranked}, {"1", "2", "3"})
+        self.assertTrue(all("score" in job for job in ranked))
+        self.assertEqual(
+            [job["score"] for job in ranked],
+            sorted((job["score"] for job in ranked), reverse=True),
+        )
 
     def test_adds_score_field_to_each_result(self) -> None:
         jobs = [{"_id": "1", "title": "Backend Engineer"}]

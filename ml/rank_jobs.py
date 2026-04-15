@@ -10,8 +10,10 @@ querying MongoDB for candidate job documents and passing them here
 together with the user's profile text.
 """
 
+from typing import Any
 
-def rank_jobs(user_text: str, jobs: list[dict[str]]) -> list[dict[str]]:
+
+def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Rank a list of job documents by relevance to the user's profile text.
 
     Parameters

@@ -34,7 +34,7 @@ python -m pip install -r ml/requirements.txt
 python -m pytest -vv
 ```
 
-To show result ouput:
+To show result output:
 
 ```powershell
 python -m pytest -s -vv
