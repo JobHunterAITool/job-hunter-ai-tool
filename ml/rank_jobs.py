@@ -1,13 +1,9 @@
 """
-ML ranking module for JobHunterAI.
-
-Public interface
-----------------
-    rank_jobs(user_text: str, jobs: list[dict]) -> list[dict]
-
-The backend calls rank_jobs() from its POST /search handler after
-querying MongoDB for candidate job documents and passing them here
-together with the user's profile text.
+Author: Richard Hsiao
+Class: CS 467
+Project: The Job Hunting AI Web Tool
+Description: Ranking module stub used for backend integration before the real
+ML model is connected.
 """
 
 from typing import Any
@@ -24,18 +20,16 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
         experience level).  Must be a non-empty string.
     jobs : list[dict]
         Job postings retrieved from MongoDB.  Each posting is expected to
-        contain at least the following fields, as documented below::
+        contain at least the following fields, as documented below:
 
             {
-                "_id":         str,
+                "_id":         str,    # MongoDB 
                 "title":       str,
                 "company":     str,
                 "location":    str,
                 "description": str,
-                "skills":      list[str],
+                "skills":      list[str],    # Parsed from job descriptions
                 "source":      str,
-                "fetched_at":  str,   # ISO 8601 timestamp string
-                "normalized":  bool,
             }
 
         Absent fields are treated as empty strings during scoring.
@@ -59,7 +53,7 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
 
     Notes
     -----
-    Current implementation: placeholder stub — returns jobs in their original
+    Current implementation: placeholder stub — returns jobs in ranked
     order with a dummy score of 0.0 so that the backend POST /search endpoint
     is testable end-to-end before the real ML logic is wired in.
 
