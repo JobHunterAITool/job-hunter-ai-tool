@@ -30,14 +30,28 @@ python -m pip install -r ml/requirements.txt
 
 ### 3. Run tests
 
+3.1. Run full test suite:
+
 ```powershell
 python -m pytest -vv
 ```
 
-To show result output:
+3.2. Run full test suite with outputs:
 
 ```powershell
 python -m pytest -s -vv
+```
+
+3.3. Run regular unit tests only with outputs:
+
+```powershell
+python -m pytest tests/test_rank_jobs.py -s -v
+```
+
+3.4. Run seed-data tests only with outputs:
+
+```powershell
+python -m pytest tests/test_rank_jobs_seed.py -s -v
 ```
 
 ## Public Interface (Contract)
