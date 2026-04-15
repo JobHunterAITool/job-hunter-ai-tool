@@ -20,17 +20,17 @@ class RankJobsSeedDataTests(unittest.TestCase):
 
     def test_ranked_output_has_valid_shape_and_score_range(self) -> None:
         ranked = rank_jobs("python backend fastapi sql docker", self.SEED_JOBS)
-        top_preview = [
-            {"_id": job.get("_id"), "score": round(job["score"], 4)}
-            for job in ranked[:5]
-        ]
-        print("\ntop 5 (python/backend query):", top_preview)
 
         self.assertEqual(len(ranked), len(self.SEED_JOBS))
         self.assertTrue(all("score" in job for job in ranked))
         self.assertTrue(all(isinstance(job["score"], float) for job in ranked))
         self.assertTrue(all(0.0 <= job["score"] <= 1.0 for job in ranked))
 
+        top_preview = [
+            {"_id": job.get("_id"), "score": round(job["score"], 4)}
+            for job in ranked[:5]
+        ]
+        print("\ntop 5 (python/backend query):", top_preview)
     def test_backend_profile_surfaces_relevant_top_result(self) -> None:
         ranked = rank_jobs(
             "backend engineer python fastapi rest api microservices sql postgresql docker kubernetes",
