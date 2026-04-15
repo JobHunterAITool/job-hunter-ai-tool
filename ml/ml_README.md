@@ -14,7 +14,7 @@ source .venv/bin/activate
 python -m pip install -U pip
 ```
 
-#### Windows (PowerShell)
+#### Windows (Powershell)
 
 ```powershell
 py -m venv .venv
@@ -24,7 +24,7 @@ python -m pip install -U pip
 
 ### 2. Install dependencies
 
-```bash
+```powershell
 python -m pip install -r ml/requirements.txt
 ```
 
@@ -32,8 +32,14 @@ python -m pip install -r ml/requirements.txt
 
 #### Windows
 
-```bash
-python -m pytest
+```powershell
+python -m pytest -vv
+```
+
+To show result ouput:
+
+```powershell
+python -m pytest -s -vv
 ```
 
 ## Public Interface (Contract)

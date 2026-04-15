@@ -32,7 +32,7 @@ class RankJobsTests(unittest.TestCase):
 
         ranked = rank_jobs("backend", jobs)
         print("\ninput jobs:", jobs)
-        print("\nranked output:", ranked)
+        print("ranked output:", ranked)
 
         self.assertNotIn("score", jobs[0])
 
