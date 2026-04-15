@@ -132,6 +132,7 @@ Baseline algorithm target:
 
 Future improvements (planned):
 
+- Text parsing of 'description' field for 'skills'
 - Keyword pre-filtering before TF‑IDF scoring for latency
 - Text normalization improvements
 - Optional embedding-based ranking upgrade (sentence-transformers)
