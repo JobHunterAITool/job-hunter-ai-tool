@@ -6,16 +6,6 @@ This module ranks job postings against a user's resume/profile text using a base
 
 ### 1. Create & activate a virtual environment
 
-#### macOS / Linux
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -U pip
-```
-
-#### Windows (Powershell)
-
 ```powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -29,8 +19,6 @@ python -m pip install -r ml/requirements.txt
 ```
 
 ### 3. Run tests
-
-#### Windows
 
 ```powershell
 python -m pytest -vv
