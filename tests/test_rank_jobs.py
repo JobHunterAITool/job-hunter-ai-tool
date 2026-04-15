@@ -4,7 +4,7 @@ from ml.rank_jobs import rank_jobs
 
 
 class RankJobsTests(unittest.TestCase):
-    def test_returns_jobs_in_original_order_for_stub(self) -> None:
+    def test_returns_jobs_in_ranked_order(self) -> None:
         jobs = [
             {"_id": "1", "title": "Backend Engineer", "description": "Python APIs"},
             {"_id": "2", "title": "Data Analyst", "description": "SQL dashboards"},
@@ -12,6 +12,7 @@ class RankJobsTests(unittest.TestCase):
         ]
 
         ranked = rank_jobs("python ml", jobs)
+        print("\nranked order:", ranked)
 
         self.assertEqual([job["_id"] for job in ranked], ["1", "2", "3"])
 
@@ -29,25 +30,30 @@ class RankJobsTests(unittest.TestCase):
     def test_does_not_mutate_input_job_dicts(self) -> None:
         jobs = [{"_id": "1", "title": "Backend Engineer"}]
 
-        _ = rank_jobs("backend", jobs)
+        ranked = rank_jobs("backend", jobs)
+        print("\ninput jobs:", jobs)
+        print("\nranked output:", ranked)
 
         self.assertNotIn("score", jobs[0])
 
     def test_raises_for_empty_user_text(self) -> None:
         jobs = [{"_id": "1", "title": "Backend Engineer"}]
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError) as err:
             rank_jobs("", jobs)
+        print("\nerr.exception:", err.exception)
 
     def test_raises_for_whitespace_user_text(self) -> None:
         jobs = [{"_id": "1", "title": "Backend Engineer"}]
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError) as err:
             rank_jobs("   ", jobs)
+        print("\nerr.exception:", err.exception)
 
     def test_raises_for_empty_jobs(self) -> None:
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError) as err:
             rank_jobs("backend", [])
+        print("\nerr.exception:", err.exception)
 
     def test_tolerates_missing_fields(self) -> None:
         jobs = [
@@ -57,6 +63,7 @@ class RankJobsTests(unittest.TestCase):
         ]
 
         ranked = rank_jobs("backend", jobs)
+        print("\nranked:", ranked)
 
         self.assertEqual(len(ranked), 3)
         self.assertTrue(all("score" in job for job in ranked))
