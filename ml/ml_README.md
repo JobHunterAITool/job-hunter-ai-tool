@@ -78,12 +78,11 @@ Given resume/profile text and a list of candidate jobs, return the jobs sorted b
 - Type: `list[dict]`
 - The returned list must be **sorted descending** by match score (best match first).
 - Each returned job dict must include:
-  - `match_score`: `float` in `[0.0, 1.0]` (cosine similarity)
-  - `match_percent`: `int` in `[0, 100]` (rounded from `match_score * 100`)
+  - `score`: `float` in `[0.0, 1.0]` (cosine similarity)
 
 #### Non-destructive behavior (recommended)
 
-The function should **not mutate** the input job dictionaries in-place. It should return **copies** with added `match_score` / `match_percent` fields to avoid unexpected side effects in the backend.
+The function should **not mutate** the input job dictionaries in-place. It should return **copies** with added `score` field to avoid unexpected side effects in the backend.
 
 ### Pagination / Top-N slicing responsibility
 
@@ -99,7 +98,7 @@ If multiple jobs have equal scores, preserve the original order of the input lis
 Recommended behavior:
 
 - In development: raise exceptions to make issues obvious.
-- In production: if ranking fails unexpectedly, fall back to returning jobs in original order with `match_score = 0.0` and `match_percent = 0`.
+- In production: if ranking fails unexpectedly, fall back to returning jobs in original order with `score = 0.0`.
 
 ## Seed Data
 
