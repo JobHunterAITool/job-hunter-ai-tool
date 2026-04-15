@@ -10,8 +10,6 @@ querying MongoDB for candidate job documents and passing them here
 together with the user's profile text.
 """
 
-from __future__ import annotations
-
 from typing import Any
 
 
@@ -79,4 +77,5 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
         job_copy = dict(job)
         job_copy["score"] = 0.0
         ranked.append(job_copy)
-    return ranked
+    # Sort the ranked jobs by their scores in descending order
+    return sorted(ranked, key=lambda job: job["score"], reverse=True)
