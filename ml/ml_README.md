@@ -73,18 +73,20 @@ Given resume/profile text and a list of candidate jobs, return the jobs sorted b
 - Edge cases:
   - If `user_text` is empty or whitespace-only, the function should not crash. Recommended behavior is to return all jobs with scores set to `0.0`.
 
+> **TODO:** It may be better to refactor this to a `list[str]` to improve matches for multiple-word phrases (e.g. "machine learning").
+
 ### Input: `jobs`
 
 - Type: `list[dict]`
 - Each job is a Python `dict` (usually originating from MongoDB documents).
 - Recommended/expected keys (missing keys are treated as empty strings):
-  - `id` (string): stable identifier (preferred if available)
+  - `_id` (string): stable identifier (preferred if available)
   - `title` (string)
   - `company` (string)
   - `location` (string, optional)
   - `description` (string)
   - `skills` (`list[str]`): Parsed at the Backend via another module
-  - `created` (string)
+  - `created` (string): Date when the job was posted
   - `redirect_url` (string): Webscraped to parse `skills` list
 
 > **Missing fields:** If any of the above keys are missing, the ranking logic should treat the missing value as an empty string rather than raising an exception.

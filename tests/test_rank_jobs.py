@@ -30,7 +30,9 @@ class RankJobsTests(unittest.TestCase):
         self.assertEqual(len(ranked), 1)
         self.assertIn("score", ranked[0])
         self.assertIsInstance(ranked[0]["score"], float)
-        self.assertEqual(ranked[0]["score"], 0.0)
+        self.assertGreaterEqual(ranked[0]["score"], 0.0)
+        self.assertLessEqual(ranked[0]["score"], 1.0)
+        self.assertGreater(ranked[0]["score"], 0.0)
 
     def test_does_not_mutate_input_job_dicts(self) -> None:
         jobs = [{"_id": "1", "title": "Backend Engineer"}]
