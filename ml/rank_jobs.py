@@ -20,18 +20,18 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
         experience level).  Must be a non-empty string.
     jobs : list[dict]
         Job postings retrieved from MongoDB.  Each posting is expected to
-        contain at least the following fields, as documented below:
+        contain at least the following fields:
 
-            {
-                "_id":             str,        # MongoDB ObjectId 
-                "title":           str,
-                "company":         str,        # company.display_name (Adzuna)
-                "location":        str,        # location.display_name (Adzuna)
-                "description":     str,
-                "skills":          list[str],  # Parsed by Backend
-                "created":         str,        # ISO 8601 timestamp string
-                "redirect_url":    str,        # URL to full job description
-            }
+        {
+            "_id":             str,        # MongoDB ObjectId
+            "title":           str,
+            "company":         str,        # company.display_name (Adzuna)
+            "location":        str,        # location.display_name (Adzuna)
+            "description":     str,
+            "skills":          list[str],  # Parsed by Backend
+            "created":         str,        # ISO 8601 timestamp string
+            "redirect_url":    str,        # URL to full job description (Adzuna)
+        }
 
         Absent fields are treated as empty strings during scoring.
 

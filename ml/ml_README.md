@@ -30,25 +30,25 @@ python -m pip install -r ml/requirements.txt
 
 ### 3. Run tests
 
-3.1. Run full test suite:
+#### 3.1. Run full test suite:
 
 ```powershell
 python -m pytest -vv
 ```
 
-3.2. Run full test suite with outputs:
+#### 3.2. Run full test suite with outputs:
 
 ```powershell
 python -m pytest -s -vv
 ```
 
-3.3. Run regular unit tests only with outputs:
+#### 3.3. Run regular unit tests only with outputs:
 
 ```powershell
 python -m pytest tests/test_rank_jobs.py -s -v
 ```
 
-3.4. Run seed-data tests only with outputs:
+#### 3.4. Run seed-data tests only with outputs:
 
 ```powershell
 python -m pytest tests/test_rank_jobs_seed.py -s -v
@@ -83,7 +83,9 @@ Given resume/profile text and a list of candidate jobs, return the jobs sorted b
   - `company` (string)
   - `location` (string, optional)
   - `description` (string)
-  - `skills` (optional): either `list[str]` or a comma-separated `str`
+  - `skills` (`list[str]`): Parsed at the Backend via another module
+  - `created` (string)
+  - `redirect_url` (string): Webscraped to parse `skills` list
 
 > **Missing fields:** If any of the above keys are missing, the ranking logic should treat the missing value as an empty string rather than raising an exception.
 

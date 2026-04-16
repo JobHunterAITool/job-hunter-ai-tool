@@ -31,6 +31,7 @@ class RankJobsSeedDataTests(unittest.TestCase):
             for job in ranked[:5]
         ]
         print("\ntop 5 (python/backend query):", top_preview)
+
     def test_backend_profile_surfaces_relevant_top_result(self) -> None:
         ranked = rank_jobs(
             "backend engineer python fastapi rest api microservices sql postgresql docker kubernetes",
