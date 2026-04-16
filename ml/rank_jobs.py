@@ -23,13 +23,14 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
         contain at least the following fields, as documented below:
 
             {
-                "_id":         str,    # MongoDB 
-                "title":       str,
-                "company":     str,
-                "location":    str,
-                "description": str,
-                "skills":      list[str],    # Parsed from job descriptions
-                "source":      str,
+                "_id":             str,        # MongoDB ObjectId 
+                "title":           str,
+                "company":         str,        # company.display_name (Adzuna)
+                "location":        str,        # location.display_name (Adzuna)
+                "description":     str,
+                "skills":          list[str],  # Parsed by Backend
+                "created":         str,        # ISO 8601 timestamp string
+                "redirect_url":    str,        # URL to full job description
             }
 
         Absent fields are treated as empty strings during scoring.
