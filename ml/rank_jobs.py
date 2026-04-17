@@ -28,6 +28,7 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
                 "company":         str,        # company.display_name (Adzuna)
                 "location":        str,        # location.display_name (Adzuna)
                 "description":     str,
+                "category":        str,        # category.label (Adzuna)
                 "skills":          list[str],  # Parsed by Backend
                 "created":         str,        # ISO 8601 timestamp string
                 "redirect_url":    str,        # URL to full job description
