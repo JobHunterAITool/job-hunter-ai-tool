@@ -30,25 +30,25 @@ python -m pip install -r ml/requirements.txt
 
 ### 3. Run tests
 
-3.1. Run full test suite:
+#### 3.1. Run full test suite:
 
 ```powershell
 python -m pytest -vv
 ```
 
-3.2. Run full test suite with outputs:
+#### 3.2. Run full test suite with outputs:
 
 ```powershell
 python -m pytest -s -vv
 ```
 
-3.3. Run regular unit tests only with outputs:
+#### 3.3. Run regular unit tests only with outputs:
 
 ```powershell
 python -m pytest tests/test_rank_jobs.py -s -v
 ```
 
-3.4. Run seed-data tests only with outputs:
+#### 3.4. Run seed-data tests only with outputs:
 
 ```powershell
 python -m pytest tests/test_rank_jobs_seed.py -s -v
@@ -71,19 +71,24 @@ Given resume/profile text and a list of candidate jobs, return the jobs sorted b
 - Type: `str`
 - Description: Raw extracted resume text (or fallback manual input text) provided by the backend.
 - Edge cases:
-  - If `user_text` is empty or whitespace-only, the function should not crash. Recommended behavior is to return all jobs with scores set to `0.0`.
+  - If `user_text` is empty or whitespace-only, the function raises a ValueError
+
+> **TODO:** It may be better to refactor this to a `list[str]` to improve matches for multiple-word phrases (e.g. "machine learning").
 
 ### Input: `jobs`
 
 - Type: `list[dict]`
 - Each job is a Python `dict` (usually originating from MongoDB documents).
 - Recommended/expected keys (missing keys are treated as empty strings):
-  - `_id` (string): stable identifier (preferred if available)
+  - `_id` (string): stable identifier (MongoDB)
   - `title` (string)
   - `company` (string)
   - `location` (string, optional)
   - `description` (string)
-  - `skills` (optional): either `list[str]` or a comma-separated `str`
+  - `category` (string): Could be used to break ties
+  - `created` (string): Date when the job was posted
+  - `redirect_url` (string): Webscraped to parse `skills` list
+  - `skills` (`list[str] | str`): Preferred shape is `list[str]`, but comma-separated `str` also accepted
 
 > **Missing fields:** If any of the above keys are missing, the ranking logic should treat the missing value as an empty string rather than raising an exception.
 
@@ -135,4 +140,4 @@ Future improvements (planned):
 - Text parsing of 'description' field for 'skills'
 - Keyword pre-filtering before TF‑IDF scoring for latency
 - Text normalization improvements
-- Optional embedding-based ranking upgrade (sentence-transformers)
+- Optional LogisticRegression
