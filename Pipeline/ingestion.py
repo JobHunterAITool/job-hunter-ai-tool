@@ -1,0 +1,144 @@
+import requests
+import datetime
+import time
+import json
+import os
+
+# Adzuna API endpoints : 
+
+# /jobs/{country}/search/{page}
+# This is the main endpoint that actually returns job listings. It gives us all the core data like title, description, company, location, salary, and link, and supports filters like keywords and category
+
+# /jobs/{country}/histogram
+# This gives a breakdown of how many jobs fall into different salary ranges
+
+# /jobs/{country}/history
+# This returns historical average salary data over time
+
+# /jobs/{country}/geodata
+# This provides salary data by location
+
+# /jobs/{country}/top_companies
+# This shows which companies are posting the most jobs for a given search
+
+# /version
+# This just returns the API version info
+
+
+# categories  :  returns the predefined list of job categories adzuna uses, we will use this for our industry filter. 
+# you can see them all in this response : https://api.adzuna.com/v1/api/jobs/us/categories?app_id=8e88dd1a&app_key=501524232a49925c03eec7a276d7fb5f
+# below are the filters in scope for this project. 
+categories = [
+    "it-jobs",
+    "engineering-jobs",
+    "scientific-qa-jobs",
+]
+
+# read credentials in so theyre not harded coded 
+with open("cred.txt", "r") as file: 
+    line = file.read().strip()
+id, key  = [x.strip().strip('"') for x in line.split(",")]
+
+
+# main loop logic : 
+# We will request one category at a time, since adzuna supports pagination we will continue requesting for that one category until no results return. 
+# FOR NOW : Ill stop at page 10 for each category, for later progress reports we can go past that. 
+
+seen_ids = set()
+all_jobs = []
+category = ""
+results_per_page = 50
+base_url = "https://api.adzuna.com/v1/api/jobs/us/search/{}"
+
+# 50 is the max results per page per the api response
+def send_HTTP_request(url, id, key, category, results_per_page=50, page=1, what = ""):
+        url = base_url.format(page)
+        params = {
+            "app_id": id,
+            "app_key": key,
+            "results_per_page": results_per_page, 
+            'category' : category, 
+            'what' : what
+            }
+
+        try:
+            response = requests.get(url, params=params)
+            return response, response.json() # return the response and statuscode. 
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return None
+
+# create timestamp variable and convert it to string.
+TIMESTAMP = datetime.datetime.now().isoformat()
+
+# start making requests : 
+# loop through each of our job industry categories. 
+for category in categories:
+    print(f"\nJob category: {category}")
+
+    # pagination - 50 results per response. We can limit where to stop here, or continue until we reach the end. 
+    for page in range(1, 3):   # change to 11 later for pages 1 through 10 - can change to while loop if we want to read everything.
+        time.sleep(2) # setting timer to avoid being rate-limited for when we start making larger requests.
+        # the send_HTTP_requests returns the status code, and then the actual data in a set. 
+        response, data = send_HTTP_request(
+            base_url,
+            id=id,
+            key=key,
+            category=category,
+            results_per_page=results_per_page,
+            page=page,
+            what="computer science"  # <- we can change this, but without it we return 400,000+ jobs
+        )
+
+        print(response.url)
+
+        if response is None:
+            print(f"Request failed for category={category}, page={page}")
+            break
+
+        if response.status_code != 200:
+            print(f"Request failed for category={category}, page={page}")
+            print(f"Status code: {response.status_code}")
+            print(f"Error: {response.text}")
+            break
+
+        # return the results, or if it doesnt exist an empty list (to avoid erroring out)
+        results = data.get("results", [])
+
+        if not results:
+            print(f"No more results for {category} on page {page}. Stopping this category.")
+            break
+
+        print(f"Retrieved {len(results)} jobs from category={category}, page={page}")
+
+        # check for duplications
+        for job in results:
+            job_id = job.get("id")
+            if job_id not in seen_ids:
+                seen_ids.add(job_id)
+                job["TIMESTAMP"] = TIMESTAMP
+                job["Category"] = category
+                area = job.get("location", {}).get("area", [])
+                job["state"] = area[1] if len(area) > 1 else None
+                all_jobs.append(job)
+
+print(f"\nUnique jobs entered: {len(all_jobs)}")
+
+# printing all jobs just prints the python representation of the data structure which is a dict
+print(all_jobs)
+# json module converts to valid json string
+print(json.dumps(all_jobs, indent=2))
+
+
+# delete already existing jobs_*.txt files, we will overwrite them each time (for now)
+# update this logic to insert data into MongoDB in the next progress report. 
+for file in os.listdir():
+    if file.startswith("jobs_") and file.endswith(".txt"):
+        os.remove(file)
+        
+filename = f"jobs_{TIMESTAMP.replace(':', '_')}.txt"
+
+with open(filename, "w", encoding="utf-8") as f:
+    f.write(json.dumps(all_jobs, indent=2))
+
+print(f"Results written to: {filename}")
