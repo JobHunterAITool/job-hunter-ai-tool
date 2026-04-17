@@ -61,7 +61,7 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
             "company":         str,        # company.display_name (Adzuna)
             "location":        str,        # location.display_name (Adzuna)
             "description":     str,
-            "category::        str,        # category.label (Adzuna)
+            "category":        str,        # category.label (Adzuna)
             "skills":          list[str],  # Parsed by Backend
             "created":         str,        # ISO 8601 timestamp string
             "redirect_url":    str,    # URL to full job description (Adzuna)
@@ -84,13 +84,12 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
     Raises
     ------
     ValueError
-        If ``user_text`` is empty or ``jobs`` is an empty list.
+        If "user_text" is empty or "jobs" is an empty list.
 
     Notes
     -----
-    Current implementation: placeholder stub — returns jobs in ranked
-    order with a dummy score of 0.0 so that the backend POST /search endpoint
-    is testable end-to-end before the real ML logic is wired in.
+    Current implementation: returns jobs with appended "score" field, sorted in
+    descending order.
 
     """
     if not user_text or not user_text.strip():
@@ -125,14 +124,3 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
         ranked.append(job_copy)
 
     return sorted(ranked, key=lambda job: job["score"], reverse=True)
-
-    # # --- Stub implementation ---
-    # # Return a copy of the input list with a placeholder score attached.
-    # # Replace this block entirely in Progress Report #2.
-    # ranked = []
-    # for job in jobs:
-    #     job_copy = dict(job)
-    #     job_copy["score"] = 0.0
-    #     ranked.append(job_copy)
-    # # Sort the ranked jobs by their scores in descending order
-    # return sorted(ranked, key=lambda job: job["score"], reverse=True)

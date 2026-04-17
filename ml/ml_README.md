@@ -71,7 +71,7 @@ Given resume/profile text and a list of candidate jobs, return the jobs sorted b
 - Type: `str`
 - Description: Raw extracted resume text (or fallback manual input text) provided by the backend.
 - Edge cases:
-  - If `user_text` is empty or whitespace-only, the function should not crash. Recommended behavior is to return all jobs with scores set to `0.0`.
+  - If `user_text` is empty or whitespace-only, the function raises a ValueError
 
 > **TODO:** It may be better to refactor this to a `list[str]` to improve matches for multiple-word phrases (e.g. "machine learning").
 
@@ -88,7 +88,7 @@ Given resume/profile text and a list of candidate jobs, return the jobs sorted b
   - `category` (string): Could be used to break ties
   - `created` (string): Date when the job was posted
   - `redirect_url` (string): Webscraped to parse `skills` list
-  - `skills` (`list[str]`): Parsed at the Backend
+  - `skills` (`list[str] | str`): Preferred shape is `list[str]`, but comma-separated `str` also accepted
 
 > **Missing fields:** If any of the above keys are missing, the ranking logic should treat the missing value as an empty string rather than raising an exception.
 
