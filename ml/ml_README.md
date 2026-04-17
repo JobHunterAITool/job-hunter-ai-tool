@@ -80,14 +80,15 @@ Given resume/profile text and a list of candidate jobs, return the jobs sorted b
 - Type: `list[dict]`
 - Each job is a Python `dict` (usually originating from MongoDB documents).
 - Recommended/expected keys (missing keys are treated as empty strings):
-  - `_id` (string): stable identifier (preferred if available)
+  - `_id` (string): stable identifier (MongoDB)
   - `title` (string)
   - `company` (string)
   - `location` (string, optional)
   - `description` (string)
-  - `skills` (`list[str]`): Parsed at the Backend via another module
+  - `category` (string): Could be used to break ties
   - `created` (string): Date when the job was posted
   - `redirect_url` (string): Webscraped to parse `skills` list
+  - `skills` (`list[str]`): Parsed at the Backend
 
 > **Missing fields:** If any of the above keys are missing, the ranking logic should treat the missing value as an empty string rather than raising an exception.
 
@@ -139,4 +140,4 @@ Future improvements (planned):
 - Text parsing of 'description' field for 'skills'
 - Keyword pre-filtering before TF‑IDF scoring for latency
 - Text normalization improvements
-- Optional embedding-based ranking upgrade (sentence-transformers)
+- Optional LogisticRegression
