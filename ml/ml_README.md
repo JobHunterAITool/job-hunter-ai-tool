@@ -78,7 +78,7 @@ Given resume/profile text and a list of candidate jobs, return the jobs sorted b
 - Type: `list[dict]`
 - Each job is a Python `dict` (usually originating from MongoDB documents).
 - Recommended/expected keys (missing keys are treated as empty strings):
-  - `id` (string): stable identifier (preferred if available)
+  - `_id` (string): stable identifier (preferred if available)
   - `title` (string)
   - `company` (string)
   - `location` (string, optional)
