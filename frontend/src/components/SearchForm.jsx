@@ -1,19 +1,21 @@
 import { useState } from "react";
 import { searchJobs } from "../api";
 
-export default function SearchForm() {
+export default function SearchForm({
+  onResults,
+  onLoadingChange,
+  onError,
+  isLoading,
+}) {
   const [jobTitle, setJobTitle] = useState("");
   const [skills, setSkills] = useState("");
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState("Mid");
-  const [results, setResults] = useState([]);
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError("");
-    setIsLoading(true);
+    onError("");
+    onLoadingChange(true);
 
     const payload = {
       job_title: jobTitle,
@@ -24,12 +26,12 @@ export default function SearchForm() {
 
     try {
       const response = await searchJobs(payload);
-      setResults(response.results ?? []);
+      onResults(response.results ?? []);
     } catch (requestError) {
-      setResults([]);
-      setError(requestError.message || "Search failed.");
+      onResults([]);
+      onError(requestError.message || "Search failed.");
     } finally {
-      setIsLoading(false);
+      onLoadingChange(false);
     }
   }
 
@@ -73,23 +75,6 @@ export default function SearchForm() {
           {isLoading ? "Searching..." : "Search Jobs"}
         </button>
       </form>
-
-      {error ? <p className="error-message">{error}</p> : null}
-
-      <div className="results">
-        <h3>Ranked Results</h3>
-        {!isLoading && results.length === 0 ? (
-          <p className="results-empty">No results yet. Submit a search to query the backend.</p>
-        ) : null}
-        {results.map((job, index) => (
-          <article key={`${job.title}-${job.company}-${index}`} className="result-card">
-            <h4>{job.title}</h4>
-            <p>{job.company} | {job.location}</p>
-            <p>Score: {Number(job.score).toFixed(2)}</p>
-            <p>Matched skills: {(job.matched_skills ?? []).join(", ") || "None"}</p>
-          </article>
-        ))}
-      </div>
     </div>
   );
 }
