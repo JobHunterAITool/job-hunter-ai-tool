@@ -14,3 +14,10 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Backend API connection
+
+The frontend is wired to call the backend `/search` endpoint from `src/components/SearchForm.jsx`.
+
+- Development default: Vite proxy forwards `/search`, `/jobs`, and `/upload-resume` to `http://127.0.0.1:8000`.
+- Optional override: set `VITE_API_BASE_URL` (for example `http://127.0.0.1:8000`) to call the backend directly instead of using the proxy.
