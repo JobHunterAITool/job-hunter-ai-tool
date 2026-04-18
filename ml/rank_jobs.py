@@ -65,6 +65,7 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
             "skills":          list[str],  # Parsed by Backend
             "created":         str,        # ISO 8601 timestamp string
             "redirect_url":    str,    # URL to full job description (Adzuna)
+            "job_description_text": str,   # Plain text extracted by Pipeline
         }
 
         Absent fields are treated as empty strings during scoring.

@@ -89,6 +89,7 @@ Given resume/profile text and a list of candidate jobs, return the jobs sorted b
   - `created` (string): Date when the job was posted
   - `redirect_url` (string): Webscraped to parse `skills` list
   - `skills` (`list[str] | str`): Preferred shape is `list[str]`, but comma-separated `str` also accepted
+  - `job_description_text` (string)
 
 > **Missing fields:** If any of the above keys are missing, the ranking logic should treat the missing value as an empty string rather than raising an exception.
 
