@@ -33,6 +33,7 @@ def _job_to_text(job: dict[str, Any]) -> str:
         job.get("company", ""),
         job.get("location", ""),
         job.get("description", ""),
+        job.get("job_description_text", ""),
         skills_text,
     ]
     return " ".join(str(part).strip() for part in parts if str(part).strip())
