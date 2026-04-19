@@ -11,7 +11,7 @@ class RankJobsTests(unittest.TestCase):
             {"_id": "3", "title": "ML Engineer", "description": "NLP ranking"},
         ]
 
-        ranked = rank_jobs("python ml", jobs)
+        ranked = rank_jobs({"user_text": "python ml"}, jobs)
         print("\nranked order:", ranked)
 
         self.assertEqual({job["_id"] for job in ranked}, {"1", "2", "3"})
@@ -24,7 +24,7 @@ class RankJobsTests(unittest.TestCase):
     def test_adds_score_field_to_each_result(self) -> None:
         jobs = [{"_id": "1", "title": "Backend Engineer"}]
 
-        ranked = rank_jobs("backend", jobs)
+        ranked = rank_jobs({"user_text": "backend"}, jobs)
         print("\nscore field added:", ranked)
 
         self.assertEqual(len(ranked), 1)
@@ -37,7 +37,7 @@ class RankJobsTests(unittest.TestCase):
     def test_does_not_mutate_input_job_dicts(self) -> None:
         jobs = [{"_id": "1", "title": "Backend Engineer"}]
 
-        ranked = rank_jobs("backend", jobs)
+        ranked = rank_jobs({"user_text": "backend"}, jobs)
         print("\ninput jobs:", jobs)
         print("ranked output:", ranked)
 
@@ -47,19 +47,37 @@ class RankJobsTests(unittest.TestCase):
         jobs = [{"_id": "1", "title": "Backend Engineer"}]
 
         with self.assertRaises(ValueError) as err:
-            rank_jobs("", jobs)
+            rank_jobs({"user_text": ""}, jobs)
         print("\nerr.exception:", err.exception)
 
-    def test_raises_for_whitespace_user_text(self) -> None:
+    def test_accepts_structured_user_fields_without_user_text(self) -> None:
+        jobs = [{"_id": "1", "title": "Backend Engineer", "description": "Python APIs"}]
+
+        ranked = rank_jobs(
+            {
+                "job_title": "Backend Engineer",
+                "skills": ["Python", "FastAPI"],
+                "location": "Remote",
+                "experience_level": "Mid",
+            },
+            jobs,
+        )
+        print("\nranked from structured fields:", ranked)
+
+        self.assertEqual(len(ranked), 1)
+        self.assertIn("score", ranked[0])
+        self.assertGreater(ranked[0]["score"], 0.0)
+
+    def test_raises_for_empty_user_profile(self) -> None:
         jobs = [{"_id": "1", "title": "Backend Engineer"}]
 
         with self.assertRaises(ValueError) as err:
-            rank_jobs("   ", jobs)
+            rank_jobs({}, jobs)
         print("\nerr.exception:", err.exception)
 
     def test_raises_for_empty_jobs(self) -> None:
         with self.assertRaises(ValueError) as err:
-            rank_jobs("backend", [])
+            rank_jobs({"user_text": "backend"}, [])
         print("\nerr.exception:", err.exception)
 
     def test_tolerates_missing_fields(self) -> None:
@@ -69,7 +87,7 @@ class RankJobsTests(unittest.TestCase):
             {},
         ]
 
-        ranked = rank_jobs("backend", jobs)
+        ranked = rank_jobs({"user_text": "backend"}, jobs)
         print("\nranked:", ranked)
 
         self.assertEqual(len(ranked), 3)
