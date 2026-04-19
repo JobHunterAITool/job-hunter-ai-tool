@@ -30,25 +30,25 @@ python -m pip install -r ml/requirements.txt
 
 ### 3. Run tests
 
-#### 3.1. Run full test suite:
+#### 3.1. Run full test suite
 
 ```powershell
 python -m pytest -vv
 ```
 
-#### 3.2. Run full test suite with outputs:
+#### 3.2. Run full test suite with outputs
 
 ```powershell
 python -m pytest -s -vv
 ```
 
-#### 3.3. Run regular unit tests only with outputs:
+#### 3.3. Run regular unit tests only with outputs
 
 ```powershell
 python -m pytest tests/test_rank_jobs.py -s -v
 ```
 
-#### 3.4. Run seed-data tests only with outputs:
+#### 3.4. Run seed-data tests only with outputs
 
 ```powershell
 python -m pytest tests/test_rank_jobs_seed.py -s -v
@@ -59,21 +59,28 @@ python -m pytest tests/test_rank_jobs_seed.py -s -v
 ### Function
 
 ```python
-rank_jobs(user_text: str, jobs: list[dict]) -> list[dict]
+rank_jobs(user_profile: dict[str, Any], jobs: list[dict]) -> list[dict]
 ```
 
 ### Purpose
 
-Given resume/profile text and a list of candidate jobs, return the jobs sorted by best match. This function is intended to be called by the Backend `POST /search` handler after it fetches a candidate set (e.g., top 200) from MongoDB.
+Given a user profile dictionary and a list of candidate jobs, return the jobs sorted by best match. This function is intended to be called by the Backend `POST /search` handler after it fetches a candidate set (e.g., top 200) from MongoDB.
 
-### Input: `user_text`
+### Input: `user_profile`
 
-- Type: `str`
-- Description: Raw extracted resume text (or fallback manual input text) provided by the backend.
+- Type: `dict[str, Any]`
+- Description: User inputs provided by backend aggregation logic.
+- Supported keys:
+  - `user_text` (string): raw resume/profile text
+  - `resume_text` (string): alternate key for extracted resume text
+  - `job_title` (string): frontend job title field
+  - `skills` (`list[str] | str`): list of skills or comma-separated skills
+  - `location` (string): frontend location field
+  - `experience_level` (string): frontend experience selector
 - Edge cases:
-  - If `user_text` is empty or whitespace-only, the function raises a ValueError
+  - If all supported keys are empty/absent, the function raises a ValueError
 
-> **TODO:** It may be better to refactor this to a `list[str]` to improve matches for multiple-word phrases (e.g. "machine learning").
+> **Note:** The module currently normalizes structured fields into a single text query before scoring. This keeps the API flexible while the ML implementation remains a stub.
 
 ### Input: `jobs`
 
