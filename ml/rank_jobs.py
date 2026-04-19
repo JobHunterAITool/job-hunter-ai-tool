@@ -2,9 +2,9 @@
 Author: Richard Hsiao
 Class: CS 467
 Project: The Job Hunting AI Web Tool
-Description: Ranking module stub used for backend integration before the real
-ML model is connected. It currently accepts either resume text or structured
-user fields and normalizes them into a single query string for scoring.
+Description: Baseline ML ranking module that normalizes a user profile into a
+query string, applies TF-IDF vectorization, computes cosine similarity against
+job text, and returns deterministic score-sorted results.
 """
 
 import re
@@ -29,15 +29,20 @@ def _normalize_skills(skills: Any) -> list[str]:
     return [str(skills).strip()] if str(skills).strip() else []
 
 
-def build_user_text(
-    job_title: str = "",
-    skills: Any = None,
-    location: str = "",
-    experience_level: str = "",
-) -> str:
-    """Build the ranking text representation from structured user fields."""
-    skill_text = " ".join(_normalize_skills(skills))
-    parts = [job_title, skill_text, location, experience_level]
+def build_user_text(user_profile: dict[str, Any]) -> str:
+    """Build ranking text from a user profile dictionary.
+
+    Supported keys: user_text, resume_text, job_title, skills, location,
+    experience_level.
+    """
+    skill_text = " ".join(_normalize_skills(user_profile.get("skills")))
+    parts = [
+        user_profile.get("user_text", "") or user_profile.get("resume_text", ""),
+        user_profile.get("job_title", ""),
+        skill_text,
+        user_profile.get("location", ""),
+        user_profile.get("experience_level", ""),
+    ]
     return " ".join(str(part).strip() for part in parts if str(part).strip())
 
 
@@ -68,30 +73,17 @@ def _keyword_overlap_score(user_terms: set[str], job_text: str) -> int:
 
 
 def rank_jobs(
-    user_text: str | None = None,
-    jobs: list[dict[str, Any]] | None = None,
-    *,
-    job_title: str = "",
-    skills: Any = None,
-    location: str = "",
-    experience_level: str = "",
+    user_profile: dict[str, Any],
+    jobs: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     """Rank a list of job documents by relevance to the user's profile text.
 
     Parameters
     ----------
-    user_text : str | None
-        Plain text extracted from the user's uploaded resume. Optional when
-        structured user fields are supplied.
-    job_title : str
-        Manual profile/job preference title from the frontend form.
-    skills : Any
-        Manual profile skills from the frontend form. Accepts list[str] or a
-        comma-separated string.
-    location : str
-        Manual profile location from the frontend form.
-    experience_level : str
-        Manual profile experience level from the frontend form.
+    user_profile : dict[str, Any]
+        User inputs for ranking, including any combination of:
+        user_text, resume_text, job_title, skills, location,
+        experience_level.
     jobs : list[dict]
         Job postings retrieved from MongoDB. Each posting is expected to
         contain at least the following fields:
@@ -134,23 +126,13 @@ def rank_jobs(
     descending order.
 
     """
-    if jobs is None:
-        jobs = []
+    if not isinstance(user_profile, dict):
+        raise ValueError("user_profile must be a dictionary")
 
-    if user_text and user_text.strip():
-        query_text = user_text.strip()
-    else:
-        query_text = build_user_text(
-            job_title=job_title,
-            skills=skills,
-            location=location,
-            experience_level=experience_level,
-        )
+    query_text = build_user_text(user_profile)
 
     if not query_text:
-        raise ValueError(
-            "either user_text or structured profile fields must be provided"
-        )
+        raise ValueError("user_profile must include non-empty ranking fields")
 
     if not jobs:
         raise ValueError("jobs list must not be empty")
@@ -166,7 +148,7 @@ def rank_jobs(
         candidate_jobs = [job for _, job in candidate_jobs]
 
     candidate_texts = [_job_to_text(job) for job in candidate_jobs]
-    corpus = [user_text, *candidate_texts]
+    corpus = [query_text, *candidate_texts]
 
     try:
         tfidf_matrix = TfidfVectorizer(stop_words="english").fit_transform(corpus)
