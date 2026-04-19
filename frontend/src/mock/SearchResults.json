@@ -1,0 +1,26 @@
+[
+    {
+      "id": 1,
+      "title": "Frontend Developer",
+      "company": "TechNova",
+      "location": "Remote",
+      "match_score": 92,
+      "summary": "Strong match for React, JavaScript, and frontend UI work."
+    },
+    {
+      "id": 2,
+      "title": "Software Engineer",
+      "company": "CloudPeak",
+      "location": "Boston, MA",
+      "match_score": 85,
+      "summary": "Good match for software engineering and API integration skills."
+    },
+    {
+      "id": 3,
+      "title": "UI Engineer",
+      "company": "Bright Labs",
+      "location": "Seattle, WA",
+      "match_score": 80,
+      "summary": "Relevant match for component-based frontend development."
+    }
+  ]
