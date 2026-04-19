@@ -2,11 +2,15 @@
 
 > This is the 'production' repo for the Job Hunter AI Tool.
 
+## Project Requirements
+
+> Source: https://eecs.engineering.oregonstate.edu/capstone/submission/pages/viewSingleProject.php?id=UqHibY35MJbhf0ba
+
 Develop the ultimate smart AI-based job searching tool. This project will be done by capstone students who are also interested in Data Science, Machine Learning, Text Mining, Web Development, Python Programming, Web Applications, and related tools and models. The goal here is to envision, plan, and develop this open-source platform which could be deployed via the web world-wide. 
 
 > **IMPORTANT:** This project does not have a “mentor”. If you choose this project, you and your team will elect a Team Leader from your group of learners. You will direct your project, determine methods and models, and independently decide directions, goals, ideas, and results. 
 
-## Objectives
+### Objectives
 1. Explore data, criteria, and goals related to technical job searches. 
 2. Understand the problem domain, the challenges, the stakeholders, the use cases, and the potential clients. 
 3. Use data, such as via web scraping, APIs, and other methods to gather data and through this data information about all aspects of web-based job searching from the perspectives of both the searcher as well as the advertiser. Include correlations and analytics that can discover as well as model or predict relationships between academic credentials, key words, locations, skills, and related. 
@@ -21,25 +25,25 @@ Great Project Resource: https://gatesboltonanalytics.com/
 
 Please note that is project does not have a formal mentor and is student team managed and directed. If you choose this project for a short summer class such as CS 467, make sure to manage the deliverables for that time frame. Alternatively, if you choose this project for a 3-term capstone (such as CS 461, 462, and 463) you will be expected to make the project more robust (and to determine how best to do this). 
 
-## Motivations
+### Motivations
 Job searching can be time consuming and challenging, especially for students or new job hunters. Our goal is to envision, plan, develop, and deploy a job search site that utilizes AI methods and models. Methods and models might include web development, client-server interaction, data gathering via web scraping and APIs (application programming interfaces), text mining, data analytics, machine learning, visualization, classification, and related. 
 
 An example use-case might include a User engaging with the web site, entering critical information related to job search goals, interests, areas, locations, etc., and then receiving a list of a given number of highly matched and correlated opportunities. 
 
-## Qualifications
+### Qualifications
 
-### Minimum Qualifications:
+#### Minimum Qualifications:
 
 - A considerable interest in using AI/Machine Learning, and Data Science tools, methods, and models. 
 - A strong desire to improve job search outcomes and to assist Users (and especially students and new seekers). 
 - A willingness to learn new methods and models and to to apply and interpret results.
 - An interest in data science, web development, text mining, AI/machine learning, and analytics.
  
-### Preferred Qualifications:
+#### Preferred Qualifications:
 
 Intermediate (or better) abilities in programming (such as in Python) and in Web Development (such as via HTML/JS, and related.)
 
-## Quick start commands
+## Quick Start Commands
 
 ```bash
 python -m venv .venv
@@ -98,8 +102,8 @@ To keep this repository consistent across backend, frontend, ML, and pipeline co
 
 ### Suggested Normalization Targets in This Repo
 
-- Rename `Pipeline` directory to `pipeline`.
-- Rename `ml_README.md` to `ml_readme.md` (or merge into `README.md` inside `ml`).
-- Keep Python backend files in lowercase_with_underscores.
-- Keep React component files in PascalCase and frontend utility files in camelCase.
+- [ ] Rename `Pipeline` directory to `pipeline`.
+- [ ] Rename `ml_README.md` to `ml_readme.md` (or merge into `README.md` inside `ml`).
+- [ ] Keep Python backend files in lowercase_with_underscores.
+- [ ] Keep React component files in PascalCase and frontend utility files in camelCase.
 
