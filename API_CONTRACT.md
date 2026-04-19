@@ -30,7 +30,7 @@
 
 | Method | Endpoint | Purpose |
 |------|------|------|
-| POST | /upload-resume | Upload and preview a resume (stretch goal for Milestone 1) |
+| POST | /upload-resume | Upload and preview a resume (stretch goal for PR #1) |
 | POST | /search | Search and rank job results |
 | GET | /jobs | Retrieve paginated job listings |
 | GET | /health | Confirm backend availability |
@@ -42,7 +42,7 @@
 ### Purpose
 Accept a resume file uploaded from the frontend.
 
-Note: This endpoint is optional for Milestone 1 and does not block core search functionality.
+> Note: This endpoint is optional so that it does not block core search functionality.
 
 ### Request
 Content-Type: `multipart/form-data`
@@ -98,7 +98,7 @@ Content-Type: `application/json`
 }
 ```
 
-`profile_text` is required for Milestone 1 and accepts multiline freeform text.
+`profile_text` is required for PR 1 and accepts multiline freeform text.
 
 ### Request Fields
 
@@ -242,7 +242,7 @@ Provide a lightweight availability check.
 
 ## Shared Validation Rules
 
-Milestone 1 profile input:
+PR 1 profile input:
 
 - `profile_text` is required on `POST /search`.
 - `profile_text` may contain multiline pasted resume text.
