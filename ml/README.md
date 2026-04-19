@@ -2,58 +2,6 @@
 
 This module ranks job postings against a user's resume/profile text using a baseline TF‑IDF + cosine similarity approach.
 
-## Quick Start
-
-### 1. Create & activate a virtual environment
-
-#### Windows (PowerShell)
-
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -U pip
-```
-
-#### macOS / Linux
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -U pip
-```
-
-### 2. Install dependencies
-
-```powershell
-python -m pip install -r ml/requirements.txt
-```
-
-### 3. Run tests
-
-#### 3.1. Run full test suite
-
-```powershell
-python -m pytest -vv
-```
-
-#### 3.2. Run full test suite with outputs
-
-```powershell
-python -m pytest -s -vv
-```
-
-#### 3.3. Run regular unit tests only with outputs
-
-```powershell
-python -m pytest tests/test_rank_jobs.py -s -v
-```
-
-#### 3.4. Run seed-data tests only with outputs
-
-```powershell
-python -m pytest tests/test_rank_jobs_seed.py -s -v
-```
-
 ## Public Interface (Contract)
 
 ### Function
@@ -149,3 +97,55 @@ Future improvements (planned):
 - Keyword pre-filtering before TF‑IDF scoring for latency
 - Text normalization improvements
 - Optional LogisticRegression
+
+## Quick Start
+
+### 1. Create & activate a virtual environment
+
+#### Windows (PowerShell)
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -U pip
+```
+
+#### macOS / Linux
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -U pip
+```
+
+### 2. Install dependencies
+
+```powershell
+python -m pip install -r ml/requirements.txt
+```
+
+### 3. Run tests
+
+#### 3.1. Run full test suite
+
+```powershell
+python -m pytest -vv
+```
+
+#### 3.2. Run full test suite with outputs
+
+```powershell
+python -m pytest -s -vv
+```
+
+#### 3.3. Run regular unit tests only with outputs
+
+```powershell
+python -m pytest tests/test_rank_jobs.py -s -v
+```
+
+#### 3.4. Run seed-data tests only with outputs
+
+```powershell
+python -m pytest tests/test_rank_jobs_seed.py -s -v
+```
