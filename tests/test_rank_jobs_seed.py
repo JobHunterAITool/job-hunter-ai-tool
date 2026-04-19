@@ -1,58 +1,97 @@
-import json
 import unittest
-from pathlib import Path
 
 from ml.rank_jobs import rank_jobs
 
 
-def _load_seed_jobs() -> list[dict]:
-    seed_path = Path(__file__).resolve().parents[1] / "seed_jobs.json"
-    return json.loads(seed_path.read_text(encoding="utf-8"))
-
-
-class RankJobsSeedDataTests(unittest.TestCase):
-    SEED_JOBS = _load_seed_jobs()
-
-    def test_seed_data_loads(self) -> None:
-        print(f"\nseed job count: {len(self.SEED_JOBS)}")
-        self.assertTrue(self.SEED_JOBS)
-        self.assertIsInstance(self.SEED_JOBS, list)
-
-    def test_ranked_output_has_valid_shape_and_score_range(self) -> None:
-        ranked = rank_jobs("python backend fastapi sql docker", self.SEED_JOBS)
-
-        self.assertEqual(len(ranked), len(self.SEED_JOBS))
-        self.assertTrue(all("score" in job for job in ranked))
-        self.assertTrue(all(isinstance(job["score"], float) for job in ranked))
-        self.assertTrue(all(0.0 <= job["score"] <= 1.0 for job in ranked))
-
-        top_preview = [
-            {"_id": job.get("_id"), "score": round(job["score"], 4)}
-            for job in ranked[:5]
+class RankJobsTests(unittest.TestCase):
+    def test_returns_jobs_in_ranked_order(self) -> None:
+        jobs = [
+            {"_id": "1", "title": "Backend Engineer", "description": "Python APIs"},
+            {"_id": "2", "title": "Data Analyst", "description": "SQL dashboards"},
+            {"_id": "3", "title": "ML Engineer", "description": "NLP ranking"},
         ]
-        print("\ntop 5 (python/backend query):", top_preview)
 
-    def test_backend_profile_surfaces_relevant_top_result(self) -> None:
-        ranked = rank_jobs(
-            "backend engineer python fastapi rest api microservices sql postgresql docker kubernetes",
-            self.SEED_JOBS,
+        ranked = rank_jobs({"user_text": "python ml"}, jobs)
+        print("\nranked order:", ranked)
+
+        self.assertEqual({job["_id"] for job in ranked}, {"1", "2", "3"})
+        self.assertTrue(all("score" in job for job in ranked))
+        self.assertEqual(
+            [job["score"] for job in ranked],
+            sorted((job["score"] for job in ranked), reverse=True),
         )
 
-        print("\ntop backend result:", {"_id": ranked[0].get("_id"), "title": ranked[0].get("title"), "score": round(ranked[0]["score"], 4)})
-        top_text = json.dumps(ranked[0]).lower()
-        self.assertTrue(any(term in top_text for term in ["backend", "python", "fastapi", "api"]))
+    def test_adds_score_field_to_each_result(self) -> None:
+        jobs = [{"_id": "1", "title": "Backend Engineer"}]
 
-    def test_ranking_is_deterministic_for_same_input(self) -> None:
-        query = "machine learning engineer python pytorch tensorflow nlp"
+        ranked = rank_jobs({"user_text": "backend"}, jobs)
+        print("\nscore field added:", ranked)
 
-        ranked_once = rank_jobs(query, self.SEED_JOBS)
-        ranked_twice = rank_jobs(query, self.SEED_JOBS)
+        self.assertEqual(len(ranked), 1)
+        self.assertIn("score", ranked[0])
+        self.assertIsInstance(ranked[0]["score"], float)
+        self.assertGreaterEqual(ranked[0]["score"], 0.0)
+        self.assertLessEqual(ranked[0]["score"], 1.0)
+        self.assertGreater(ranked[0]["score"], 0.0)
 
-        ids_once = [job.get("_id") for job in ranked_once]
-        ids_twice = [job.get("_id") for job in ranked_twice]
-        print("\nfirst 10 ids (run 1):", ids_once[:10])
-        print("first 10 ids (run 2):", ids_twice[:10])
-        self.assertEqual(ids_once, ids_twice)
+    def test_does_not_mutate_input_job_dicts(self) -> None:
+        jobs = [{"_id": "1", "title": "Backend Engineer"}]
+
+        ranked = rank_jobs({"user_text": "backend"}, jobs)
+        print("\ninput jobs:", jobs)
+        print("ranked output:", ranked)
+
+        self.assertNotIn("score", jobs[0])
+
+    def test_raises_for_empty_user_text(self) -> None:
+        jobs = [{"_id": "1", "title": "Backend Engineer"}]
+
+        with self.assertRaises(ValueError) as err:
+            rank_jobs({"user_text": ""}, jobs)
+        print("\nerr.exception:", err.exception)
+
+    def test_accepts_structured_user_fields_without_user_text(self) -> None:
+        jobs = [{"_id": "1", "title": "Backend Engineer", "description": "Python APIs"}]
+
+        ranked = rank_jobs(
+            {
+                "job_title": "Backend Engineer",
+                "skills": ["Python", "FastAPI"],
+                "location": "Remote",
+                "experience_level": "Mid",
+            },
+            jobs,
+        )
+        print("\nranked from structured fields:", ranked)
+
+        self.assertEqual(len(ranked), 1)
+        self.assertIn("score", ranked[0])
+        self.assertGreater(ranked[0]["score"], 0.0)
+
+    def test_raises_for_empty_user_profile(self) -> None:
+        jobs = [{"_id": "1", "title": "Backend Engineer"}]
+
+        with self.assertRaises(ValueError) as err:
+            rank_jobs({}, jobs)
+        print("\nerr.exception:", err.exception)
+
+    def test_raises_for_empty_jobs(self) -> None:
+        with self.assertRaises(ValueError) as err:
+            rank_jobs({"user_text": "backend"}, [])
+        print("\nerr.exception:", err.exception)
+
+    def test_tolerates_missing_fields(self) -> None:
+        jobs = [
+            {"_id": "1"},
+            {"title": "No id field"},
+            {},
+        ]
+
+        ranked = rank_jobs({"user_text": "backend"}, jobs)
+        print("\nranked:", ranked)
+
+        self.assertEqual(len(ranked), 3)
+        self.assertTrue(all("score" in job for job in ranked))
 
 
 if __name__ == "__main__":
