@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { searchJobs } from "../api";
+import { mockSearchJobs } from "../services/mockAPI";
 
 export default function SearchForm({
   onResults,
@@ -25,8 +25,8 @@ export default function SearchForm({
     };
 
     try {
-      const response = await searchJobs(payload);
-      onResults(response.results ?? []);
+      const response = await mockSearchJobs(payload);
+      onResults(response);
     } catch (requestError) {
       onResults([]);
       onError(requestError.message || "Search failed.");
