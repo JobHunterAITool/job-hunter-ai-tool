@@ -102,8 +102,8 @@ To keep this repository consistent across backend, frontend, ML, and pipeline co
 
 ### Suggested Normalization Targets in This Repo
 
-- [ ] Rename `Pipeline` directory to `pipeline`.
-- [ ] Rename `ml_README.md` to `ml_readme.md` (or merge into `README.md` inside `ml`).
-- [ ] Keep Python backend files in lowercase_with_underscores.
-- [ ] Keep React component files in PascalCase and frontend utility files in camelCase.
+- Rename `Pipeline` directory to `pipeline`.
+- Rename `ml_README.md` to `ml_readme.md` (or merge into `README.md` inside `ml`).
+- Keep Python backend files in lowercase_with_underscores.
+- Keep React component files in PascalCase and frontend utility files in camelCase.
 
