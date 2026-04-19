@@ -3,10 +3,12 @@ Author: Richard Hsiao
 Class: CS 467
 Project: The Job Hunting AI Web Tool
 Description: Ranking module stub used for backend integration before the real
-ML model is connected.
+ML model is connected. It currently accepts either resume text or structured
+user fields and normalizes them into a single query string for scoring.
 """
 
 import re
+from collections.abc import Iterable
 from typing import Any
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -15,6 +17,28 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 _MAX_CANDIDATES = 200
 _TOKEN_RE = re.compile(r"[A-Za-z0-9]+")
+
+
+def _normalize_skills(skills: Any) -> list[str]:
+    if skills is None:
+        return []
+    if isinstance(skills, str):
+        return [part.strip() for part in skills.split(",") if part.strip()]
+    if isinstance(skills, Iterable):
+        return [str(skill).strip() for skill in skills if str(skill).strip()]
+    return [str(skills).strip()] if str(skills).strip() else []
+
+
+def build_user_text(
+    job_title: str = "",
+    skills: Any = None,
+    location: str = "",
+    experience_level: str = "",
+) -> str:
+    """Build the ranking text representation from structured user fields."""
+    skill_text = " ".join(_normalize_skills(skills))
+    parts = [job_title, skill_text, location, experience_level]
+    return " ".join(str(part).strip() for part in parts if str(part).strip())
 
 
 def _tokenize(text: str) -> set[str]:
@@ -43,15 +67,31 @@ def _keyword_overlap_score(user_terms: set[str], job_text: str) -> int:
     return len(user_terms & _tokenize(job_text))
 
 
-def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def rank_jobs(
+    user_text: str | None = None,
+    jobs: list[dict[str, Any]] | None = None,
+    *,
+    job_title: str = "",
+    skills: Any = None,
+    location: str = "",
+    experience_level: str = "",
+) -> list[dict[str, Any]]:
     """Rank a list of job documents by relevance to the user's profile text.
 
     Parameters
     ----------
-    user_text : str
-        Plain text extracted from the user's uploaded resume, or assembled
-        from the manual input form fields (title + skills + location +
-        experience level). Must be a non-empty string.
+    user_text : str | None
+        Plain text extracted from the user's uploaded resume. Optional when
+        structured user fields are supplied.
+    job_title : str
+        Manual profile/job preference title from the frontend form.
+    skills : Any
+        Manual profile skills from the frontend form. Accepts list[str] or a
+        comma-separated string.
+    location : str
+        Manual profile location from the frontend form.
+    experience_level : str
+        Manual profile experience level from the frontend form.
     jobs : list[dict]
         Job postings retrieved from MongoDB. Each posting is expected to
         contain at least the following fields:
@@ -86,7 +126,7 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
     Raises
     ------
     ValueError
-        If "user_text" is empty or "jobs" is an empty list.
+        If no user information is provided or "jobs" is an empty list.
 
     Notes
     -----
@@ -94,13 +134,28 @@ def rank_jobs(user_text: str, jobs: list[dict[str, Any]]) -> list[dict[str, Any]
     descending order.
 
     """
-    if not user_text or not user_text.strip():
-        raise ValueError("user_text must be a non-empty string")
+    if jobs is None:
+        jobs = []
+
+    if user_text and user_text.strip():
+        query_text = user_text.strip()
+    else:
+        query_text = build_user_text(
+            job_title=job_title,
+            skills=skills,
+            location=location,
+            experience_level=experience_level,
+        )
+
+    if not query_text:
+        raise ValueError(
+            "either user_text or structured profile fields must be provided"
+        )
+
     if not jobs:
         raise ValueError("jobs list must not be empty")
 
-    user_text = user_text.strip()
-    user_terms = _tokenize(user_text)
+    user_terms = _tokenize(query_text)
 
     candidate_jobs = list(jobs)
     if len(candidate_jobs) > _MAX_CANDIDATES:
