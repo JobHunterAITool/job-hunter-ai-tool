@@ -48,3 +48,58 @@ python -m pip install -r ml/requirements.txt
 python -m pytest
 ```
 
+## Naming Conventions
+
+To keep this repository consistent across backend, frontend, ML, and pipeline code, use the following naming rules.
+
+### Python Backend and ML (PEP 8)
+
+- Packages and directories: lowercase.
+	- Preferred: short lowercase names.
+	- Allowed when helpful: lowercase_with_underscores.
+- Python files (modules): lowercase_with_underscores.py.
+- Classes and exception types: PascalCase.
+- Functions, methods, variables, and parameters: lowercase_with_underscores.
+- Constants: UPPERCASE_WITH_UNDERSCORES.
+- Private/internal helpers: prefix with a single underscore.
+
+### FastAPI Project Structure
+
+- routes directory: one file per route domain.
+	- Examples: search.py, jobs.py, upload_resume.py.
+- services directory: business logic only.
+	- Examples: ranking.py, resume_parser.py.
+- models directory: request/response/data schemas.
+	- Example: schemas.py.
+
+### Frontend (React + JavaScript)
+
+- React component files: PascalCase.jsx.
+	- Examples: SearchForm.jsx, JobResults.jsx.
+- Non-component JavaScript files: camelCase.js.
+	- Examples: apiClient.js, mockApi.js.
+- Functions and variables in JavaScript: camelCase.
+- Constants in JavaScript: UPPER_SNAKE_CASE when truly constant.
+- CSS files:
+	- Component-scoped styles: match component name where practical (PascalCase.css), or use a documented local pattern.
+	- Global styles: lowercase (for example index.css).
+
+### Docs and Config Files
+
+- Markdown docs: lowercase_with_underscores.md.
+	- Examples: api_contract.md, design_architecture.md.
+- Keep naming readable and descriptive over abbreviated names.
+
+### Repository-Wide Rules
+
+- Avoid mixed styles for the same category (for example, do not mix mockAPI.js and mock_api.js).
+- Do not use capitalized directory names for Python package-like folders.
+- Use one naming style per layer and keep it stable to reduce churn and merge conflicts.
+
+### Suggested Normalization Targets in This Repo
+
+- Rename `Pipeline` directory to `pipeline`.
+- Rename `ml_README.md` to `ml_readme.md` (or merge into `README.md` inside `ml`).
+- Keep Python backend files in lowercase_with_underscores.
+- Keep React component files in PascalCase and frontend utility files in camelCase.
+
