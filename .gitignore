@@ -213,5 +213,9 @@ node_modules/
 # macOS
 .DS_Store
 
-# Files
+# Planning docs
 plan-docs
+
+# Pipeline generated outputs
+pipeline/jobs_*
+pipeline/enriched_jobs_*

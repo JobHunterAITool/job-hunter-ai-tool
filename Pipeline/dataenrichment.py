@@ -1,84 +1,248 @@
 # This should run after the ingestion script- 
 # take the displayname and make a new field in the JSON thats "Company: "
-import os
 import json
+import os
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 import requests
-import time
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-# find the jobs file
-jobs_data_file = None
+# Runtime settings for faster but still safe page extraction.
+MAX_WORKERS = 6
+REQUEST_TIMEOUT_SECONDS = 15
+SAVE_RAW_HTML = False
+BLOCKED_TEXT_MARKERS = [
+    "Our systems have detected suspicious behaviour",
+    "Login to continue",
+]
 
-for file in os.listdir():
-    if file.startswith("jobs_") and file.endswith(".txt"):
-        jobs_data_file = file
-        break
+thread_local = threading.local()
 
-if not jobs_data_file:
-    raise FileNotFoundError("No jobs_*.txt file found")
 
+def find_jobs_file():
+    candidates = []
+    for file in os.listdir():
+        if file.startswith("jobs_") and (file.endswith(".txt") or file.endswith(".json")):
+            candidates.append(file)
+
+    if not candidates:
+        raise FileNotFoundError("No jobs_*.txt or jobs_*.json file found")
+
+    # Prefer the most recently modified file.
+    candidates.sort(key=lambda file_name: os.path.getmtime(file_name), reverse=True)
+    return candidates[0]
+
+
+def build_session():
+    session = requests.Session()
+    retry_policy = Retry(
+        total=3,
+        connect=3,
+        read=3,
+        backoff_factor=0.5,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["GET"],
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry_policy, pool_connections=MAX_WORKERS, pool_maxsize=MAX_WORKERS)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    session.headers.update(
+        {
+            "User-Agent": "Mozilla/5.0 (compatible; JobHunterEnrichment/1.0)",
+            "Accept": "text/html,application/xhtml+xml",
+        }
+    )
+    return session
+
+
+def get_thread_session():
+    if not hasattr(thread_local, "session"):
+        thread_local.session = build_session()
+    return thread_local.session
+
+
+def clean_text(text):
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    return "\n".join(lines)
+
+
+def parse_description(full_html):
+    soup = BeautifulSoup(full_html, "html.parser")
+    selectors = [
+        "section.adp-body",
+        "article",
+        "main",
+        "div[itemprop='description']",
+    ]
+
+    for selector in selectors:
+        node = soup.select_one(selector)
+        if not node:
+            continue
+        text = clean_text(node.get_text("\n", strip=True))
+        if text:
+            return node, text, selector
+
+    body = soup.select_one("body")
+    if body:
+        text = clean_text(body.get_text("\n", strip=True))
+        if text:
+            return None, text, "body_fallback"
+
+    return None, None, "no_text_found"
+
+
+def fetch_and_extract(url):
+    session = get_thread_session()
+
+    try:
+        response = session.get(url, timeout=REQUEST_TIMEOUT_SECONDS, allow_redirects=True)
+        full_html = response.text
+        node, description_text, parse_source = parse_description(full_html)
+
+        if response.status_code == 403:
+            status = "blocked"
+        elif description_text:
+            status = "body returned"
+        else:
+            status = "adp body not available"
+
+        result = {
+            "html": str(node) if (SAVE_RAW_HTML and node is not None) else None,
+            "job_description_text": description_text,
+            "html_parse_status": parse_source,
+            "final_url": response.url,
+            "status_code": response.status_code,
+            "content_type": response.headers.get("Content-Type"),
+            "request_error": None,
+            "status": status,
+        }
+    except requests.exceptions.RequestException as error:
+        result = {
+            "html": None,
+            "job_description_text": None,
+            "html_parse_status": "request_exception",
+            "final_url": None,
+            "status_code": None,
+            "content_type": None,
+            "request_error": str(error),
+            "status": "request_failed",
+        }
+
+    return result
+
+
+def is_blocked_response(result):
+    if result.get("status_code") == 403:
+        return True
+
+    text = result.get("job_description_text")
+    if not isinstance(text, str):
+        return False
+
+    return any(marker in text for marker in BLOCKED_TEXT_MARKERS)
+
+
+jobs_data_file = find_jobs_file()
 with open(jobs_data_file, "r", encoding="utf-8") as file:
     jobs = json.load(file)
 
-
-# enrich each job with html from redirect_url
-for job in jobs:
-    time.sleep(2) # to avoid potentially being rate limited
+# Group by redirect_url to avoid duplicate HTTP fetches.
+jobs_by_url = {}
+for index, job in enumerate(jobs):
     url = job.get("redirect_url")
-
     if not url:
         job["html"] = None
+        job["job_description_text"] = None
+        job["html_parse_status"] = "no_redirect_url"
         job["request_error"] = "No redirect_url found"
         continue
+    jobs_by_url.setdefault(url, []).append(index)
 
-    try:
-        response = requests.get(url, timeout=15, allow_redirects=True)
-        print(f"Requested data from {url}")
-        # check status codes to see if we site is identifying this scraper as a bot
-        status = None
-        if response.status_code == 403:
-            status = "blocked"
-        else:
-            if adp_body:
-                status = "body returned"
+print(f"Unique URLs to fetch: {len(jobs_by_url)} (from {len(jobs)} jobs)")
+
+blocked_report = []
+blocked_count = 0
+fallback_count = 0
+
+with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+    futures = {executor.submit(fetch_and_extract, url): url for url in jobs_by_url}
+    completed = 0
+
+    for future in as_completed(futures):
+        url = futures[future]
+        result = future.result()
+        completed += 1
+
+        for job_index in jobs_by_url[url]:
+            job = jobs[job_index]
+            job["html"] = result["html"]
+            job["job_description_text"] = result["job_description_text"]
+            job["html_parse_status"] = result["html_parse_status"]
+            job["final_url"] = result["final_url"]
+            job["status_code"] = result["status_code"]
+            job["content_type"] = result["content_type"]
+
+            if is_blocked_response(result):
+                blocked_count += 1
+                fallback_text = job.get("description")
+                if isinstance(fallback_text, str) and fallback_text.strip():
+                    job["job_description_text"] = fallback_text
+                    job["description_source"] = "adzuna_api_fallback"
+                    fallback_count += 1
+                else:
+                    job["job_description_text"] = None
+                    job["description_source"] = "none"
+                job["blocked_by_anti_bot"] = True
+                job["html_parse_status"] = "blocked_403"
+
+                blocked_report.append(
+                    {
+                        "id": job.get("id"),
+                        "redirect_url": job.get("redirect_url"),
+                        "final_url": result.get("final_url"),
+                        "status_code": result.get("status_code"),
+                        "fallback_used": bool(isinstance(fallback_text, str) and fallback_text.strip()),
+                    }
+                )
             else:
-                status = "adp body not available"
+                job["blocked_by_anti_bot"] = False
+                if isinstance(job.get("job_description_text"), str) and job["job_description_text"].strip():
+                    job["description_source"] = "scraped_page"
+                else:
+                    job["description_source"] = "none"
 
-        print(f"{job.get('id')} | {status}")
-        full_html = response.text
+            if result["request_error"]:
+                job["request_error"] = result["request_error"]
+            elif "request_error" in job:
+                del job["request_error"]
 
-        soup = BeautifulSoup(full_html, "html.parser")
-        adp_body = soup.select_one("section.adp-body")
+        print(f"[{completed}/{len(futures)}] {url} | {result['status']}")
 
-        # most redirects go to another adzuna-details page
-        # the expanded description is in section class adp_body
-        # adp_body has qualifications in it - we can potentially mine this in a future update to this logic. 
-        if adp_body:
-            job["html"] = str(adp_body)
-            job["job_description_text"] = adp_body.get_text("\n", strip=True)
-            job["html_parse_status"] = "adp_body_found"
-        else:
-            job["html"] = None
-            job["job_description_text"] = None
-            job["html_parse_status"] = "adp_body_not_found"
+# write enriched data to both txt and json outputs
+input_base = os.path.splitext(jobs_data_file)[0]
+enriched_txt_file = f"enriched_{input_base}.txt"
+enriched_json_file = f"enriched_{input_base}.json"
 
-        job["final_url"] = response.url
-        job["status_code"] = response.status_code
-        job["content_type"] = response.headers.get("Content-Type")
+with open(enriched_txt_file, "w", encoding="utf-8") as file:
+    json.dump(jobs, file, indent=2)
 
-    except requests.exceptions.RequestException as e:
-        job["html"] = None
-        job["request_error"] = str(e)
+with open(enriched_json_file, "w", encoding="utf-8") as file:
+    json.dump(jobs, file, indent=2)
 
-    time.sleep(1)
+print(f"Enriched file written to {enriched_txt_file}")
+print(f"Enriched file written to {enriched_json_file}")
 
-# write new file for now with enriched data
-enriched_file = f"enriched_{jobs_data_file}"
+blocked_report_file = f"blocked_urls_{os.path.splitext(jobs_data_file)[0]}.json"
+with open(blocked_report_file, "w", encoding="utf-8") as file:
+    json.dump(blocked_report, file, indent=2)
 
-with open(enriched_file, "w", encoding="utf-8") as f:
-    json.dump(jobs, f, indent=2)
-
-print(f"Enriched file written to {enriched_file}")
+print(f"Blocked URL report written to {blocked_report_file}")
+print(f"Blocked jobs: {blocked_count}; API fallback used: {fallback_count}")
 
 
 # some sample redirects to look at : 
