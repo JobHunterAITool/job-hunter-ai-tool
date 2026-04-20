@@ -223,13 +223,19 @@ with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
 
         print(f"[{completed}/{len(futures)}] {url} | {result['status']}")
 
-# write new file for now with enriched data
-enriched_file = f"enriched_{jobs_data_file}"
+# write enriched data to both txt and json outputs
+input_base = os.path.splitext(jobs_data_file)[0]
+enriched_txt_file = f"enriched_{input_base}.txt"
+enriched_json_file = f"enriched_{input_base}.json"
 
-with open(enriched_file, "w", encoding="utf-8") as file:
+with open(enriched_txt_file, "w", encoding="utf-8") as file:
     json.dump(jobs, file, indent=2)
 
-print(f"Enriched file written to {enriched_file}")
+with open(enriched_json_file, "w", encoding="utf-8") as file:
+    json.dump(jobs, file, indent=2)
+
+print(f"Enriched file written to {enriched_txt_file}")
+print(f"Enriched file written to {enriched_json_file}")
 
 blocked_report_file = f"blocked_urls_{os.path.splitext(jobs_data_file)[0]}.json"
 with open(blocked_report_file, "w", encoding="utf-8") as file:
