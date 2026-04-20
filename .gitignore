@@ -208,6 +208,7 @@ __marimo__/
 
 # Node / frontend
 node_modules/
+.vite/
 
 # macOS
 .DS_Store
