@@ -25,6 +25,10 @@ app = FastAPI(
     version="0.1.0",
 )
 
+@app.on_event("startup")
+async def startup_event():
+    load_seed_jobs()
+
 origins = [
     origin.strip()
     for origin in os.getenv(
