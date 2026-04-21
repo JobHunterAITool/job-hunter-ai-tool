@@ -42,7 +42,7 @@ Given a user profile dictionary and a list of candidate jobs, return the jobs so
   - `description` (string)
   - `category` (string): Could be used to break ties
   - `created` (string): Date when the job was posted
-  - `redirect_url` (string): Webscraped to parse `skills` list
+  - `redirect_url` (string): Used to webscrape `job_description_text`
   - `skills` (`list[str] | str`): Preferred shape is `list[str]`, but comma-separated `str` also accepted
   - `job_description_text` (string)
 
