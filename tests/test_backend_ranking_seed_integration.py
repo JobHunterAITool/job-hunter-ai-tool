@@ -26,7 +26,15 @@ def test_backend_adapter_ranks_seed_jobs_without_mongo() -> None:
         experience_level="Mid",
     )
 
+    print("\nINPUT (SearchRequest):")
+    print(search_request.model_dump())
+
+    print("\nINPUT (seed jobs count):", len(jobs))
+
     ranked_jobs = rank_jobs(search_request, jobs, top_n=10)
+
+    print("\nOUTPUT (top 5 ranked jobs):")
+    print(json.dumps(ranked_jobs[:5], indent=2))
 
     assert ranked_jobs, "Expected ranked results from backend adapter"
     assert len(ranked_jobs) <= 10
