@@ -1,9 +1,20 @@
+/**
+ * App Component
+ * 
+ * Root component for the Job Hunter AI Tool frontend.
+ *
+ * Author: Carl Ikai
+ * Project: Job Hunter AI Tool
+ */
+
 import { useState } from "react";
 import SearchForm from "./components/SearchForm";
 import JobResults from "./components/JobResults";
 import "./App.css";
 
 function App() {
+
+  /* Global application state */
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -12,7 +23,10 @@ function App() {
     <div>
       <h1>Job Hunter AI Tool</h1>
 
+      {/* Two panel layout for search form and results */}
       <div className="two-panel-layout">
+
+        {/* Search form panel */}
         <div>
           <SearchForm
             onResults={setResults}
@@ -22,6 +36,7 @@ function App() {
           />
         </div>
 
+        {/* Job results panel */}
         <div>
           <JobResults
             results={results}
@@ -29,6 +44,7 @@ function App() {
             error={error}
           />
         </div>
+
       </div>
     </div>
   );
