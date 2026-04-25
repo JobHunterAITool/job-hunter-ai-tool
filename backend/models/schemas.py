@@ -24,7 +24,7 @@ class RankedJobResult(BaseModel):
     company: str
     location: str
     score: float
-    # matched_skills: list[str] # Future field to for stretch goal
+    # matched_skills: list[str] # Future field for stretch goal
 
 
 class SearchResponse(BaseModel):
