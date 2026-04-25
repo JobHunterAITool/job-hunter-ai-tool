@@ -68,6 +68,24 @@ class RankJobsTests(unittest.TestCase):
         self.assertIn("score", ranked[0])
         self.assertGreater(ranked[0]["score"], 0.0)
 
+    def test_accepts_comma_separated_skills_string(self) -> None:
+        jobs = [{"_id": "1", "title": "Backend Engineer", "description": "Python APIs"}]
+
+        ranked = rank_jobs(
+            {
+                "job_title": "Backend Engineer",
+                "skills": "Python, FastAPI, SQL",
+                "location": "Remote",
+                "experience_level": "Mid",
+            },
+            jobs,
+        )
+        print("\nranked from comma-separated skills:", ranked)
+
+        self.assertEqual(len(ranked), 1)
+        self.assertIn("score", ranked[0])
+        self.assertGreater(ranked[0]["score"], 0.0)
+
     def test_raises_for_empty_user_profile(self) -> None:
         jobs = [{"_id": "1", "title": "Backend Engineer"}]
 
@@ -92,6 +110,33 @@ class RankJobsTests(unittest.TestCase):
 
         self.assertEqual(len(ranked), 3)
         self.assertTrue(all("score" in job for job in ranked))
+
+    def test_skill_phrase_match_survives_prefilter_with_skill_ngrams(self) -> None:
+        jobs = [
+            {
+                "_id": f"{index}",
+                "title": "Tooling Analyst",
+                "description": "machine tooling and learning platforms",
+                "skills": ["python"],
+            }
+            for index in range(200)
+        ]
+        jobs.append(
+            {
+                "_id": "skill-phrase-match",
+                "title": "Machine Learning Engineer",
+                "description": "models and pipelines",
+                "skills": ["machine learning"],
+            }
+        )
+
+        ranked = rank_jobs({"skills": ["machine learning"]}, jobs)
+        ranked_ids = [job["_id"] for job in ranked]
+        print("\nranked ids:", ranked_ids[:5], "...", ranked_ids[-5:])
+
+        self.assertEqual(len(ranked), 200)
+        self.assertIn("skill-phrase-match", ranked_ids)
+        self.assertEqual(ranked[0]["_id"], "skill-phrase-match")
 
 
 if __name__ == "__main__":
