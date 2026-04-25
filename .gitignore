@@ -221,4 +221,4 @@ pipeline/jobs_*
 pipeline/enriched_jobs_*
 
 # Testing outputs
-test/tests-*
+tests/tests-*
