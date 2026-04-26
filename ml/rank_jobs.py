@@ -8,6 +8,7 @@ job text, and returns deterministic score-sorted results.
 """
 
 import re
+import numpy as np
 from collections.abc import Iterable
 from typing import Any
 
@@ -82,9 +83,9 @@ def _job_to_text(job: dict[str, Any]) -> str:
 
     parts = [
         job.get("title", ""),
-        job.get("company", ""),
-        job.get("location", ""),
-        job.get("description", ""),
+        # job.get("company", ""),
+        # job.get("location", ""),
+        # job.get("description", ""),
         job.get("job_description_text", ""),
         skills_text,
     ]
@@ -138,10 +139,18 @@ def rank_jobs(
 
     Parameters
     ----------
-    user_profile : dict[str, Any]
+    user_profile : dict[str, str | int]
         User inputs for ranking, including any combination of:
-        user_text, resume_text, job_title, skills, location,
-        experience_level.
+
+        {
+            "user_text": str,
+            "resume_text": str,
+            "job_title": str,
+            "skills": list[str] or comma-separated str,
+            "location": str,
+            "experience_level": int or str, # Depends on FE implementation
+        }
+
     jobs : list[dict]
         Job postings retrieved from MongoDB. Each posting is expected to
         contain at least the following fields:
@@ -151,9 +160,9 @@ def rank_jobs(
             "title":           str,
             "company":         str,        # company.display_name (Adzuna)
             "location":        str,        # location.display_name (Adzuna)
-            "description":     str,
+            "description":     str,        # Truncated to 500 chars
             "category":        str,        # category.label (Adzuna)
-            "skills":          list[str],  # Parsed by Backend
+            "skills":          list[str],  # Parsed by Pipeline
             "created":         str,        # ISO 8601 timestamp string
             "redirect_url":    str,    # URL to full job description (Adzuna)
             "job_description_text": str,   # Plain text extracted by Pipeline
@@ -172,7 +181,7 @@ def rank_jobs(
         score. Each posting is a shallow copy of the input posting with one
         additional field injected::
 
-            "score": float   # cosine similarity in [0.0, 1.0]
+            "score": float   # L2-normalized cosine similarity in [0.0, 1.0]
 
         The caller (backend POST /search handler) is responsible for slicing
         the top-N results before returning them to the frontend.
@@ -221,10 +230,21 @@ def rank_jobs(
     if debug:
         _print_debug_overlaps(user_terms, candidate_jobs, scores, limit=max(0, debug_top_n))
 
+    # Normalization helper
+    def l2_norm(scores):
+        norm = np.linalg.norm(scores)
+        if norm == 0:
+            return [0.0 for _ in scores]
+        return (np.array(scores) / norm).tolist()
+
+    scores_l2norm = l2_norm(scores)
+
     ranked = []
-    for job, score in zip(candidate_jobs, scores):
+    for job, score, s_l2norm in zip(
+        candidate_jobs, scores, scores_l2norm
+    ):
         job_copy = dict(job)
-        job_copy["score"] = float(score)
+        job_copy["score"] = float(s_l2norm)
         ranked.append(job_copy)
 
     return sorted(ranked, key=lambda job: job["score"], reverse=True)
