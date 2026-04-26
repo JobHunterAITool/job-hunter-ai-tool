@@ -8,8 +8,6 @@ job text, and returns deterministic score-sorted results.
 """
 
 import re
-import os
-import json
 import numpy as np
 from collections.abc import Iterable
 from typing import Any
@@ -183,9 +181,7 @@ def rank_jobs(
         score. Each posting is a shallow copy of the input posting with one
         additional field injected::
 
-            "score": float   # cosine similarity in [0.0, 1.0]
-            "score_minmax": float  # min-max normalized score in [0.0, 1.0]
-            "score_l2norm": float  # L2-normalized score in [0.0, 1.0]
+            "score": float   # L2-normalized cosine similarity in [0.0, 1.0]
 
         The caller (backend POST /search handler) is responsible for slicing
         the top-N results before returning them to the frontend.
@@ -234,31 +230,21 @@ def rank_jobs(
     if debug:
         _print_debug_overlaps(user_terms, candidate_jobs, scores, limit=max(0, debug_top_n))
 
-    # Normalization helpers
-    def minmax_norm(scores):
-        min_score = min(scores)
-        max_score = max(scores)
-        if max_score == min_score:
-            return [1.0 for _ in scores]
-        return [(s - min_score) / (max_score - min_score) for s in scores]
-
+    # Normalization helper
     def l2_norm(scores):
         norm = np.linalg.norm(scores)
         if norm == 0:
             return [0.0 for _ in scores]
         return (np.array(scores) / norm).tolist()
 
-    scores_minmax = minmax_norm(scores)
     scores_l2norm = l2_norm(scores)
 
     ranked = []
-    for job, score, s_minmax, s_l2norm in zip(
-        candidate_jobs, scores, scores_minmax, scores_l2norm
+    for job, score, s_l2norm in zip(
+        candidate_jobs, scores, scores_l2norm
     ):
         job_copy = dict(job)
-        job_copy["score"] = float(score)
-        job_copy["score_minmax"] = float(s_minmax)
-        job_copy["score_l2norm"] = float(s_l2norm)
+        job_copy["score"] = float(s_l2norm)
         ranked.append(job_copy)
 
     return sorted(ranked, key=lambda job: job["score"], reverse=True)
