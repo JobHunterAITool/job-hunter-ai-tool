@@ -173,7 +173,8 @@ Example response shape:
       "title": "Software Engineer",
       "company": "Amazon",
       "location": "Remote",
-      "score": 0.99
+      "score": 0.99,
+      "matched_skills": ["Python", "AWS"]
     }
   ]
 }
