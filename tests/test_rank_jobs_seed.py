@@ -20,7 +20,7 @@ class RankJobsSeedDataTests(unittest.TestCase):
 
     def test_ranked_output_has_valid_shape_and_score_range(self) -> None:
         """Ranking seed jobs returns correct shape and score range."""
-        ranked = rank_jobs({"user_text": "python backend fastapi sql docker"}, self.SEED_JOBS)
+        ranked = rank_jobs({"skills": ["python", "backend", "fastapi", "sql", "docker"]}, self.SEED_JOBS)
         # Export ranked jobs for debugging
         with open("tests/ranked_jobs_seed_debug.json", "w", encoding="utf-8") as f:
             json.dump(ranked, f, indent=2, ensure_ascii=False)
@@ -33,7 +33,7 @@ class RankJobsSeedDataTests(unittest.TestCase):
         """A realistic backend profile query surfaces relevant jobs at the top."""
         ranked = rank_jobs(
             {
-                "user_text": "backend engineer python fastapi rest api microservices sql postgresql docker kubernetes"
+                "skills": ["backend", "python", "fastapi", "sql", "docker", "kubernetes"]
             },
             self.SEED_JOBS,
         )

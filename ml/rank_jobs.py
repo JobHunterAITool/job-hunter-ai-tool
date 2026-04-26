@@ -239,12 +239,23 @@ def rank_jobs(
 
     scores_l2norm = l2_norm(scores)
 
+    user_skills = set(s.lower() for s in _normalize_skills(user_profile.get("skills")))
+
     ranked = []
     for job, score, s_l2norm in zip(
         candidate_jobs, scores, scores_l2norm
     ):
         job_copy = dict(job)
+
+        job_skills = set(s.lower() for s in _normalize_skills(job.get("skills")))
+
+        matched_skills = sorted(user_skills & job_skills)
+
+        job_copy["matched_skills"] = matched_skills
+        job_copy["matched_skills_count"] = len(matched_skills)
+
         job_copy["score"] = float(s_l2norm)
+
         ranked.append(job_copy)
 
     return sorted(ranked, key=lambda job: job["score"], reverse=True)
