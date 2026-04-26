@@ -221,10 +221,42 @@ def rank_jobs(
     if debug:
         _print_debug_overlaps(user_terms, candidate_jobs, scores, limit=max(0, debug_top_n))
 
+    import math
+    import numpy as np
+
+    # Normalization helpers
+    def minmax_norm(scores):
+        min_score = min(scores)
+        max_score = max(scores)
+        if max_score == min_score:
+            return [1.0 for _ in scores]
+        return [(s - min_score) / (max_score - min_score) for s in scores]
+
+    def zscore_norm(scores):
+        mean = np.mean(scores)
+        std = np.std(scores)
+        if std == 0:
+            return [0.0 for _ in scores]
+        return [(s - mean) / std for s in scores]
+
+    def softmax_norm(scores):
+        exp_scores = np.exp(scores - np.max(scores))
+        sum_exp = np.sum(exp_scores)
+        if sum_exp == 0:
+            return [0.0 for _ in scores]
+        return (exp_scores / sum_exp).tolist()
+
+    scores_minmax = minmax_norm(scores)
+    scores_zscore = zscore_norm(scores)
+    scores_softmax = softmax_norm(scores)
+
     ranked = []
-    for job, score in zip(candidate_jobs, scores):
+    for job, score, s_minmax, s_zscore, s_softmax in zip(candidate_jobs, scores, scores_minmax, scores_zscore, scores_softmax):
         job_copy = dict(job)
         job_copy["score"] = float(score)
+        job_copy["score_minmax"] = float(s_minmax)
+        job_copy["score_zscore"] = float(s_zscore)
+        job_copy["score_softmax"] = float(s_softmax)
         ranked.append(job_copy)
 
     return sorted(ranked, key=lambda job: job["score"], reverse=True)

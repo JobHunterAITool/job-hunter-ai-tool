@@ -21,6 +21,9 @@ class RankJobsSeedDataTests(unittest.TestCase):
     def test_ranked_output_has_valid_shape_and_score_range(self) -> None:
         """Ranking seed jobs returns correct shape and score range."""
         ranked = rank_jobs({"user_text": "python backend fastapi sql docker"}, self.SEED_JOBS)
+        # Export ranked jobs for debugging
+        with open("tests/ranked_jobs_seed_debug.json", "w", encoding="utf-8") as f:
+            json.dump(ranked, f, indent=2, ensure_ascii=False)
         self.assertEqual(len(ranked), len(self.SEED_JOBS))
         self.assertTrue(all("score" in job for job in ranked))
         self.assertTrue(all(isinstance(job["score"], float) for job in ranked))
