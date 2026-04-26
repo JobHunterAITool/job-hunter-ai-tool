@@ -8,6 +8,8 @@ job text, and returns deterministic score-sorted results.
 """
 
 import re
+import os
+import json
 import numpy as np
 from collections.abc import Iterable
 from typing import Any
@@ -83,9 +85,9 @@ def _job_to_text(job: dict[str, Any]) -> str:
 
     parts = [
         job.get("title", ""),
-        job.get("company", ""),
-        job.get("location", ""),
-        job.get("description", ""),
+        # job.get("company", ""),
+        # job.get("location", ""),
+        # job.get("description", ""),
         job.get("job_description_text", ""),
         skills_text,
     ]
@@ -139,10 +141,18 @@ def rank_jobs(
 
     Parameters
     ----------
-    user_profile : dict[str, Any]
+    user_profile : dict[str, str | int]
         User inputs for ranking, including any combination of:
-        user_text, resume_text, job_title, skills, location,
-        experience_level.
+
+        {
+            "user_text": str,
+            "resume_text": str,
+            "job_title": str,
+            "skills": list[str] or comma-separated str,
+            "location": str,
+            "experience_level": int or str, # Depends on FE implementation
+        }
+
     jobs : list[dict]
         Job postings retrieved from MongoDB. Each posting is expected to
         contain at least the following fields:
