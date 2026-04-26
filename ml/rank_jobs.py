@@ -230,42 +230,22 @@ def rank_jobs(
             return [1.0 for _ in scores]
         return [(s - min_score) / (max_score - min_score) for s in scores]
 
-    def zscore_norm(scores):
-        mean = np.mean(scores)
-        std = np.std(scores)
-        if std == 0:
-            return [0.0 for _ in scores]
-        return [(s - mean) / std for s in scores]
-
-    def softmax_norm(scores):
-        exp_scores = np.exp(scores - np.max(scores))
-        sum_exp = np.sum(exp_scores)
-        if sum_exp == 0:
-            return [0.0 for _ in scores]
-        return (exp_scores / sum_exp).tolist()
-
     def l2_norm(scores):
         norm = np.linalg.norm(scores)
         if norm == 0:
             return [0.0 for _ in scores]
         return (np.array(scores) / norm).tolist()
 
-
     scores_minmax = minmax_norm(scores)
-    scores_zscore = zscore_norm(scores)
-    scores_softmax = softmax_norm(scores)
     scores_l2norm = l2_norm(scores)
 
-
     ranked = []
-    for job, score, s_minmax, s_zscore, s_softmax, s_l2norm in zip(
-        candidate_jobs, scores, scores_minmax, scores_zscore, scores_softmax, scores_l2norm
+    for job, score, s_minmax, s_l2norm in zip(
+        candidate_jobs, scores, scores_minmax, scores_l2norm
     ):
         job_copy = dict(job)
         job_copy["score"] = float(score)
         job_copy["score_minmax"] = float(s_minmax)
-        job_copy["score_zscore"] = float(s_zscore)
-        job_copy["score_softmax"] = float(s_softmax)
         job_copy["score_l2norm"] = float(s_l2norm)
         ranked.append(job_copy)
 
