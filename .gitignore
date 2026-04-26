@@ -219,3 +219,6 @@ plan-docs
 # Pipeline generated outputs
 pipeline/jobs_*
 pipeline/enriched_jobs_*
+
+# Testing outputs
+tests/outputs/
