@@ -101,6 +101,7 @@ def _print_debug_overlaps(
     user_terms: set[str],
     candidate_jobs: list[dict[str, Any]],
     scores: list[float],
+    scores_l2norm: list[float],
     limit: int,
 ) -> None:
     print("[rank_jobs debug] user_terms:", sorted(user_terms))
@@ -109,12 +110,12 @@ def _print_debug_overlaps(
         return
 
     ranked_pairs = sorted(
-        zip(candidate_jobs, scores),
-        key=lambda item: item[1],
+        zip(candidate_jobs, scores, scores_l2norm),
+        key=lambda item: item[2],  # Sort by L2-normalized score for output
         reverse=True,
     )
 
-    for index, (job, score) in enumerate(ranked_pairs[:limit], start=1):
+    for index, (job, score, l2norm_score) in enumerate(ranked_pairs[:limit], start=1):
         job_text = _job_to_text(job)
         overlap = sorted(user_terms & _tokenize(job_text))
         print(
@@ -123,7 +124,8 @@ def _print_debug_overlaps(
                 "rank": index,
                 "job_id": job.get("_id"),
                 "title": job.get("title", ""),
-                "score": float(score),
+                "score": float(l2norm_score),
+                "raw_score": float(score),
                 "matched_terms": overlap,
             },
         )
@@ -227,9 +229,6 @@ def rank_jobs(
     except ValueError:
         scores = [0.0] * len(candidate_jobs)
 
-    if debug:
-        _print_debug_overlaps(user_terms, candidate_jobs, scores, limit=max(0, debug_top_n))
-
     # Normalization helper
     def l2_norm(scores):
         norm = np.linalg.norm(scores)
@@ -238,6 +237,16 @@ def rank_jobs(
         return (np.array(scores) / norm).tolist()
 
     scores_l2norm = l2_norm(scores)
+
+    # Debug output of top-ranked job overlaps with user terms
+    if debug:
+        _print_debug_overlaps(
+            user_terms,
+            candidate_jobs,
+            scores,
+            scores_l2norm,
+            limit=max(0, debug_top_n),
+        )
 
     user_skills = set(s.lower() for s in _normalize_skills(user_profile.get("skills")))
 
