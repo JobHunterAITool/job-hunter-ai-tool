@@ -8,6 +8,7 @@ job text, and returns deterministic score-sorted results.
 """
 
 import re
+import numpy as np
 from collections.abc import Iterable
 from typing import Any
 
@@ -151,9 +152,9 @@ def rank_jobs(
             "title":           str,
             "company":         str,        # company.display_name (Adzuna)
             "location":        str,        # location.display_name (Adzuna)
-            "description":     str,
+            "description":     str,        # Truncated to 500 chars
             "category":        str,        # category.label (Adzuna)
-            "skills":          list[str],  # Parsed by Backend
+            "skills":          list[str],  # Parsed by Pipeline
             "created":         str,        # ISO 8601 timestamp string
             "redirect_url":    str,    # URL to full job description (Adzuna)
             "job_description_text": str,   # Plain text extracted by Pipeline
@@ -221,9 +222,6 @@ def rank_jobs(
     if debug:
         _print_debug_overlaps(user_terms, candidate_jobs, scores, limit=max(0, debug_top_n))
 
-    import math
-    import numpy as np
-
     # Normalization helpers
     def minmax_norm(scores):
         min_score = min(scores)
@@ -246,17 +244,29 @@ def rank_jobs(
             return [0.0 for _ in scores]
         return (exp_scores / sum_exp).tolist()
 
+    def l2_norm(scores):
+        norm = np.linalg.norm(scores)
+        if norm == 0:
+            return [0.0 for _ in scores]
+        return (np.array(scores) / norm).tolist()
+
+
     scores_minmax = minmax_norm(scores)
     scores_zscore = zscore_norm(scores)
     scores_softmax = softmax_norm(scores)
+    scores_l2norm = l2_norm(scores)
+
 
     ranked = []
-    for job, score, s_minmax, s_zscore, s_softmax in zip(candidate_jobs, scores, scores_minmax, scores_zscore, scores_softmax):
+    for job, score, s_minmax, s_zscore, s_softmax, s_l2norm in zip(
+        candidate_jobs, scores, scores_minmax, scores_zscore, scores_softmax, scores_l2norm
+    ):
         job_copy = dict(job)
         job_copy["score"] = float(score)
         job_copy["score_minmax"] = float(s_minmax)
         job_copy["score_zscore"] = float(s_zscore)
         job_copy["score_softmax"] = float(s_softmax)
+        job_copy["score_l2norm"] = float(s_l2norm)
         ranked.append(job_copy)
 
     return sorted(ranked, key=lambda job: job["score"], reverse=True)
