@@ -174,6 +174,8 @@ def rank_jobs(
         additional field injected::
 
             "score": float   # cosine similarity in [0.0, 1.0]
+            "score_minmax": float  # min-max normalized score in [0.0, 1.0]
+            "score_l2norm": float  # L2-normalized score in [0.0, 1.0]
 
         The caller (backend POST /search handler) is responsible for slicing
         the top-N results before returning them to the frontend.
