@@ -90,33 +90,29 @@ def _keyword_overlap_score(user_terms: set[str], job_text: str) -> int:
 
 def _print_debug_overlaps(
     user_terms: set[str],
-    candidate_jobs: list[dict[str, Any]],
-    scores: list[float],
-    scores_l2norm: list[float],
+    ranked_jobs: list[dict[str, Any]],
     limit: int,
 ) -> None:
     print("[rank_jobs debug] user_terms:", sorted(user_terms))
-    if not candidate_jobs:
+
+    if not ranked_jobs:
         print("[rank_jobs debug] no candidate jobs")
         return
 
-    ranked_pairs = sorted(
-        zip(candidate_jobs, scores, scores_l2norm),
-        key=lambda item: item[2],
-        reverse=True,
-    )
-
-    for index, (job, score, l2norm_score) in enumerate(ranked_pairs[:limit], start=1):
+    for index, job in enumerate(ranked_jobs[:limit], start=1):
         job_text = _job_to_text(job)
         overlap = sorted(user_terms & _tokenize(job_text))
+
         print(
             "[rank_jobs debug]",
             {
                 "rank": index,
                 "job_id": job.get("_id"),
                 "title": job.get("title", ""),
-                "score": float(l2norm_score),
-                "raw_score": float(score),
+                "score": float(job.get("score", 0.0)),  # final_score
+                "tfidf_score": float(job.get("tfidf_score", 0.0)),
+                "skill_score": float(job.get("skill_score", 0.0)),
+                "matched_skills": job.get("matched_skills", []),
                 "matched_terms": overlap,
             },
         )
@@ -237,18 +233,9 @@ def rank_jobs(
 
     scores_l2norm = l2_norm(scores)
 
-    if debug:
-        _print_debug_overlaps(
-            user_terms,
-            candidate_jobs,
-            scores,
-            scores_l2norm,
-            limit=max(0, debug_top_n),
-        )
-
     user_skills = set(s.lower() for s in _normalize_skills(user_profile.get("skills")))
 
-    alpha = 0.3  # weight for skill score
+    alpha = 0.4  # weight for skill score
 
     ranked = []
     for job, score, s_l2norm in zip(candidate_jobs, scores, scores_l2norm):
@@ -267,10 +254,22 @@ def rank_jobs(
         job_copy["matched_skills"] = matched_skills
         job_copy["matched_skills_count"] = len(matched_skills)
 
-        job_copy["tfidf_score"] = float(s_l2norm)
+        job_copy["tfidf_score"] = float(score)
+        job_copy["l2norm_score"] = float(s_l2norm)
         job_copy["skill_score"] = float(skill_score)
         job_copy["score"] = float(final_score)
 
         ranked.append(job_copy)
 
-    return sorted(ranked, key=lambda job: job["score"], reverse=True)
+        # sort once and reuse
+        ranked_sorted = sorted(ranked, key=lambda job: job["score"], reverse=True)
+
+        # debug AFTER final scores are computed
+        if debug:
+            _print_debug_overlaps(
+                user_terms,
+                ranked_sorted,
+                limit=max(0, debug_top_n),
+            )
+
+    return ranked_sorted
