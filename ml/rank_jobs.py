@@ -12,13 +12,29 @@ import numpy as np
 from collections.abc import Iterable
 from typing import Any
 
+import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
 _MAX_CANDIDATES = 200
-_SKILL_NGRAM_MAX = 5
 _TOKEN_RE = re.compile(r"[A-Za-z0-9]+")
+
+
+# Load spaCy (lightweight config)
+_nlp = spacy.load("en_core_web_sm", disable=["ner", "parser"])
+
+
+def _spacy_preprocess(text: str) -> str:
+    doc = _nlp(text.lower())
+    tokens = [
+        token.lemma_
+        for token in doc
+        if not token.is_stop
+        and not token.is_punct
+        and token.is_alpha
+    ]
+    return " ".join(tokens)
 
 
 def _normalize_skills(skills: Any) -> list[str]:
@@ -31,36 +47,14 @@ def _normalize_skills(skills: Any) -> list[str]:
     return [str(skills).strip()] if str(skills).strip() else []
 
 
-def _skills_ngram_tokens(skills: Any) -> list[str]:
-    tokens: list[str] = []
-    normalized_skills = _normalize_skills(skills)
-
-    for skill in normalized_skills:
-        words = _TOKEN_RE.findall(skill.lower())
-        max_n = min(_SKILL_NGRAM_MAX, len(words))
-        for n in range(2, max_n + 1):
-            for start in range(len(words) - n + 1):
-                # Encode phrase n-grams as single terms so unigram tokenization keeps them intact.
-                tokens.append(f"skillng{n}{''.join(words[start : start + n])}")
-
-    return tokens
-
-
-def _append_skill_ngram_tokens(text: str, skills: Any) -> str:
-    skill_features = _skills_ngram_tokens(skills)
-    if not skill_features:
-        return text
-    return f"{text} {' '.join(skill_features)}".strip()
-
-
 def build_user_text(user_profile: dict[str, Any]) -> str:
     """Build ranking text from a user profile dictionary.
-
     Supported keys: user_text, resume_text, job_title, skills, location,
     experience_level.
     """
     normalized_skills = _normalize_skills(user_profile.get("skills"))
     skill_text = " ".join(normalized_skills)
+
     parts = [
         user_profile.get("user_text", "") or user_profile.get("resume_text", ""),
         user_profile.get("job_title", ""),
@@ -68,12 +62,12 @@ def build_user_text(user_profile: dict[str, Any]) -> str:
         user_profile.get("location", ""),
         user_profile.get("experience_level", ""),
     ]
-    base_text = " ".join(str(part).strip() for part in parts if str(part).strip())
-    return _append_skill_ngram_tokens(base_text, normalized_skills)
+
+    return " ".join(str(part).strip() for part in parts if str(part).strip())
 
 
 def _tokenize(text: str) -> set[str]:
-    return set(_TOKEN_RE.findall(text.lower()))
+    return set(_spacy_preprocess(text).split())
 
 
 def _job_to_text(job: dict[str, Any]) -> str:
@@ -83,14 +77,11 @@ def _job_to_text(job: dict[str, Any]) -> str:
 
     parts = [
         job.get("title", ""),
-        # job.get("company", ""),
-        # job.get("location", ""),
-        # job.get("description", ""),
         job.get("job_description_text", ""),
         skills_text,
     ]
-    base_text = " ".join(str(part).strip() for part in parts if str(part).strip())
-    return _append_skill_ngram_tokens(base_text, normalized_skills)
+
+    return " ".join(str(part).strip() for part in parts if str(part).strip())
 
 
 def _keyword_overlap_score(user_terms: set[str], job_text: str) -> int:
@@ -111,7 +102,7 @@ def _print_debug_overlaps(
 
     ranked_pairs = sorted(
         zip(candidate_jobs, scores, scores_l2norm),
-        key=lambda item: item[2],  # Sort by L2-normalized score for output
+        key=lambda item: item[2],
         reverse=True,
     )
 
@@ -202,25 +193,34 @@ def rank_jobs(
     if not isinstance(user_profile, dict):
         raise ValueError("user_profile must be a dictionary")
 
-    query_text = build_user_text(user_profile)
+    query_text_raw = build_user_text(user_profile)
 
-    if not query_text:
+    if not query_text_raw:
         raise ValueError("user_profile must include non-empty ranking fields")
+
+    query_text = _spacy_preprocess(query_text_raw)
 
     if not jobs:
         raise ValueError("jobs list must not be empty")
 
-    user_terms = _tokenize(query_text)
+    user_terms = set(query_text.split())
 
     candidate_jobs = list(jobs)
     if len(candidate_jobs) > _MAX_CANDIDATES:
         candidate_jobs = sorted(
             enumerate(candidate_jobs),
-            key=lambda item: (-_keyword_overlap_score(user_terms, _job_to_text(item[1])), item[0]),
+            key=lambda item: (
+                -_keyword_overlap_score(user_terms, _job_to_text(item[1])),
+                item[0],
+            ),
         )[:_MAX_CANDIDATES]
         candidate_jobs = [job for _, job in candidate_jobs]
 
-    candidate_texts = [_job_to_text(job) for job in candidate_jobs]
+    candidate_texts = [
+        _spacy_preprocess(_job_to_text(job))
+        for job in candidate_jobs
+    ]
+
     corpus = [query_text, *candidate_texts]
 
     try:
@@ -229,7 +229,6 @@ def rank_jobs(
     except ValueError:
         scores = [0.0] * len(candidate_jobs)
 
-    # Normalization helper
     def l2_norm(scores):
         norm = np.linalg.norm(scores)
         if norm == 0:
@@ -238,7 +237,6 @@ def rank_jobs(
 
     scores_l2norm = l2_norm(scores)
 
-    # Debug output of top-ranked job overlaps with user terms
     if debug:
         _print_debug_overlaps(
             user_terms,
@@ -250,20 +248,28 @@ def rank_jobs(
 
     user_skills = set(s.lower() for s in _normalize_skills(user_profile.get("skills")))
 
+    alpha = 0.3  # weight for skill score
+
     ranked = []
-    for job, score, s_l2norm in zip(
-        candidate_jobs, scores, scores_l2norm
-    ):
+    for job, score, s_l2norm in zip(candidate_jobs, scores, scores_l2norm):
         job_copy = dict(job)
 
         job_skills = set(s.lower() for s in _normalize_skills(job.get("skills")))
-
         matched_skills = sorted(user_skills & job_skills)
+
+        skill_score = (
+            len(matched_skills) / max(len(user_skills), 1)
+            if user_skills else 0.0
+        )
+
+        final_score = (1 - alpha) * s_l2norm + alpha * skill_score
 
         job_copy["matched_skills"] = matched_skills
         job_copy["matched_skills_count"] = len(matched_skills)
 
-        job_copy["score"] = float(s_l2norm)
+        job_copy["tfidf_score"] = float(s_l2norm)
+        job_copy["skill_score"] = float(skill_score)
+        job_copy["score"] = float(final_score)
 
         ranked.append(job_copy)
 
