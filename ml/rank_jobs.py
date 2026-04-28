@@ -121,7 +121,7 @@ def _print_debug_overlaps(
 def rank_jobs(
     user_profile: dict[str, Any],
     jobs: list[dict[str, Any]],
-    debug: bool = True,
+    debug: bool = False,
     debug_top_n: int = 5,
 ) -> list[dict[str, Any]]:
     """Rank a list of job documents by relevance to the user's profile text.
@@ -264,7 +264,7 @@ def rank_jobs(
         # sort once and reuse
         ranked_sorted = sorted(ranked, key=lambda job: job["score"], reverse=True)
 
-        # debug AFTER final scores are computed
+        # debug after final scores are computed
         if debug:
             _print_debug_overlaps(
                 user_terms,
