@@ -10,7 +10,7 @@ from fastapi import APIRouter
 
 from backend.db import get_jobs_collection
 from backend.models.schemas import SearchRequest, SearchResponse
-from backend.services.ranking import rank_jobs_stub
+from backend.services.ranking import rank_jobs
 
 router = APIRouter(tags=["search"])
 
@@ -23,5 +23,5 @@ def search_jobs(search_request: SearchRequest):
     jobs = list(jobs_collection.find({}, {"_id": 0}))
 
     # Keeping this call isolated makes it easy to swap in the ML model later.
-    ranked_jobs = rank_jobs_stub(search_request, jobs, top_n=10)
+    ranked_jobs = rank_jobs(search_request, jobs, top_n=10)
     return SearchResponse(results=ranked_jobs)
