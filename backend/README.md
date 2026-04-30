@@ -182,9 +182,10 @@ Example response shape:
 
 Notes:
 - Pulls all jobs from MongoDB.
-- Calls `services/ranking.py -> rank_jobs_stub(...)`.
+- Calls `services/ranking.py -> rank_jobs(...)`.
 - Returns top 10 ranked results.
-- Ranking logic is a placeholder and marked for future ML replacement.
+- Ranking adapter converts `SearchRequest` into a `user_profile` dict.
+- ML scoring is performed by `ml/rank_jobs.py -> rank_jobs(...)`.
 
 ### `GET /jobs?page=1&limit=20`
 
@@ -252,6 +253,26 @@ Invoke-RestMethod -Method Post `
 Invoke-RestMethod -Method Get -Uri "http://127.0.0.1:8000/jobs?page=1&limit=5"
 ```
 
+## ML Integration Test (No MongoDB Required)
+
+This milestone test verifies that backend-shaped frontend input can be adapted
+and passed into the ML ranking module using local `seed_jobs.json` data.
+
+What it validates:
+- `SearchRequest` input mapping in `backend/services/ranking.py`
+- call into `ml/rank_jobs.py -> rank_jobs(...)`
+- ranked list response shape and descending scores
+
+Run from project root:
+
+```powershell
+python -m pytest tests/test_backend_ranking_seed_integration.py -s -v
+```
+
+Optional:
+- Use `-s` to print debug output in terminal.
+- Add `-k backend_adapter` to run a subset by name.
+
 ## Troubleshooting
 
 ### `ModuleNotFoundError: No module named 'fastapi'`
@@ -303,7 +324,7 @@ pip install python-multipart
 
 ## Where ML Will Plug In Later
 
-- Current ranking is stubbed in `backend/services/ranking.py`.
-- Keep route call signature the same:
-  - `rank_jobs_stub(search_input, jobs, top_n=10)`
-- Replace only ranking internals with model inference later to avoid breaking API contract.
+- Current service adapter is in `backend/services/ranking.py` as
+  `rank_jobs(search_input, jobs, top_n=10)`.
+- The adapter preserves backend route contracts and delegates ML scoring to
+  `ml/rank_jobs.py`.
