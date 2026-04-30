@@ -7,6 +7,7 @@ logic. This is where the future ML ranking pipeline will plug in.
 """
 
 import logging
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, status
 
@@ -16,6 +17,15 @@ from backend.services.ranking import rank_jobs
 
 router = APIRouter(tags=["search"])
 logger = logging.getLogger(__name__)
+MAX_CANDIDATE_JOBS = 200
+MAX_RETURNED_RESULTS = 20
+
+
+def _score_for_sort(job: dict[str, Any]) -> float:
+    try:
+        return float(job.get("score", 0.0))
+    except (TypeError, ValueError):
+        return 0.0
 
 
 @router.post("/search", response_model=SearchResponse)
@@ -23,8 +33,8 @@ def search_jobs(search_request: SearchRequest):
     """Search jobs and return top ranked results."""
     try:
         jobs_collection = get_jobs_collection()
-        # Pull raw jobs first, then score/rank in the service layer.
-        jobs = list(jobs_collection.find({}, {"_id": 0}))
+        # Pull up to 200 candidate jobs first, then score/rank in the service layer.
+        jobs = list(jobs_collection.find({}, {"_id": 0}).limit(MAX_CANDIDATE_JOBS))
     except Exception:
         logger.exception("Failed to read jobs from MongoDB for /search")
         raise HTTPException(
@@ -36,8 +46,13 @@ def search_jobs(search_request: SearchRequest):
         return SearchResponse(results=[])
 
     try:
-        # Keeping this call isolated makes it easy to swap in the ML model later.
-        ranked_jobs = rank_jobs(search_request, jobs, top_n=10)
+        # The ranker may already sort, but API contract requires score-sorted top results.
+        ranked_jobs = rank_jobs(search_request, jobs, top_n=MAX_CANDIDATE_JOBS)
+        ranked_jobs = sorted(
+            ranked_jobs,
+            key=_score_for_sort,
+            reverse=True,
+        )
     except ValueError as exc:
         logger.warning("Invalid ranking input for /search: %s", exc)
         raise HTTPException(
@@ -51,4 +66,4 @@ def search_jobs(search_request: SearchRequest):
             detail="Failed to rank jobs.",
         )
 
-    return SearchResponse(results=ranked_jobs)
+    return SearchResponse(results=ranked_jobs[:MAX_RETURNED_RESULTS])
