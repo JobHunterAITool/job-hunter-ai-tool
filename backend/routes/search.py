@@ -12,7 +12,7 @@ from fastapi import APIRouter, HTTPException, status
 
 from backend.db import get_jobs_collection
 from backend.models.schemas import SearchRequest, SearchResponse
-from backend.services.ranking import rank_jobs_stub
+from backend.services.ranking import rank_jobs
 
 router = APIRouter(tags=["search"])
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ def search_jobs(search_request: SearchRequest):
 
     try:
         # Keeping this call isolated makes it easy to swap in the ML model later.
-        ranked_jobs = rank_jobs_stub(search_request, jobs, top_n=10)
+        ranked_jobs = rank_jobs(search_request, jobs, top_n=10)
     except ValueError as exc:
         logger.warning("Invalid ranking input for /search: %s", exc)
         raise HTTPException(

@@ -137,7 +137,7 @@ def test_search_returns_400_for_value_error_from_ranker(
     def raise_value_error(*_args, **_kwargs):
         raise ValueError("bad ranking input")
 
-    monkeypatch.setattr(search_route, "rank_jobs_stub", raise_value_error)
+    monkeypatch.setattr(search_route, "rank_jobs", raise_value_error)
 
     response = client.post("/search", json=_search_payload())
     assert response.status_code == 400
@@ -155,7 +155,7 @@ def test_search_returns_500_and_logs_when_ranker_fails(
     def raise_runtime_error(*_args, **_kwargs):
         raise RuntimeError("boom")
 
-    monkeypatch.setattr(search_route, "rank_jobs_stub", raise_runtime_error)
+    monkeypatch.setattr(search_route, "rank_jobs", raise_runtime_error)
 
     with caplog.at_level(logging.ERROR):
         response = client.post("/search", json=_search_payload())
