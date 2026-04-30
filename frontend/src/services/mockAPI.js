@@ -18,3 +18,15 @@ export async function mockSearchJobs(payload) {
     }, 500);
   });
 }
+export async function uploadResume(file) {
+  console.log("Mock resume upload received:", file.name);
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        filename: file.name,
+        preview: "This is a mock resume preview. Backend parsing is not being used right now.",
+      });
+    }, 500);
+  });
+}

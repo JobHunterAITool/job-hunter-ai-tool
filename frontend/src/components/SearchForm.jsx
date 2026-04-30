@@ -1,9 +1,8 @@
 /**
  * SearchForm Component
- * 
+ *
  * Provides the job search form UI for the Job Hunter AI Tool.
- * Collects user input and sends the search request to the
- * backend.
+ * Collects user input and sends the search request to the backend.
  *
  * Author: Carl Ikai
  * Project: Job Hunter AI Tool
@@ -11,6 +10,7 @@
 
 import { useState } from "react";
 import { mockSearchJobs } from "../services/mockAPI";
+import ResumeUpload from "./ResumeUpload";
 
 export default function SearchForm({
   onResults,
@@ -18,7 +18,6 @@ export default function SearchForm({
   onError,
   isLoading,
 }) {
-
   /* Local component state for form inputs */
   const [jobTitle, setJobTitle] = useState("");
   const [skills, setSkills] = useState("");
@@ -29,7 +28,7 @@ export default function SearchForm({
    * Handle form submission.
    *
    * Builds the search payload from form inputs and sends
-   * the request to the mock API.
+   * the request to the backend API.
    */
   async function handleSubmit(e) {
     e.preventDefault();
@@ -37,7 +36,6 @@ export default function SearchForm({
     onError("");
     onLoadingChange(true);
 
-    /* Construct request payload for API */
     const payload = {
       job_title: jobTitle,
       skills: skills.split(",").map((s) => s.trim()).filter(Boolean),
@@ -46,20 +44,18 @@ export default function SearchForm({
     };
 
     try {
-
-      /* Call mock API */
       const response = await mockSearchJobs(payload);
-      onResults(response);
 
+      /*
+       * Supports either:
+       * 1. Backend returns an array directly
+       * 2. Backend returns { results: [...] }
+       */
+      onResults(Array.isArray(response) ? response : response.results || []);
     } catch (requestError) {
-
-      /* Handle API errors */
       onResults([]);
       onError(requestError.message || "Search failed.");
-
     } finally {
-
-      /* Reset loading state */
       onLoadingChange(false);
     }
   }
@@ -109,6 +105,8 @@ export default function SearchForm({
           {isLoading ? "Searching..." : "Search Jobs"}
         </button>
       </form>
+
+      <ResumeUpload />
     </div>
   );
 }
