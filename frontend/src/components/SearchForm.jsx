@@ -9,7 +9,7 @@
  */
 
 import { useState } from "react";
-import { mockSearchJobs } from "../services/mockAPI";
+import { searchJobs } from "../services/api";
 import ResumeUpload from "./ResumeUpload";
 
 export default function SearchForm({
@@ -22,13 +22,10 @@ export default function SearchForm({
   const [jobTitle, setJobTitle] = useState("");
   const [skills, setSkills] = useState("");
   const [location, setLocation] = useState("");
-  const [experience, setExperience] = useState("Mid");
+  const [experience, setExperience] = useState("");
 
   /**
    * Handle form submission.
-   *
-   * Builds the search payload from form inputs and sends
-   * the request to the backend API.
    */
   async function handleSubmit(e) {
     e.preventDefault();
@@ -40,17 +37,12 @@ export default function SearchForm({
       job_title: jobTitle,
       skills: skills.split(",").map((s) => s.trim()).filter(Boolean),
       location,
-      experience_level: experience,
+      experience_level: experience, // backend still expects this field
     };
 
     try {
-      const response = await mockSearchJobs(payload);
+      const response = await searchJobs(payload);
 
-      /*
-       * Supports either:
-       * 1. Backend returns an array directly
-       * 2. Backend returns { results: [...] }
-       */
       onResults(Array.isArray(response) ? response : response.results || []);
     } catch (requestError) {
       onResults([]);
@@ -89,16 +81,15 @@ export default function SearchForm({
           required
         />
 
-        {/* Experience level selection */}
-        <select
+        {/* Years of experience typed input */}
+        <input
+          type="number"
+          placeholder="Years of Experience"
           value={experience}
           onChange={(e) => setExperience(e.target.value)}
+          min="0"
           required
-        >
-          <option value="Entry">Entry</option>
-          <option value="Mid">Mid</option>
-          <option value="Senior">Senior</option>
-        </select>
+        />
 
         {/* Submit button */}
         <button type="submit" disabled={isLoading}>

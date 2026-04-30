@@ -1,25 +1,53 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000").trim();
+import axios from "axios";
 
-function buildUrl(path) {
-  if (!API_BASE_URL) {
-    return path;
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000"
+).trim();
+
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+});
+
+/**
+ * Sends job search input to the backend search endpoint.
+ */
+export async function searchJobs(payload) {
+  try {
+    const response = await apiClient.post("/search", payload);
+    return response.data;
+  } catch (error) {
+    const message =
+      error.response?.data?.detail ||
+      error.response?.data?.error ||
+      error.message ||
+      "Search request failed.";
+
+    throw new Error(message);
   }
-
-  const base = API_BASE_URL.endsWith("/") ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
-  return `${base}${path}`;
 }
 
-export async function searchJobs(payload) {
-  const response = await fetch(buildUrl("/search"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+/**
+ * Uploads a resume file to the backend upload endpoint.
+ */
+export async function uploadResume(file) {
+  const formData = new FormData();
+  formData.append("file", file);
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Search request failed (${response.status}): ${errorBody}`);
+  try {
+    const response = await apiClient.post("/upload-resume", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    const message =
+      error.response?.data?.detail ||
+      error.response?.data?.error ||
+      error.message ||
+      "Resume upload failed.";
+
+    throw new Error(message);
   }
-
-  return response.json();
 }

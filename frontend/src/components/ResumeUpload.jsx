@@ -2,14 +2,14 @@
  * ResumeUpload Component
  *
  * Allows users to drag and drop a PDF or DOCX resume and sends it
- * to the backend for plain-text preview extraction.
+ * to the backend for text preview extraction.
  *
  * Author: Carl Ikai
  * Project: Job Hunter AI Tool
  */
 
 import { useState } from "react";
-import { uploadResume } from "../services/mockAPI";
+import { uploadResume } from "../services/api";
 
 export default function ResumeUpload() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -71,7 +71,20 @@ export default function ResumeUpload() {
 
     try {
       const data = await uploadResume(selectedFile);
-      setPreview(data.preview || "No preview text could be extracted.");
+
+      /*
+       * Backend returns:
+       * {
+       *   filename: "...",
+       *   message: "...",
+       *   extracted_text_preview: "..."
+       * }
+       */
+      setPreview(
+        data.extracted_text_preview ||
+          "No preview text could be extracted."
+      );
+
     } catch (uploadError) {
       setError(uploadError.message || "Something went wrong.");
     } finally {
@@ -113,7 +126,9 @@ export default function ResumeUpload() {
         </div>
 
         {selectedFile && (
-          <p className="selected-file">Selected file: {selectedFile.name}</p>
+          <p className="selected-file">
+            Selected file: {selectedFile.name}
+          </p>
         )}
 
         <button type="submit" disabled={isUploading}>
