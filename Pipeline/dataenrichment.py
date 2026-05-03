@@ -128,7 +128,6 @@ def parse_description(full_html):
         node = soup.select_one(selector)
         if not node:
             continue
-
         text = clean_text(node.get_text("\n", strip=True))
         if text:
             return node, text, selector
@@ -167,7 +166,6 @@ def fetch_and_extract(url):
             "request_error": None,
             "status": status,
         }
-
     except requests.exceptions.RequestException as error:
         result = {
             "html": None,
@@ -194,7 +192,6 @@ def is_blocked_response(result):
     return any(marker in text for marker in BLOCKED_TEXT_MARKERS)
 
 
-
 jobs_data_file = find_jobs_file()
 with open(jobs_data_file, "r", encoding="utf-8") as file:
     jobs = json.load(file)
@@ -209,6 +206,7 @@ for index, job in enumerate(jobs):
         job["html_parse_status"] = "no_redirect_url"
         job["request_error"] = "No redirect_url found"
         continue
+    jobs_by_url.setdefault(url, []).append(index)
 
     jobs_by_url.setdefault(url, []).append(index)
 
@@ -240,7 +238,6 @@ with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             if is_blocked_response(result):
                 blocked_count += 1
                 fallback_text = job.get("description")
-
                 if isinstance(fallback_text, str) and fallback_text.strip():
                     job["job_description_text"] = fallback_text
                     job["description_source"] = "adzuna_api_fallback"
@@ -248,7 +245,6 @@ with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
                 else:
                     job["job_description_text"] = None
                     job["description_source"] = "none"
-
                 job["blocked_by_anti_bot"] = True
                 job["html_parse_status"] = "blocked_403"
 
