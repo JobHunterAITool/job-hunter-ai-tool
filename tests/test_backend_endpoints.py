@@ -92,14 +92,48 @@ def _search_payload() -> dict:
 def test_search_happy_path_returns_ranked_results(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    fake_collection = FakeCollection([_job_doc(i) for i in range(12)])
+    fake_collection = FakeCollection([_job_doc(i) for i in range(40)])
     monkeypatch.setattr(search_route, "get_jobs_collection", lambda: fake_collection)
 
     response = client.post("/search", json=_search_payload())
     assert response.status_code == 200
 
     body = response.json()
-    assert len(body["results"]) == 10
+    assert len(body["results"]) == 20
+    scores = [job["score"] for job in body["results"]]
+    assert scores == sorted(scores, reverse=True)
+
+
+def test_search_caps_candidates_to_200_and_returns_top_20_sorted(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake_collection = FakeCollection([_job_doc(i) for i in range(260)])
+    monkeypatch.setattr(search_route, "get_jobs_collection", lambda: fake_collection)
+
+    captured: dict[str, int] = {}
+
+    def fake_rank_jobs(_search_request, jobs, top_n=10):  # noqa: ARG001
+        captured["candidate_count"] = len(jobs)
+        captured["top_n"] = top_n
+        # Intentionally unsorted by score to verify route-level sorting.
+        return [
+            {
+                **job,
+                "matched_skills": [],
+                "score": float((index % 9) / 10.0),
+            }
+            for index, job in enumerate(jobs)
+        ]
+
+    monkeypatch.setattr(search_route, "rank_jobs", fake_rank_jobs)
+
+    response = client.post("/search", json=_search_payload())
+    assert response.status_code == 200
+
+    body = response.json()
+    assert captured["candidate_count"] == 200
+    assert captured["top_n"] == 200
+    assert len(body["results"]) == 20
     scores = [job["score"] for job in body["results"]]
     assert scores == sorted(scores, reverse=True)
 
