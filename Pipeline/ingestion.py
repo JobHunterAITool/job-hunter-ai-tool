@@ -28,6 +28,9 @@ import os
 # categories  :  returns the predefined list of job categories adzuna uses, we will use this for our industry filter. 
 # you can see them all in this response : https://api.adzuna.com/v1/api/jobs/us/categories?app_id=8e88dd1a&app_key=501524232a49925c03eec7a276d7fb5f
 # below are the filters in scope for this project. 
+
+
+
 categories = [
     "it-jobs",
     "engineering-jobs",
@@ -77,7 +80,7 @@ for category in categories:
     print(f"\nJob category: {category}")
 
     # pagination - 50 results per response. We can limit where to stop here, or continue until we reach the end. 
-    for page in range(1, 3):   # change to 11 later for pages 1 through 10 - can change to while loop if we want to read everything.
+    for page in range(1, 2):   # change to 11 later for pages 1 through 10 - can change to while loop if we want to read everything.
         time.sleep(2) # setting timer to avoid being rate-limited for when we start making larger requests.
         # the send_HTTP_requests returns the status code, and then the actual data in a set. 
         response, data = send_HTTP_request(
