@@ -208,6 +208,17 @@ __marimo__/
 
 # Node / frontend
 node_modules/
+.vite/
 
 # macOS
 .DS_Store
+
+# Planning docs
+plan-docs
+
+# Pipeline generated outputs
+pipeline/jobs_*
+pipeline/enriched_jobs_*
+
+# Testing outputs
+tests/outputs/

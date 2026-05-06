@@ -4,6 +4,18 @@ import time
 import json
 import os
 
+# Adzuna free-tier guardrails.
+FREE_TIER_PER_MINUTE = 25
+FREE_TIER_PER_DAY = 250
+FREE_TIER_PER_WEEK = 1000
+FREE_TIER_PER_MONTH = 2500
+
+# Keep some daily headroom by default so repeated local runs do not consume the full quota.
+REQUESTS_PER_RUN_CAP = int(os.getenv("ADZUNA_REQUESTS_PER_RUN_CAP", "200"))
+REQUESTS_PER_RUN_CAP = min(REQUESTS_PER_RUN_CAP, FREE_TIER_PER_DAY)
+REQUEST_INTERVAL_SECONDS = 60.0 / FREE_TIER_PER_MINUTE
+MAX_PAGES_PER_CATEGORY = int(os.getenv("ADZUNA_MAX_PAGES_PER_CATEGORY", "2"))
+
 # Adzuna API endpoints : 
 
 # /jobs/{country}/search/{page}
@@ -52,6 +64,9 @@ all_jobs = []
 category = ""
 results_per_page = 50
 base_url = "https://api.adzuna.com/v1/api/jobs/us/search/{}"
+request_count = 0
+last_request_at = None
+
 
 # 50 is the max results per page per the api response
 def send_HTTP_request(url, id, key, category, results_per_page=50, page=1, what = ""):
@@ -69,19 +84,45 @@ def send_HTTP_request(url, id, key, category, results_per_page=50, page=1, what 
             return response, response.json() # return the response and statuscode. 
         except requests.exceptions.RequestException as e:
             print(f"Request failed: {e}")
-            return None
+            return None, {}
 
 # create timestamp variable and convert it to string.
 TIMESTAMP = datetime.datetime.now().isoformat()
 
+print(
+    f"Adzuna free-tier guardrails active: "
+    f"{FREE_TIER_PER_MINUTE}/min, {FREE_TIER_PER_DAY}/day, "
+    f"{FREE_TIER_PER_WEEK}/week, {FREE_TIER_PER_MONTH}/month"
+)
+print(
+    f"This run cap: {REQUESTS_PER_RUN_CAP} requests, "
+    f"max pages/category: {MAX_PAGES_PER_CATEGORY}"
+)
+
 # start making requests : 
 # loop through each of our job industry categories. 
 for category in categories:
+    if request_count >= REQUESTS_PER_RUN_CAP:
+        print("Reached per-run request cap before finishing all categories.")
+        break
+
     print(f"\nJob category: {category}")
 
     # pagination - 50 results per response. We can limit where to stop here, or continue until we reach the end. 
-    for page in range(1, 2):   # change to 11 later for pages 1 through 10 - can change to while loop if we want to read everything.
-        time.sleep(2) # setting timer to avoid being rate-limited for when we start making larger requests.
+    for page in range(1, MAX_PAGES_PER_CATEGORY + 1):
+        if request_count >= REQUESTS_PER_RUN_CAP:
+            print("Reached per-run request cap. Stopping pagination.")
+            break
+
+        if last_request_at is not None:
+            elapsed = time.time() - last_request_at
+            wait_seconds = REQUEST_INTERVAL_SECONDS - elapsed
+            if wait_seconds > 0:
+                time.sleep(wait_seconds)
+
+        request_count += 1
+        last_request_at = time.time()
+
         # the send_HTTP_requests returns the status code, and then the actual data in a set. 
         response, data = send_HTTP_request(
             base_url,
@@ -93,11 +134,11 @@ for category in categories:
             what="computer science"  # <- we can change this, but without it we return 400,000+ jobs
         )
 
-        print(response.url)
-
         if response is None:
             print(f"Request failed for category={category}, page={page}")
             break
+
+        print(f"[{request_count}/{REQUESTS_PER_RUN_CAP}] {response.url}")
 
         if response.status_code != 200:
             print(f"Request failed for category={category}, page={page}")
@@ -126,6 +167,7 @@ for category in categories:
                 all_jobs.append(job)
 
 print(f"\nUnique jobs entered: {len(all_jobs)}")
+print(f"Total API requests this run: {request_count}")
 
 # printing all jobs just prints the python representation of the data structure which is a dict
 print(all_jobs)
@@ -133,15 +175,22 @@ print(all_jobs)
 print(json.dumps(all_jobs, indent=2))
 
 
-# delete already existing jobs_*.txt files, we will overwrite them each time (for now)
+# delete already existing jobs_*.txt and jobs_*.json files, we will overwrite them each time (for now)
 # update this logic to insert data into MongoDB in the next progress report. 
 for file in os.listdir():
-    if file.startswith("jobs_") and file.endswith(".txt"):
+    if file.startswith("jobs_") and (file.endswith(".txt") or file.endswith(".json")):
         os.remove(file)
-        
-filename = f"jobs_{TIMESTAMP.replace(':', '_')}.txt"
 
-with open(filename, "w", encoding="utf-8") as f:
-    f.write(json.dumps(all_jobs, indent=2))
+base_filename = f"jobs_{TIMESTAMP.replace(':', '_')}"
+txt_filename = f"{base_filename}.txt"
+json_filename = f"{base_filename}.json"
+payload = json.dumps(all_jobs, indent=2)
 
-print(f"Results written to: {filename}")
+with open(txt_filename, "w", encoding="utf-8") as f:
+    f.write(payload)
+
+with open(json_filename, "w", encoding="utf-8") as f:
+    f.write(payload)
+
+print(f"Results written to: {txt_filename}")
+print(f"Results written to: {json_filename}")

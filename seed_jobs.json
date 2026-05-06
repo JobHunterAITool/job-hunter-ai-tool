@@ -5,10 +5,19 @@
     "company": "Stripe",
     "location": "San Francisco, CA",
     "description": "Join Stripe's platform engineering team to build and scale distributed systems that power millions of businesses worldwide. You will design and implement backend services in Ruby and Python, write clean maintainable code, collaborate in code reviews, and contribute to on-call rotations. Experience with PostgreSQL, Redis, and Kafka is a plus. We value curiosity, autonomy, and a bias for shipping.",
-    "skills": ["Python", "Ruby", "PostgreSQL", "Redis", "Kafka", "Docker", "REST APIs"],
+    "skills": [
+      "Python",
+      "Ruby",
+      "PostgreSQL",
+      "Redis",
+      "Kafka",
+      "Docker",
+      "REST APIs"
+    ],
     "category": "it-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_001/software-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_001/software-engineer",
+    "job_description_text": "**Overview**\nStripe is hiring a Software Engineer based in San Francisco, CA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Python, Ruby, PostgreSQL, Redis, Kafka, Docker, REST APIs.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_002",
@@ -16,10 +25,20 @@
     "company": "JPMorgan Chase",
     "location": "New York, NY",
     "description": "We are looking for a backend developer to join our digital banking platform team. You will build RESTful APIs using Python and FastAPI, integrate with internal microservices, and ensure high availability through comprehensive unit and integration testing. Familiarity with Docker, Kubernetes, and CI/CD pipelines is expected. Strong SQL skills and experience with PostgreSQL or Oracle are required.",
-    "skills": ["Python", "FastAPI", "SQL", "PostgreSQL", "Docker", "Kubernetes", "REST APIs", "CI/CD"],
+    "skills": [
+      "Python",
+      "FastAPI",
+      "SQL",
+      "PostgreSQL",
+      "Docker",
+      "Kubernetes",
+      "REST APIs",
+      "CI/CD"
+    ],
     "category": "it-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_002/backend-developer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_002/backend-developer",
+    "job_description_text": "**Overview**\nJPMorgan Chase is hiring a Backend Developer based in New York, NY. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Python, FastAPI, SQL, PostgreSQL, Docker, Kubernetes, REST APIs, CI/CD.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_003",
@@ -27,10 +46,19 @@
     "company": "Bank of America",
     "location": "Charlotte, NC",
     "description": "Bank of America's data and analytics team is hiring a data analyst to support business intelligence initiatives. You will query large datasets using SQL, build dashboards in Tableau, write Python scripts to automate reporting pipelines, and communicate findings to non-technical stakeholders. Experience with pandas, NumPy, and Excel is required. Exposure to machine learning concepts is a bonus.",
-    "skills": ["SQL", "Python", "Pandas", "NumPy", "Tableau", "Excel", "Data Visualization"],
+    "skills": [
+      "SQL",
+      "Python",
+      "Pandas",
+      "NumPy",
+      "Tableau",
+      "Excel",
+      "Data Visualization"
+    ],
     "category": "accounting-finance-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_003/data-analyst"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_003/data-analyst",
+    "job_description_text": "**Overview**\nBank of America is hiring a Data Analyst based in Charlotte, NC. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: SQL, Python, Pandas, NumPy, Tableau, Excel, Data Visualization.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_004",
@@ -38,10 +66,20 @@
     "company": "OpenAI",
     "location": "San Francisco, CA",
     "description": "OpenAI is building the future of AI. As an ML engineer you will train and fine-tune large language models, design evaluation pipelines, and deploy models to production serving infrastructure. Strong Python skills and hands-on experience with PyTorch or TensorFlow are required. Familiarity with transformer architectures, RLHF, and distributed training is a strong asset.",
-    "skills": ["Python", "PyTorch", "TensorFlow", "Machine Learning", "NLP", "Deep Learning", "Docker", "CUDA"],
+    "skills": [
+      "Python",
+      "PyTorch",
+      "TensorFlow",
+      "Machine Learning",
+      "NLP",
+      "Deep Learning",
+      "Docker",
+      "CUDA"
+    ],
     "category": "scientific-qa-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_004/machine-learning-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_004/machine-learning-engineer",
+    "job_description_text": "**Overview**\nOpenAI is hiring a Machine Learning Engineer based in San Francisco, CA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Python, PyTorch, TensorFlow, Machine Learning, NLP, Deep Learning, Docker, CUDA.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_005",
@@ -49,10 +87,20 @@
     "company": "Salesforce",
     "location": "San Francisco, CA",
     "description": "Salesforce's product engineering team is looking for a full stack developer to build features across our CRM platform. You will work with React on the frontend and Node.js or Python on the backend, design database schemas in PostgreSQL, and participate in agile ceremonies. Experience with TypeScript, GraphQL, and cloud platforms (AWS or GCP) is highly valued.",
-    "skills": ["React", "Node.js", "Python", "TypeScript", "GraphQL", "PostgreSQL", "AWS", "Docker"],
+    "skills": [
+      "React",
+      "Node.js",
+      "Python",
+      "TypeScript",
+      "GraphQL",
+      "PostgreSQL",
+      "AWS",
+      "Docker"
+    ],
     "category": "it-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_005/full-stack-developer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_005/full-stack-developer",
+    "job_description_text": "**Overview**\nSalesforce is hiring a Full Stack Developer based in San Francisco, CA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: React, Node.js, Python, TypeScript, GraphQL, PostgreSQL, AWS, Docker.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_006",
@@ -60,10 +108,21 @@
     "company": "Comcast",
     "location": "Philadelphia, PA",
     "description": "Join our cloud infrastructure team to design, build, and maintain CI/CD pipelines, Kubernetes clusters, and monitoring systems at scale. You will automate infrastructure provisioning using Terraform and Ansible, respond to on-call incidents, and champion reliability engineering practices across engineering teams. Strong Linux and shell scripting skills are a must.",
-    "skills": ["Kubernetes", "Docker", "Terraform", "Ansible", "AWS", "CI/CD", "Linux", "Python", "Bash"],
+    "skills": [
+      "Kubernetes",
+      "Docker",
+      "Terraform",
+      "Ansible",
+      "AWS",
+      "CI/CD",
+      "Linux",
+      "Python",
+      "Bash"
+    ],
     "category": "engineering-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_006/devops-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_006/devops-engineer",
+    "job_description_text": "**Overview**\nComcast is hiring a DevOps Engineer based in Philadelphia, PA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Kubernetes, Docker, Terraform, Ansible, AWS, CI/CD, Linux, Python.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_007",
@@ -71,10 +130,20 @@
     "company": "Robinhood",
     "location": "Menlo Park, CA",
     "description": "Robinhood's data science team is looking for someone to build predictive models that drive personalized financial recommendations. You will work closely with product and engineering to define features, train models using scikit-learn and XGBoost, validate results with A/B tests, and deploy models via REST APIs. Proficiency in Python, SQL, and statistical modeling is essential.",
-    "skills": ["Python", "scikit-learn", "XGBoost", "SQL", "Statistics", "A/B Testing", "Pandas", "Machine Learning"],
+    "skills": [
+      "Python",
+      "scikit-learn",
+      "XGBoost",
+      "SQL",
+      "Statistics",
+      "A/B Testing",
+      "Pandas",
+      "Machine Learning"
+    ],
     "category": "scientific-qa-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_007/data-scientist"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_007/data-scientist",
+    "job_description_text": "**Overview**\nRobinhood is hiring a Data Scientist based in Menlo Park, CA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Python, scikit-learn, XGBoost, SQL, Statistics, A/B Testing, Pandas, Machine Learning.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_008",
@@ -82,10 +151,19 @@
     "company": "Walmart Global Tech",
     "location": "Bentonville, AR",
     "description": "Build intuitive mobile shopping experiences for millions of customers across the US. As an iOS developer you will implement new features in Swift, write unit and UI tests with XCTest, collaborate with UX designers on pixel-perfect implementations, and participate in code reviews. Experience with Combine, SwiftUI, and RESTful API integration is required.",
-    "skills": ["Swift", "SwiftUI", "Xcode", "iOS", "REST APIs", "Unit Testing", "Git"],
+    "skills": [
+      "Swift",
+      "SwiftUI",
+      "Xcode",
+      "iOS",
+      "REST APIs",
+      "Unit Testing",
+      "Git"
+    ],
     "category": "it-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_008/ios-developer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_008/ios-developer",
+    "job_description_text": "**Overview**\nWalmart Global Tech is hiring a iOS Developer based in Bentonville, AR. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Swift, SwiftUI, Xcode, iOS, REST APIs, Unit Testing, Git.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_009",
@@ -93,10 +171,20 @@
     "company": "Lyft",
     "location": "San Francisco, CA",
     "description": "Join Lyft's mobile team to build the Android app used by millions of riders and drivers every day. You will develop features in Kotlin using Jetpack Compose, integrate with backend REST APIs, write unit tests with JUnit and Mockito, and improve app performance through profiling. Experience with coroutines, dependency injection (Hilt), and CI pipelines is a plus.",
-    "skills": ["Kotlin", "Android", "Jetpack Compose", "REST APIs", "JUnit", "Coroutines", "Hilt", "Git"],
+    "skills": [
+      "Kotlin",
+      "Android",
+      "Jetpack Compose",
+      "REST APIs",
+      "JUnit",
+      "Coroutines",
+      "Hilt",
+      "Git"
+    ],
     "category": "it-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_009/android-developer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_009/android-developer",
+    "job_description_text": "**Overview**\nLyft is hiring a Android Developer based in San Francisco, CA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Kotlin, Android, Jetpack Compose, REST APIs, JUnit, Coroutines, Hilt, Git.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_010",
@@ -104,10 +192,19 @@
     "company": "Wells Fargo",
     "location": "San Francisco, CA",
     "description": "Design and govern cloud infrastructure for one of the largest financial institutions in the United States. You will define cloud architecture standards, review engineering designs for compliance and cost efficiency, and guide teams migrating legacy workloads to AWS. Deep expertise in AWS services (VPC, IAM, RDS, Lambda, S3) is required, along with strong knowledge of security and networking best practices.",
-    "skills": ["AWS", "Cloud Architecture", "Terraform", "Networking", "Security", "Python", "Kubernetes"],
+    "skills": [
+      "AWS",
+      "Cloud Architecture",
+      "Terraform",
+      "Networking",
+      "Security",
+      "Python",
+      "Kubernetes"
+    ],
     "category": "engineering-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_010/cloud-solutions-architect"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_010/cloud-solutions-architect",
+    "job_description_text": "**Overview**\nWells Fargo is hiring a Cloud Solutions Architect based in San Francisco, CA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: AWS, Cloud Architecture, Terraform, Networking, Security, Python, Kubernetes.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_011",
@@ -115,10 +212,20 @@
     "company": "Palantir Technologies",
     "location": "Denver, CO",
     "description": "Palantir is expanding its data intelligence platform and needs Python developers to build scalable data processing services. You will implement ETL pipelines, design REST APIs with FastAPI or Flask, write comprehensive tests with pytest, and collaborate with data engineers and ML researchers. Experience with async Python, message queues (RabbitMQ or Kafka), and cloud deployment is preferred.",
-    "skills": ["Python", "FastAPI", "Flask", "pytest", "REST APIs", "Kafka", "SQL", "Docker"],
+    "skills": [
+      "Python",
+      "FastAPI",
+      "Flask",
+      "pytest",
+      "REST APIs",
+      "Kafka",
+      "SQL",
+      "Docker"
+    ],
     "category": "it-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_011/software-developer-python"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_011/software-developer-python",
+    "job_description_text": "**Overview**\nPalantir Technologies is hiring a Software Developer (Python) based in Denver, CO. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Python, FastAPI, Flask, pytest, REST APIs, Kafka, SQL, Docker.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_012",
@@ -126,10 +233,20 @@
     "company": "Zillow",
     "location": "Seattle, WA",
     "description": "Zillow is reimagining how Americans buy and sell homes. We are hiring a frontend engineer to build our React application, implement new customer-facing features, improve performance, and maintain a robust component library. Strong TypeScript and CSS skills are required. Experience with Next.js, testing with Jest and React Testing Library, and accessibility (WCAG) is highly valued.",
-    "skills": ["React", "TypeScript", "Next.js", "CSS", "Jest", "Accessibility", "GraphQL", "Git"],
+    "skills": [
+      "React",
+      "TypeScript",
+      "Next.js",
+      "CSS",
+      "Jest",
+      "Accessibility",
+      "GraphQL",
+      "Git"
+    ],
     "category": "it-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_012/frontend-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_012/frontend-engineer",
+    "job_description_text": "**Overview**\nZillow is hiring a Frontend Engineer based in Seattle, WA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: React, TypeScript, Next.js, CSS, Jest, Accessibility, GraphQL, Git.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_013",
@@ -137,10 +254,20 @@
     "company": "Brex",
     "location": "San Francisco, CA",
     "description": "Brex is looking for a security engineer to own application and infrastructure security across our fintech platform. Responsibilities include conducting threat modeling, running penetration tests, reviewing code for vulnerabilities, managing SIEM tooling, and driving secure SDLC practices. Experience with OWASP Top 10, AWS security controls, and scripting in Python is required.",
-    "skills": ["Security", "Python", "AWS", "Penetration Testing", "SIEM", "OWASP", "Linux", "CI/CD"],
+    "skills": [
+      "Security",
+      "Python",
+      "AWS",
+      "Penetration Testing",
+      "SIEM",
+      "OWASP",
+      "Linux",
+      "CI/CD"
+    ],
     "category": "engineering-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_013/security-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_013/security-engineer",
+    "job_description_text": "**Overview**\nBrex is hiring a Security Engineer based in San Francisco, CA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Security, Python, AWS, Penetration Testing, SIEM, OWASP, Linux, CI/CD.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_014",
@@ -148,10 +275,20 @@
     "company": "Databricks",
     "location": "San Francisco, CA",
     "description": "Build and maintain the data infrastructure that powers Databricks' analytics and ML platforms. You will design and implement batch and streaming ETL pipelines using Apache Spark and Airflow, manage data warehouse schemas in Snowflake, and ensure data quality through automated testing. Strong Python and SQL skills are essential; experience with dbt and cloud data platforms is a plus.",
-    "skills": ["Python", "Apache Spark", "Airflow", "Snowflake", "SQL", "dbt", "Docker", "AWS"],
+    "skills": [
+      "Python",
+      "Apache Spark",
+      "Airflow",
+      "Snowflake",
+      "SQL",
+      "dbt",
+      "Docker",
+      "AWS"
+    ],
     "category": "scientific-qa-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_014/data-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_014/data-engineer",
+    "job_description_text": "**Overview**\nDatabricks is hiring a Data Engineer based in San Francisco, CA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Python, Apache Spark, Airflow, Snowflake, SQL, dbt, Docker, AWS.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_015",
@@ -159,10 +296,20 @@
     "company": "Twilio",
     "location": "Austin, TX",
     "description": "Twilio is hiring an SRE to improve the reliability and scalability of our global communications platform. You will define and track SLOs, build observability tooling with Prometheus and Grafana, automate operational tasks with Python scripts, and collaborate with development teams on incident response and postmortems. Kubernetes and GCP expertise is required.",
-    "skills": ["Kubernetes", "GCP", "Prometheus", "Grafana", "Python", "Terraform", "Linux", "Go"],
+    "skills": [
+      "Kubernetes",
+      "GCP",
+      "Prometheus",
+      "Grafana",
+      "Python",
+      "Terraform",
+      "Linux",
+      "Go"
+    ],
     "category": "engineering-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_015/site-reliability-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_015/site-reliability-engineer",
+    "job_description_text": "**Overview**\nTwilio is hiring a Site Reliability Engineer based in Austin, TX. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Kubernetes, GCP, Prometheus, Grafana, Python, Terraform, Linux, Go.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_016",
@@ -170,10 +317,18 @@
     "company": "HubSpot",
     "location": "Cambridge, MA",
     "description": "HubSpot is hiring junior software engineers to join our fast-growing SaaS platform team. You will build and maintain features in Python and Go, write tests, participate in code reviews, and learn from senior engineers. A degree in computer science or equivalent experience is preferred. Familiarity with REST APIs, version control with Git, and basic SQL is expected.",
-    "skills": ["Python", "Go", "SQL", "REST APIs", "Git", "Docker"],
+    "skills": [
+      "Python",
+      "Go",
+      "SQL",
+      "REST APIs",
+      "Git",
+      "Docker"
+    ],
     "category": "graduate-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_016/junior-software-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_016/junior-software-engineer",
+    "job_description_text": "**Overview**\nHubSpot is hiring a Junior Software Engineer based in Cambridge, MA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Python, Go, SQL, REST APIs, Git, Docker.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_017",
@@ -181,10 +336,20 @@
     "company": "Anthropic",
     "location": "San Francisco, CA",
     "description": "Anthropic's AI safety team is looking for an NLP engineer to improve the intent classification and entity extraction capabilities of our AI assistant platform. You will fine-tune transformer models using Hugging Face, design evaluation benchmarks, and deploy models to production. Strong Python skills and experience with BERT, GPT, or similar architectures are required.",
-    "skills": ["Python", "NLP", "Hugging Face", "PyTorch", "Machine Learning", "BERT", "Docker", "REST APIs"],
+    "skills": [
+      "Python",
+      "NLP",
+      "Hugging Face",
+      "PyTorch",
+      "Machine Learning",
+      "BERT",
+      "Docker",
+      "REST APIs"
+    ],
     "category": "scientific-qa-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_017/nlp-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_017/nlp-engineer",
+    "job_description_text": "**Overview**\nAnthropic is hiring a NLP Engineer based in San Francisco, CA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Python, NLP, Hugging Face, PyTorch, Machine Learning, BERT, Docker, REST APIs.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_018",
@@ -192,10 +357,19 @@
     "company": "Leidos",
     "location": "Reston, VA",
     "description": "Leidos is looking for a database administrator to manage and optimize Oracle and PostgreSQL databases for federal government clients. Responsibilities include schema design, query optimization, backup and recovery planning, and performance monitoring. Experience with PL/SQL, indexing strategies, and database security hardening is required. ITIL certification is an asset.",
-    "skills": ["PostgreSQL", "Oracle", "SQL", "PL/SQL", "Database Administration", "Linux", "Backup and Recovery"],
+    "skills": [
+      "PostgreSQL",
+      "Oracle",
+      "SQL",
+      "PL/SQL",
+      "Database Administration",
+      "Linux",
+      "Backup and Recovery"
+    ],
     "category": "admin-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_018/database-administrator"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_018/database-administrator",
+    "job_description_text": "**Overview**\nLeidos is hiring a Database Administrator based in Reston, VA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: PostgreSQL, Oracle, SQL, PL/SQL, Database Administration, Linux, Backup and Recovery.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_019",
@@ -203,10 +377,20 @@
     "company": "Tesla",
     "location": "Austin, TX",
     "description": "Tesla develops safety-critical software for electric vehicles and energy products. We are hiring an embedded software engineer to implement and test kernel modules, device drivers, and BSP components in C and C++. Experience with RTOS concepts, POSIX APIs, low-level debugging (JTAG/GDB), and automotive standards (AUTOSAR, ISO 26262) is highly valued.",
-    "skills": ["C", "C++", "RTOS", "Embedded Systems", "Linux", "POSIX", "GDB", "Debugging"],
+    "skills": [
+      "C",
+      "C++",
+      "RTOS",
+      "Embedded Systems",
+      "Linux",
+      "POSIX",
+      "GDB",
+      "Debugging"
+    ],
     "category": "engineering-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_019/embedded-software-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_019/embedded-software-engineer",
+    "job_description_text": "**Overview**\nTesla is hiring a Embedded Software Engineer based in Austin, TX. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: C, C++, RTOS, Embedded Systems, Linux, POSIX, GDB, Debugging.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_020",
@@ -214,10 +398,19 @@
     "company": "DoorDash",
     "location": "San Francisco, CA",
     "description": "DoorDash is hiring a product analyst to help us understand user behavior and drive data-informed product decisions. You will define metrics, build dashboards in Looker, write complex SQL queries against our data warehouse, and partner with product managers on A/B test design and analysis. Experience with Python, statistical testing, and funnel analysis is a strong asset.",
-    "skills": ["SQL", "Python", "Looker", "A/B Testing", "Statistics", "Pandas", "Data Visualization"],
+    "skills": [
+      "SQL",
+      "Python",
+      "Looker",
+      "A/B Testing",
+      "Statistics",
+      "Pandas",
+      "Data Visualization"
+    ],
     "category": "consultancy-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_020/product-analyst"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_020/product-analyst",
+    "job_description_text": "**Overview**\nDoorDash is hiring a Product Analyst based in San Francisco, CA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: SQL, Python, Looker, A/B Testing, Statistics, Pandas, Data Visualization.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_021",
@@ -225,10 +418,19 @@
     "company": "Cockroach Labs",
     "location": "New York, NY",
     "description": "Work on CockroachDB, a distributed SQL database built for cloud-native applications. You will implement features in Go, design and optimize distributed transaction protocols, write correctness and performance tests, and participate in code reviews with a globally distributed team. Deep knowledge of distributed systems theory (consensus, replication, CAP theorem) is required.",
-    "skills": ["Go", "Distributed Systems", "SQL", "PostgreSQL", "Kubernetes", "Docker", "Linux"],
+    "skills": [
+      "Go",
+      "Distributed Systems",
+      "SQL",
+      "PostgreSQL",
+      "Kubernetes",
+      "Docker",
+      "Linux"
+    ],
     "category": "engineering-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_021/software-engineer-distributed-systems"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_021/software-engineer-distributed-systems",
+    "job_description_text": "**Overview**\nCockroach Labs is hiring a Software Engineer, Distributed Systems based in New York, NY. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Go, Distributed Systems, SQL, PostgreSQL, Kubernetes, Docker, Linux.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_022",
@@ -236,10 +438,20 @@
     "company": "Faire",
     "location": "Remote, USA",
     "description": "Faire's ML Platform team builds the infrastructure that enables data scientists and ML engineers to train, evaluate, and deploy models at scale. You will build feature stores, model registries, and online serving infrastructure using Python and Kubernetes, and design APIs consumed by model developers across the company. Experience with MLflow, Feast, or Tecton is a strong plus.",
-    "skills": ["Python", "Kubernetes", "Docker", "Machine Learning", "MLflow", "SQL", "AWS", "Spark"],
+    "skills": [
+      "Python",
+      "Kubernetes",
+      "Docker",
+      "Machine Learning",
+      "MLflow",
+      "SQL",
+      "AWS",
+      "Spark"
+    ],
     "category": "scientific-qa-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_022/ml-platform-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_022/ml-platform-engineer",
+    "job_description_text": "**Overview**\nFaire is hiring a ML Platform Engineer based in Remote, USA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Python, Kubernetes, Docker, Machine Learning, MLflow, SQL, AWS, Spark.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_023",
@@ -247,10 +459,20 @@
     "company": "Instructure",
     "location": "Salt Lake City, UT",
     "description": "Instructure is looking for a QA engineer to own test strategy and quality across our Canvas learning management platform. You will write and maintain automated test suites using Selenium and pytest, perform exploratory and regression testing, triage bugs, and collaborate closely with developers to improve code quality. Experience with CI/CD integration and REST API testing tools (Postman, Newman) is required.",
-    "skills": ["Python", "pytest", "Selenium", "REST APIs", "CI/CD", "SQL", "Postman", "Git"],
+    "skills": [
+      "Python",
+      "pytest",
+      "Selenium",
+      "REST APIs",
+      "CI/CD",
+      "SQL",
+      "Postman",
+      "Git"
+    ],
     "category": "scientific-qa-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_023/qa-engineer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_023/qa-engineer",
+    "job_description_text": "**Overview**\nInstructure is hiring a QA Engineer based in Salt Lake City, UT. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Python, pytest, Selenium, REST APIs, CI/CD, SQL, Postman, Git.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_024",
@@ -258,10 +480,19 @@
     "company": "Coinbase",
     "location": "San Francisco, CA",
     "description": "Coinbase is the leading US cryptocurrency exchange. We are hiring a blockchain developer to build and audit smart contracts, integrate on-chain transactions with backend services, and help define the architecture of our next consumer product. Experience with Solidity, EVM chains, and other smart contract languages is required. Familiarity with Go and Python for backend integration is a plus.",
-    "skills": ["Solidity", "Blockchain", "Go", "Python", "REST APIs", "JavaScript", "Ethereum"],
+    "skills": [
+      "Solidity",
+      "Blockchain",
+      "Go",
+      "Python",
+      "REST APIs",
+      "JavaScript",
+      "Ethereum"
+    ],
     "category": "it-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_024/blockchain-developer"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_024/blockchain-developer",
+    "job_description_text": "**Overview**\nCoinbase is hiring a Blockchain Developer based in San Francisco, CA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Solidity, Blockchain, Go, Python, REST APIs, JavaScript, Ethereum.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   },
   {
     "_id": "seed_025",
@@ -269,9 +500,18 @@
     "company": "SAP America",
     "location": "Newtown Square, PA",
     "description": "SAP is looking for a technical project manager with a software engineering background to lead delivery of enterprise software integrations for US clients. You will coordinate cross-functional teams, manage sprint planning in Jira, define technical acceptance criteria, track risks and dependencies, and communicate status to executive stakeholders. PMP or PMI-ACP certification and experience with Agile/Scrum are required.",
-    "skills": ["Project Management", "Agile", "Scrum", "Jira", "SQL", "REST APIs", "Technical Writing"],
+    "skills": [
+      "Project Management",
+      "Agile",
+      "Scrum",
+      "Jira",
+      "SQL",
+      "REST APIs",
+      "Technical Writing"
+    ],
     "category": "consultancy-jobs",
     "created": "2026-04-01T00:00:00Z",
-    "redirect_url": "https://fakejobs.example.com/ads/seed_025/technical-project-manager"
+    "redirect_url": "https://fakejobs.example.com/ads/seed_025/technical-project-manager",
+    "job_description_text": "**Overview**\nSAP America is hiring a Technical Project Manager based in Newtown Square, PA. This is a sample posting created for development and testing workflows. The role focuses on shipping high-quality software, partnering with cross-functional stakeholders, and using data to guide decisions. The ideal candidate is comfortable owning projects end-to-end, communicating clearly, and balancing execution speed with reliability.\n\n**Responsibilities**\n+ Build and maintain production-ready systems that support core product and business goals.\n+ Collaborate with engineering, product, and design partners to define requirements and deliver milestones.\n+ Write clean, well-tested code and participate in code reviews to improve overall code quality.\n+ Monitor system behavior, troubleshoot issues, and continuously improve performance, reliability, and developer experience.\n\n**Qualifications**\n**Required Qualifications:**\n+ 2+ years of relevant industry experience or equivalent project-based experience.\n+ Hands-on experience with: Project Management, Agile, Scrum, Jira, SQL, REST APIs, Technical Writing.\n+ Strong problem-solving skills, attention to detail, and ability to work independently in a collaborative environment.\n\n**Preferred Qualifications:**\n+ Experience working with cloud infrastructure, CI/CD pipelines, and production observability.\n+ Familiarity with experimentation, metrics, or data-informed product development.\n+ Excellent written and verbal communication skills with technical and non-technical audiences.\n\nThis posting is synthetic and intended for local testing only."
   }
 ]

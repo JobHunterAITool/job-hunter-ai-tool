@@ -10,9 +10,6 @@ from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-import re
-
-
 # Runtime settings for faster but still safe page extraction.
 MAX_WORKERS = 6
 REQUEST_TIMEOUT_SECONDS = 15
@@ -23,7 +20,6 @@ BLOCKED_TEXT_MARKERS = [
 ]
 
 thread_local = threading.local()
-
 
 
 def find_jobs_file():
@@ -40,43 +36,6 @@ def find_jobs_file():
     return candidates[0]
 
 
-
-
-# citation : help of an LLM was used to help generate the set of known skills as well as regex patterns : https://chatgpt.com/share/69f40421-eae4-83ea-8174-5259e6bf35bc
-# read in static file of known skillsets : 
-with open("KNOWN SKILLS.txt", "r", encoding="utf-8") as file:
-    text = file.read()
-    skills = re.findall(r'"([^"]+)"', text)
-
-print(f"Skills to search for: {len(skills)}")
-skills = [element.lower() for element in skills]
-    
-def extract_skills(description, skills):
-    if not description:
-        return []
-    
-    # lowercase all text to make matching simpler
-    description = description.lower()
-
-    # place extracted skills into a set for uniqueness
-    extracted_skills = set()
-
-    for skill in skills:
-        # escape special regex characters in skills like c++, c#, .net, node.js, ci/cd
-        escaped_skill = re.escape(skill)
-
-        # match skill as its own phrase, not inside another word
-        pattern = r'(?<![a-z0-9+#./-])' + escaped_skill + r'(?![a-z0-9+#./-])'
-
-        # search the entirety of the description for the skill
-        if re.search(pattern, description):
-            extracted_skills.add(skill)
-
-    return sorted(extracted_skills)
-
-
-
-
 def build_session():
     session = requests.Session()
     retry_policy = Retry(
@@ -88,11 +47,7 @@ def build_session():
         allowed_methods=["GET"],
         raise_on_status=False,
     )
-    adapter = HTTPAdapter(
-        max_retries=retry_policy,
-        pool_connections=MAX_WORKERS,
-        pool_maxsize=MAX_WORKERS
-    )
+    adapter = HTTPAdapter(max_retries=retry_policy, pool_connections=MAX_WORKERS, pool_maxsize=MAX_WORKERS)
     session.mount("http://", adapter)
     session.mount("https://", adapter)
     session.headers.update(
@@ -128,7 +83,6 @@ def parse_description(full_html):
         node = soup.select_one(selector)
         if not node:
             continue
-
         text = clean_text(node.get_text("\n", strip=True))
         if text:
             return node, text, selector
@@ -167,7 +121,6 @@ def fetch_and_extract(url):
             "request_error": None,
             "status": status,
         }
-
     except requests.exceptions.RequestException as error:
         result = {
             "html": None,
@@ -194,7 +147,6 @@ def is_blocked_response(result):
     return any(marker in text for marker in BLOCKED_TEXT_MARKERS)
 
 
-
 jobs_data_file = find_jobs_file()
 with open(jobs_data_file, "r", encoding="utf-8") as file:
     jobs = json.load(file)
@@ -209,7 +161,6 @@ for index, job in enumerate(jobs):
         job["html_parse_status"] = "no_redirect_url"
         job["request_error"] = "No redirect_url found"
         continue
-
     jobs_by_url.setdefault(url, []).append(index)
 
 print(f"Unique URLs to fetch: {len(jobs_by_url)} (from {len(jobs)} jobs)")
@@ -217,7 +168,6 @@ print(f"Unique URLs to fetch: {len(jobs_by_url)} (from {len(jobs)} jobs)")
 blocked_report = []
 blocked_count = 0
 fallback_count = 0
-success_count = 0
 
 with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
     futures = {executor.submit(fetch_and_extract, url): url for url in jobs_by_url}
@@ -240,7 +190,6 @@ with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             if is_blocked_response(result):
                 blocked_count += 1
                 fallback_text = job.get("description")
-
                 if isinstance(fallback_text, str) and fallback_text.strip():
                     job["job_description_text"] = fallback_text
                     job["description_source"] = "adzuna_api_fallback"
@@ -248,7 +197,6 @@ with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
                 else:
                     job["job_description_text"] = None
                     job["description_source"] = "none"
-
                 job["blocked_by_anti_bot"] = True
                 job["html_parse_status"] = "blocked_403"
 
@@ -261,13 +209,10 @@ with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
                         "fallback_used": bool(isinstance(fallback_text, str) and fallback_text.strip()),
                     }
                 )
-
             else:
                 job["blocked_by_anti_bot"] = False
-
                 if isinstance(job.get("job_description_text"), str) and job["job_description_text"].strip():
                     job["description_source"] = "scraped_page"
-                    success_count += 1
                 else:
                     job["description_source"] = "none"
 
@@ -275,12 +220,6 @@ with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
                 job["request_error"] = result["request_error"]
             elif "request_error" in job:
                 del job["request_error"]
-
-            # add in the description field : 
-            description_for_skills = job.get("job_description_text")
-            job["skills"] = extract_skills(description_for_skills, skills)
-            job["skills_count"] = len(job["skills"])
-
 
         print(f"[{completed}/{len(futures)}] {url} | {result['status']}")
 
@@ -303,11 +242,7 @@ with open(blocked_report_file, "w", encoding="utf-8") as file:
     json.dump(blocked_report, file, indent=2)
 
 print(f"Blocked URL report written to {blocked_report_file}")
-print(f"Blocked jobs: {blocked_count}; API fallback used: {fallback_count}; Successful scrapes: {success_count}")
-
-
-
-
+print(f"Blocked jobs: {blocked_count}; API fallback used: {fallback_count}")
 
 
 # some sample redirects to look at :
