@@ -6,22 +6,60 @@ Description: Optional resume upload endpoint for PR#1. Right now this returns
 a simple extracted-text preview and will be expanded in later milestones.
 """
 
-from fastapi import APIRouter, File, UploadFile
+import logging
+from pathlib import Path
+
+from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
 from backend.models.schemas import UploadResumeResponse
 from backend.services.resume_parser import extract_text_preview
 
 router = APIRouter(tags=["resume"])
+logger = logging.getLogger(__name__)
+SUPPORTED_RESUME_EXTENSIONS = {".pdf", ".docx"}
 
 
 @router.post("/upload-resume", response_model=UploadResumeResponse)
 async def upload_resume(file: UploadFile = File(...)):
     """Upload a resume and return a placeholder parse preview for PR#1."""
-    # Read uploaded file bytes so parser service can handle PDF or DOCX formats.
-    file_bytes = await file.read()
+    if not file.filename:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded file must include a filename.",
+        )
 
-    # This is intentionally lightweight for PR#1 and will expand in later sprints.
-    preview = extract_text_preview(file.filename, file_bytes)
+    file_extension = Path(file.filename).suffix.lower()
+    if file_extension not in SUPPORTED_RESUME_EXTENSIONS:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="Unsupported file type. Please upload a PDF or DOCX resume.",
+        )
+
+    try:
+        # Read uploaded file bytes so parser service can handle PDF or DOCX formats.
+        file_bytes = await file.read()
+    except Exception:
+        logger.exception("Failed to read uploaded resume file: %s", file.filename)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to read uploaded file.",
+        )
+
+    if not file_bytes:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded file is empty.",
+        )
+
+    try:
+        # This is intentionally lightweight for PR#1 and will expand in later sprints.
+        preview = extract_text_preview(file.filename, file_bytes)
+    except Exception:
+        logger.exception("Resume parsing failed for file: %s", file.filename)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to parse uploaded resume.",
+        )
 
     return UploadResumeResponse(
         filename=file.filename,

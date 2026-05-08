@@ -1,65 +1,66 @@
 /**
  * SearchForm Component
- * 
+ *
  * Provides the job search form UI for the Job Hunter AI Tool.
- * Collects user input and sends the search request to the
- * backend.
+ * Collects user input and sends the search request to the backend.
  *
  * Author: Carl Ikai
  * Project: Job Hunter AI Tool
  */
 
 import { useState } from "react";
-import { mockSearchJobs } from "../services/mockAPI";
+import { searchJobs } from "../services/api";
+import ResumeUpload from "./ResumeUpload";
 
 export default function SearchForm({
   onResults,
   onLoadingChange,
   onError,
+  onHasSearchedChange,
   isLoading,
 }) {
-
   /* Local component state for form inputs */
   const [jobTitle, setJobTitle] = useState("");
   const [skills, setSkills] = useState("");
   const [location, setLocation] = useState("");
-  const [experience, setExperience] = useState("Mid");
+  const [experience, setExperience] = useState("");
 
   /**
    * Handle form submission.
-   *
-   * Builds the search payload from form inputs and sends
-   * the request to the mock API.
    */
   async function handleSubmit(e) {
     e.preventDefault();
 
+    /* Reset stale UI state before starting a new request */
+    onResults([]);
     onError("");
+    onHasSearchedChange(true);
     onLoadingChange(true);
 
-    /* Construct request payload for API */
     const payload = {
       job_title: jobTitle,
-      skills: skills.split(",").map((s) => s.trim()).filter(Boolean),
+      skills: skills
+        .split(",")
+        .map((skill) => skill.trim())
+        .filter(Boolean),
       location,
-      experience_level: experience,
+      experience_level: experience, // backend still expects this field
     };
 
     try {
+      const response = await searchJobs(payload);
+      const searchResults = Array.isArray(response)
+        ? response
+        : response.results || [];
 
-      /* Call mock API */
-      const response = await mockSearchJobs(payload);
-      onResults(response);
-
+      onResults(searchResults);
     } catch (requestError) {
-
-      /* Handle API errors */
       onResults([]);
-      onError(requestError.message || "Search failed.");
-
+      onError(
+        requestError.message ||
+          "We could not complete the search. Please try again."
+      );
     } finally {
-
-      /* Reset loading state */
       onLoadingChange(false);
     }
   }
@@ -74,6 +75,7 @@ export default function SearchForm({
           placeholder="Job Title"
           value={jobTitle}
           onChange={(e) => setJobTitle(e.target.value)}
+          disabled={isLoading}
           required
         />
 
@@ -82,6 +84,7 @@ export default function SearchForm({
           placeholder="Skills (comma separated)"
           value={skills}
           onChange={(e) => setSkills(e.target.value)}
+          disabled={isLoading}
           required
         />
 
@@ -90,25 +93,28 @@ export default function SearchForm({
           placeholder="Location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
+          disabled={isLoading}
           required
         />
 
-        {/* Experience level selection */}
-        <select
+        {/* Years of experience typed input */}
+        <input
+          type="number"
+          placeholder="Years of Experience"
           value={experience}
           onChange={(e) => setExperience(e.target.value)}
+          disabled={isLoading}
+          min="0"
           required
-        >
-          <option value="Entry">Entry</option>
-          <option value="Mid">Mid</option>
-          <option value="Senior">Senior</option>
-        </select>
+        />
 
         {/* Submit button */}
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Searching..." : "Search Jobs"}
         </button>
       </form>
+
+      <ResumeUpload />
     </div>
   );
 }

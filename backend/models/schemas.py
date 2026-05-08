@@ -8,15 +8,35 @@ backend stay aligned while the ML ranking module is still in progress.
 
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class SearchRequest(BaseModel):
     # Contract expected by /search from frontend.
-    job_title: str = Field(..., examples=["Software Engineer"])
-    skills: list[str] = Field(..., examples=[["Python", "AWS"]])
-    location: str = Field(..., examples=["Remote"])
-    experience_level: str = Field(..., examples=["Mid"])
+    job_title: str = Field(..., min_length=1, examples=["Software Engineer"])
+    skills: list[str] = Field(..., min_length=1, examples=[["Python", "AWS"]])
+    location: str = Field(..., min_length=1, examples=["Remote"])
+    experience_level: str = Field(..., min_length=1, examples=["Mid"])
+
+    @field_validator("job_title", "location", "experience_level", mode="before")
+    @classmethod
+    def _validate_non_empty_text(cls, value: str) -> str:
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("must be a non-empty string")
+        return value.strip()
+
+    @field_validator("skills", mode="before")
+    @classmethod
+    def _validate_skills(cls, value: object) -> list[str]:
+        if not isinstance(value, list) or not value:
+            raise ValueError("skills must be a non-empty list of strings")
+
+        normalized_skills = []
+        for skill in value:
+            if not isinstance(skill, str) or not skill.strip():
+                raise ValueError("each skill must be a non-empty string")
+            normalized_skills.append(skill.strip())
+        return normalized_skills
 
 
 class RankedJobResult(BaseModel):
