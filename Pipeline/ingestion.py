@@ -40,6 +40,9 @@ MAX_PAGES_PER_CATEGORY = int(os.getenv("ADZUNA_MAX_PAGES_PER_CATEGORY", "2"))
 # categories  :  returns the predefined list of job categories adzuna uses, we will use this for our industry filter. 
 # you can see them all in this response : https://api.adzuna.com/v1/api/jobs/us/categories?app_id=8e88dd1a&app_key=501524232a49925c03eec7a276d7fb5f
 # below are the filters in scope for this project. 
+
+
+
 categories = [
     "it-jobs",
     "engineering-jobs",
