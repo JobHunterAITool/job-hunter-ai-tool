@@ -2,7 +2,11 @@ import json
 from pathlib import Path
 
 from backend.models.schemas import SearchRequest
-from backend.services.ranking import rank_jobs
+from backend.services.ranking import (
+    _search_request_to_user_profile,
+    rank_jobs as backend_rank_jobs,
+)
+from ml.rank_jobs import rank_jobs as ml_rank_jobs
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -48,16 +52,21 @@ def test_backend_adapter_ranks_mongodb_jobs_without_mongo() -> None:
 
     print("\nINPUT (MongoDB jobs count):", len(jobs))
 
-    ranked_jobs = rank_jobs(search_request, jobs, top_n=10)
+    user_profile = _search_request_to_user_profile(search_request)
+    ml_ranked_jobs = ml_rank_jobs(user_profile, jobs)
+    ranked_jobs = backend_rank_jobs(search_request, jobs, top_n=10)
+    ml_jobs_returned_to_backend = ml_ranked_jobs[:10]
+
+    assert ranked_jobs == ml_jobs_returned_to_backend
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(
-        json.dumps(ranked_jobs, indent=2, ensure_ascii=False),
+        json.dumps(ml_jobs_returned_to_backend, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
 
     print("\nOUTPUT (top 5 ranked MongoDB jobs):")
-    print(json.dumps(ranked_jobs[:5], indent=2))
+    print(json.dumps(ml_jobs_returned_to_backend[:5], indent=2))
 
     assert ranked_jobs, "Expected ranked results from backend adapter"
     assert len(ranked_jobs) <= 10
