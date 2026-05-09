@@ -65,8 +65,8 @@ def test_backend_adapter_ranks_mongodb_jobs_without_mongo() -> None:
         encoding="utf-8",
     )
 
-    print("\nOUTPUT (top 5 ranked MongoDB jobs):")
-    print(json.dumps(ml_jobs_returned_to_backend[:5], indent=2))
+    # print("\nOUTPUT (top 5 ranked MongoDB jobs):")
+    # print(json.dumps(ml_jobs_returned_to_backend[:5], indent=2))
 
     assert ranked_jobs, "Expected ranked results from backend adapter"
     assert len(ranked_jobs) <= 10
