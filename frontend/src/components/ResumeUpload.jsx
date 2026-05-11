@@ -72,14 +72,6 @@ export default function ResumeUpload() {
     try {
       const data = await uploadResume(selectedFile);
 
-      /*
-       * Backend returns:
-       * {
-       *   filename: "...",
-       *   message: "...",
-       *   extracted_text_preview: "..."
-       * }
-       */
       setPreview(
         data.extracted_text_preview ||
           "No preview text could be extracted."
@@ -141,7 +133,9 @@ export default function ResumeUpload() {
       {preview && (
         <div className="resume-preview">
           <h3>Resume Preview</h3>
-          <p>{preview}</p>
+          <p style={{ whiteSpace: "pre-line" }}>
+            {preview}
+          </p>
         </div>
       )}
     </div>

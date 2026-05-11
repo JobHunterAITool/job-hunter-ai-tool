@@ -12,7 +12,7 @@ from pathlib import Path
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
 from backend.models.schemas import UploadResumeResponse
-from backend.services.resume_parser import extract_text_preview
+from backend.services.resume_parser import extract_text_preview, parse_resume_profile
 
 router = APIRouter(tags=["resume"])
 logger = logging.getLogger(__name__)
@@ -52,7 +52,10 @@ async def upload_resume(file: UploadFile = File(...)):
         )
 
     try:
-        # This is intentionally lightweight for PR#1 and will expand in later sprints.
+        # Call structured parser so debug print runs in the backend terminal.
+        parse_resume_profile(file.filename, file_bytes)
+
+        # Keep existing preview response.
         preview = extract_text_preview(file.filename, file_bytes)
     except Exception:
         logger.exception("Resume parsing failed for file: %s", file.filename)
