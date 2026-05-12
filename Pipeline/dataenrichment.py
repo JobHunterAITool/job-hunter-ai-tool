@@ -1,4 +1,4 @@
-# This should run after the ingestion script- 
+# This should run after the ingestion script-
 # take the displayname and make a new field in the JSON thats "Company: "
 import json
 import os
@@ -245,7 +245,7 @@ print(f"Blocked URL report written to {blocked_report_file}")
 print(f"Blocked jobs: {blocked_count}; API fallback used: {fallback_count}")
 
 
-# some sample redirects to look at : 
+# some sample redirects to look at :
 # https://www.adzuna.com/details/5697687209?se=XsfWK3g68RGZ3L9kDetG3g&utm_medium=api&utm_source=8e88dd1a&v=833DC389F1A448FF318E4545847F9182A2B4256E
 # https://www.adzuna.com/details/5649419020?se=XsfWK3g68RGZ3L9kDetG3g&utm_medium=api&utm_source=8e88dd1a&v=0321190A280AEFEF042D4096568297BC3428AB61
 # https://www.adzuna.com/details/5629087559?se=XsfWK3g68RGZ3L9kDetG3g&utm_medium=api&utm_source=8e88dd1a&v=46F2976A0DD28D2CCF82B34814C7ACE447ADC647
