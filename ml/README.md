@@ -24,7 +24,7 @@ Given a user profile dictionary and a list of candidate jobs, return the jobs so
   - `job_title` (string): frontend job title field
   - `skills` (`list[str] | str`): list of skills or comma-separated skills
   - `location` (string): frontend location field
-  - `experience_level` (string): frontend experience selector
+  - `experience_level` (int): years of experience
 - Edge cases:
   - If all supported keys are empty/absent, the function raises a ValueError
 

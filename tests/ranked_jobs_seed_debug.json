@@ -27,9 +27,9 @@
     ],
     "matched_skills_count": 4,
     "tfidf_score": 0.4689445784663849,
-    "l2norm_score": 0.7126941322175699,
     "skill_score": 0.8,
-    "score": 0.747616479330542
+    "raw_final_score": 0.601366747079831,
+    "score": 0.50715167947701
   },
   {
     "_id": "seed_011",
@@ -59,9 +59,9 @@
     ],
     "matched_skills_count": 4,
     "tfidf_score": 0.30336390661523077,
-    "l2norm_score": 0.4610473947227262,
     "skill_score": 0.8,
-    "score": 0.5966284368336358
+    "raw_final_score": 0.5020183439691386,
+    "score": 0.42336801545566344
   },
   {
     "_id": "seed_016",
@@ -88,9 +88,9 @@
     ],
     "matched_skills_count": 3,
     "tfidf_score": 0.14428682283500227,
-    "l2norm_score": 0.2192847016743866,
     "skill_score": 0.6,
-    "score": 0.37157082100463196
+    "raw_final_score": 0.3265720937010014,
+    "score": 0.2754086197732516
   },
   {
     "_id": "seed_014",
@@ -119,9 +119,9 @@
     ],
     "matched_skills_count": 3,
     "tfidf_score": 0.12466094768075309,
-    "l2norm_score": 0.18945762465003707,
     "skill_score": 0.6,
-    "score": 0.35367457479002223
+    "raw_final_score": 0.31479656860845184,
+    "score": 0.2654779454278386
   },
   {
     "_id": "seed_022",
@@ -150,9 +150,9 @@
     ],
     "matched_skills_count": 3,
     "tfidf_score": 0.12051944290775052,
-    "l2norm_score": 0.18316343491886916,
     "skill_score": 0.6,
-    "score": 0.3498980609513215
+    "raw_final_score": 0.3123116657446503,
+    "score": 0.2633823479129549
   },
   {
     "_id": "seed_021",
@@ -179,9 +179,9 @@
     ],
     "matched_skills_count": 2,
     "tfidf_score": 0.09262888805406494,
-    "l2norm_score": 0.14077583582662623,
     "skill_score": 0.4,
-    "score": 0.24446550149597576
+    "raw_final_score": 0.215577332832439,
+    "score": 0.18180321232266652
   },
   {
     "_id": "seed_001",
@@ -208,9 +208,9 @@
     ],
     "matched_skills_count": 2,
     "tfidf_score": 0.0846552711182191,
-    "l2norm_score": 0.12865766608189314,
     "skill_score": 0.4,
-    "score": 0.23719459964913592
+    "raw_final_score": 0.21079316267093148,
+    "score": 0.17776856966226973
   },
   {
     "_id": "seed_005",
@@ -238,9 +238,9 @@
     ],
     "matched_skills_count": 2,
     "tfidf_score": 0.08429225124064599,
-    "l2norm_score": 0.12810595453962342,
     "skill_score": 0.4,
-    "score": 0.23686357272377406
+    "raw_final_score": 0.21057535074438763,
+    "score": 0.17758488194609115
   },
   {
     "_id": "seed_006",
@@ -269,9 +269,9 @@
     ],
     "matched_skills_count": 2,
     "tfidf_score": 0.08103003972328103,
-    "l2norm_score": 0.12314810000149864,
     "skill_score": 0.4,
-    "score": 0.2338888600008992
+    "raw_final_score": 0.20861802383396866,
+    "score": 0.17593420599048706
   },
   {
     "_id": "seed_020",
@@ -298,9 +298,9 @@
     ],
     "matched_skills_count": 2,
     "tfidf_score": 0.0778324351852828,
-    "l2norm_score": 0.11828843407074735,
     "skill_score": 0.4,
-    "score": 0.23097306044244842
+    "raw_final_score": 0.2066994611111697,
+    "score": 0.174316221105599
   },
   {
     "_id": "seed_003",
@@ -327,9 +327,9 @@
     ],
     "matched_skills_count": 2,
     "tfidf_score": 0.07351526663844257,
-    "l2norm_score": 0.11172727347221868,
     "skill_score": 0.4,
-    "score": 0.22703636408333122
+    "raw_final_score": 0.20410915998306556,
+    "score": 0.1721317378865845
   },
   {
     "_id": "seed_023",
@@ -357,9 +357,9 @@
     ],
     "matched_skills_count": 2,
     "tfidf_score": 0.072474288401247,
-    "l2norm_score": 0.11014521214667411,
     "skill_score": 0.4,
-    "score": 0.2260871272880045
+    "raw_final_score": 0.20348457304074824,
+    "score": 0.17160500387890318
   },
   {
     "_id": "seed_007",
@@ -387,9 +387,9 @@
     ],
     "matched_skills_count": 2,
     "tfidf_score": 0.07013329487713656,
-    "l2norm_score": 0.10658740931707504,
     "skill_score": 0.4,
-    "score": 0.22395244559024505
+    "raw_final_score": 0.20207997692628196,
+    "score": 0.17042046336033026
   },
   {
     "_id": "seed_017",
@@ -417,9 +417,9 @@
     ],
     "matched_skills_count": 2,
     "tfidf_score": 0.06953300765951183,
-    "l2norm_score": 0.10567510283718037,
     "skill_score": 0.4,
-    "score": 0.22340506170230826
+    "raw_final_score": 0.20171980459570713,
+    "score": 0.1701167185935317
   },
   {
     "_id": "seed_004",
@@ -447,9 +447,9 @@
     ],
     "matched_skills_count": 2,
     "tfidf_score": 0.0656909855296121,
-    "l2norm_score": 0.09983606182132211,
     "skill_score": 0.4,
-    "score": 0.2199016370927933
+    "raw_final_score": 0.1994145913177673,
+    "score": 0.16817265901402073
   },
   {
     "_id": "seed_018",
@@ -475,9 +475,9 @@
     ],
     "matched_skills_count": 1,
     "tfidf_score": 0.07320185015648888,
-    "l2norm_score": 0.11125094834151951,
     "skill_score": 0.2,
-    "score": 0.14675056900491174
+    "raw_final_score": 0.12392111009389334,
+    "score": 0.10450660834166577
   },
   {
     "_id": "seed_025",
@@ -503,9 +503,9 @@
     ],
     "matched_skills_count": 1,
     "tfidf_score": 0.04084187867979831,
-    "l2norm_score": 0.06207080456933067,
     "skill_score": 0.2,
-    "score": 0.11724248274159842
+    "raw_final_score": 0.104505127207879,
+    "score": 0.08813249324941258
   },
   {
     "_id": "seed_015",
@@ -532,9 +532,9 @@
     ],
     "matched_skills_count": 1,
     "tfidf_score": 0.027903714916218,
-    "l2norm_score": 0.04240759953531691,
     "skill_score": 0.2,
-    "score": 0.10544455972119016
+    "raw_final_score": 0.09674222894973081,
+    "score": 0.08158579456953632
   },
   {
     "_id": "seed_010",
@@ -560,9 +560,9 @@
     ],
     "matched_skills_count": 1,
     "tfidf_score": 0.027500185555786098,
-    "l2norm_score": 0.04179432235809086,
     "skill_score": 0.2,
-    "score": 0.10507659341485454
+    "raw_final_score": 0.09650011133347167,
+    "score": 0.08138160909318093
   },
   {
     "_id": "seed_024",
@@ -588,9 +588,9 @@
     ],
     "matched_skills_count": 1,
     "tfidf_score": 0.026147880643217162,
-    "l2norm_score": 0.03973911195495799,
     "skill_score": 0.2,
-    "score": 0.10384346717297481
+    "raw_final_score": 0.09568872838593032,
+    "score": 0.08069734408095208
   },
   {
     "_id": "seed_013",
@@ -617,9 +617,9 @@
     ],
     "matched_skills_count": 1,
     "tfidf_score": 0.026071330992501546,
-    "l2norm_score": 0.039622773075283245,
     "skill_score": 0.2,
-    "score": 0.10377366384516996
+    "raw_final_score": 0.09564279859550094,
+    "score": 0.08065861002978049
   },
   {
     "_id": "seed_008",
@@ -643,8 +643,8 @@
     "matched_skills": [],
     "matched_skills_count": 0,
     "tfidf_score": 0.0,
-    "l2norm_score": 0.0,
     "skill_score": 0.0,
+    "raw_final_score": 0.0,
     "score": 0.0
   },
   {
@@ -670,8 +670,8 @@
     "matched_skills": [],
     "matched_skills_count": 0,
     "tfidf_score": 0.0,
-    "l2norm_score": 0.0,
     "skill_score": 0.0,
+    "raw_final_score": 0.0,
     "score": 0.0
   },
   {
@@ -697,8 +697,8 @@
     "matched_skills": [],
     "matched_skills_count": 0,
     "tfidf_score": 0.0,
-    "l2norm_score": 0.0,
     "skill_score": 0.0,
+    "raw_final_score": 0.0,
     "score": 0.0
   },
   {
@@ -724,8 +724,8 @@
     "matched_skills": [],
     "matched_skills_count": 0,
     "tfidf_score": 0.0,
-    "l2norm_score": 0.0,
     "skill_score": 0.0,
+    "raw_final_score": 0.0,
     "score": 0.0
   }
 ]
