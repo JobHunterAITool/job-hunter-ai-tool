@@ -148,9 +148,7 @@ def _print_debug_overlaps(
                 "rank": index,
                 "job_id": job.get("_id"),
                 "title": job.get("title", ""),
-                "score": float(job.get("score", 0.0)),  # final_score
-                "tfidf_score": float(job.get("tfidf_score", 0.0)),
-                "skill_score": float(job.get("skill_score", 0.0)),
+                "score": float(job.get("score", 0.0)),
                 "matched_skills": job.get("matched_skills", []),
                 "matched_terms": overlap,
             },
