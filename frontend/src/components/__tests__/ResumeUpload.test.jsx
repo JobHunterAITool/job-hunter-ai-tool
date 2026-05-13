@@ -2,9 +2,9 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import ResumeUpload from "../ResumeUpload";
-import { uploadResume } from "../../services/mockAPI";
+import { uploadResume } from "../../services/api";
 
-vi.mock("../../services/mockAPI", () => ({
+vi.mock("../../services/api", () => ({
   uploadResume: vi.fn(),
 }));
 
@@ -81,7 +81,7 @@ describe("ResumeUpload Component", () => {
   it("uploads a selected file and displays preview text", async () => {
     uploadResume.mockResolvedValue({
       filename: "resume.pdf",
-      preview: "Mock resume preview text.",
+      extracted_text_preview: "Mock resume preview text.",
     });
 
     render(<ResumeUpload />);

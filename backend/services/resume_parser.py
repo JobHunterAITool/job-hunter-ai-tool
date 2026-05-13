@@ -262,7 +262,6 @@ def parse_resume_profile(
     text = extract_full_text(filename, file_bytes)
 
     if not text:
-        print("\n[DEBUG] No text extracted from resume.\n")
         return None
 
     profile = {
@@ -272,31 +271,16 @@ def parse_resume_profile(
         "experience_level": extract_experience_years(text),
     }
 
-    # Debug output
-    print("\nRaw resume text:")
-    print(text[:500])
-    print("\n")
-
-    print("Parser output:")
-    print(profile)
-    print("\n")
-
     logger.info("Parsed resume profile: %s", profile)
 
     return profile
 
 
-def extract_text_preview(
-    filename: str,
-    file_bytes: bytes,
+def build_text_preview(
+    profile: Dict,
     max_chars: int = 350,
-) -> Optional[str]:
-    """Create frontend preview of parsed resume data."""
-
-    profile = parse_resume_profile(filename, file_bytes)
-
-    if not profile:
-        return None
+) -> str:
+    """Create frontend preview from parsed resume profile."""
 
     skills = profile.get("skills", [])
     skills_text = ", ".join(skills) if skills else "None found"
