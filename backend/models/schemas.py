@@ -13,10 +13,20 @@ from pydantic import BaseModel, Field, field_validator
 
 class SearchRequest(BaseModel):
     # Contract expected by /search from frontend.
-    job_title: str = Field(..., min_length=1, examples=["Software Engineer"])
-    skills: list[str] = Field(..., min_length=1, examples=[["Python", "AWS"]])
-    location: str = Field(..., min_length=1, examples=["Remote"])
-    experience_level: str = Field(..., min_length=1, examples=["Mid"])
+    job_title: str = Field(
+        ...,
+        min_length=1,
+        max_length=120,
+        examples=["Software Engineer"],
+    )
+    skills: list[str] = Field(
+        ...,
+        min_length=1,
+        max_length=25,
+        examples=[["Python", "AWS"]],
+    )
+    location: str = Field(..., min_length=1, max_length=120, examples=["Remote"])
+    experience_level: str = Field(..., min_length=1, max_length=50, examples=["Mid"])
 
     @field_validator("job_title", "location", "experience_level", mode="before")
     @classmethod
@@ -35,7 +45,10 @@ class SearchRequest(BaseModel):
         for skill in value:
             if not isinstance(skill, str) or not skill.strip():
                 raise ValueError("each skill must be a non-empty string")
-            normalized_skills.append(skill.strip())
+            normalized_skill = skill.strip()
+            if len(normalized_skill) > 80:
+                raise ValueError("each skill must be 80 characters or fewer")
+            normalized_skills.append(normalized_skill)
         return normalized_skills
 
 

@@ -1,10 +1,15 @@
+import json
 import logging
+import os
+import time
 from collections.abc import Iterator
+from pathlib import Path
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+import backend.main as main_app
 import backend.routes.jobs as jobs_route
 import backend.routes.search as search_route
 import backend.routes.upload_resume as upload_route
@@ -89,6 +94,51 @@ def _search_payload() -> dict:
     }
 
 
+def _load_200_job_corpus() -> list[dict]:
+    corpus_path = Path(__file__).resolve().parents[1] / "seed_jobs_200.json"
+    return json.loads(corpus_path.read_text(encoding="utf-8"))
+
+
+def test_backend_cors_allows_frontend_dev_origin() -> None:
+    client = TestClient(main_app.app)
+
+    response = client.options(
+        "/search",
+        headers={
+            "Origin": "http://localhost:5173",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "Content-Type",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
+    assert "POST" in response.headers["access-control-allow-methods"]
+    assert "content-type" in response.headers["access-control-allow-headers"].lower()
+    assert "*" not in main_app.origins
+
+
+def test_backend_cors_rejects_unconfigured_origin() -> None:
+    client = TestClient(main_app.app)
+
+    response = client.options(
+        "/search",
+        headers={
+            "Origin": "https://untrusted.example",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+
+    assert response.status_code == 400
+    assert "access-control-allow-origin" not in response.headers
+
+
+def test_backend_cors_parser_ignores_wildcard_origin() -> None:
+    assert main_app._parse_cors_origins("*, http://localhost:5173") == [
+        "http://localhost:5173"
+    ]
+
+
 def test_search_happy_path_returns_ranked_results(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -102,6 +152,41 @@ def test_search_happy_path_returns_ranked_results(
     assert len(body["results"]) == 20
     scores = [job["score"] for job in body["results"]]
     assert scores == sorted(scores, reverse=True)
+
+
+def test_search_response_time_against_200_job_corpus(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    jobs = _load_200_job_corpus()
+    assert len(jobs) == 200
+
+    fake_collection = FakeCollection(jobs)
+    monkeypatch.setattr(search_route, "get_jobs_collection", lambda: fake_collection)
+
+    payload = {
+        "job_title": "Backend Engineer",
+        "skills": ["Python", "FastAPI", "SQL", "Docker", "Kubernetes"],
+        "location": "Remote",
+        "experience_level": "Mid",
+    }
+
+    warmup_response = client.post("/search", json=payload)
+    assert warmup_response.status_code == 200
+
+    max_seconds = float(os.getenv("SEARCH_200_JOB_MAX_SECONDS", "6.0"))
+    started_at = time.perf_counter()
+    response = client.post("/search", json=payload)
+    elapsed_seconds = time.perf_counter() - started_at
+
+    assert response.status_code == 200
+    body = response.json()
+    assert len(body["results"]) == 20
+    scores = [job["score"] for job in body["results"]]
+    assert scores == sorted(scores, reverse=True)
+    assert elapsed_seconds < max_seconds, (
+        f"POST /search took {elapsed_seconds:.3f}s for 200 jobs; "
+        f"expected under {max_seconds:.3f}s"
+    )
 
 
 def test_search_caps_candidates_to_200_and_returns_top_20_sorted(
@@ -160,6 +245,20 @@ def test_search_returns_422_for_invalid_payload(client: TestClient) -> None:
     assert response.status_code == 422
     detail_text = str(response.json().get("detail", ""))
     assert "skills" in detail_text or "job_title" in detail_text
+
+
+def test_search_returns_422_for_oversized_payload(client: TestClient) -> None:
+    payload = {
+        "job_title": "Backend Engineer",
+        "skills": [f"Skill {index}" for index in range(26)],
+        "location": "Remote",
+        "experience_level": "Mid",
+    }
+
+    response = client.post("/search", json=payload)
+
+    assert response.status_code == 422
+    assert "skills" in str(response.json().get("detail", ""))
 
 
 def test_search_returns_400_for_value_error_from_ranker(
