@@ -80,7 +80,7 @@ for category in categories:
     print(f"\nJob category: {category}")
 
     # pagination - 50 results per response. We can limit where to stop here, or continue until we reach the end. 
-    for page in range(1, 2):   # change to 11 later for pages 1 through 10 - can change to while loop if we want to read everything.
+    for page in range(1, 5):   # change to 11 later for pages 1 through 10 - can change to while loop if we want to read everything.
         time.sleep(2) # setting timer to avoid being rate-limited for when we start making larger requests.
         # the send_HTTP_requests returns the status code, and then the actual data in a set. 
         response, data = send_HTTP_request(
