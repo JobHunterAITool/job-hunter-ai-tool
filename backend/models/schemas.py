@@ -16,9 +16,9 @@ class SearchRequest(BaseModel):
     job_title: str = Field(..., min_length=1, examples=["Software Engineer"])
     skills: list[str] = Field(..., min_length=1, examples=[["Python", "AWS"]])
     location: str = Field(..., min_length=1, examples=["Remote"])
-    experience_level: str = Field(..., min_length=1, examples=["Mid"])
+    experience_level: int = Field(..., ge=0, examples=[3])
 
-    @field_validator("job_title", "location", "experience_level", mode="before")
+    @field_validator("job_title", "location", mode="before")
     @classmethod
     def _validate_non_empty_text(cls, value: str) -> str:
         if not isinstance(value, str) or not value.strip():
@@ -39,6 +39,13 @@ class SearchRequest(BaseModel):
         return normalized_skills
 
 
+class ResumeProfile(BaseModel):
+    job_title: str
+    skills: list[str]
+    location: str
+    experience_level: int
+
+
 class RankedJobResult(BaseModel):
     title: str
     company: str
@@ -57,7 +64,7 @@ class JobDocument(BaseModel):
     company: str
     location: str
     skills: list[str]
-    experience_level: str
+    experience_level: int
 
 
 class PaginatedJobsResponse(BaseModel):
@@ -72,3 +79,4 @@ class UploadResumeResponse(BaseModel):
     filename: str
     message: str
     extracted_text_preview: Optional[str] = None
+    profile: Optional[ResumeProfile] = None
