@@ -114,7 +114,12 @@ export default function SearchForm({
         </button>
       </form>
 
-      <ResumeUpload />
+      <ResumeUpload
+        onResults={onResults}
+        onLoadingChange={onLoadingChange}
+        onError={onError}
+        onHasSearchedChange={onHasSearchedChange}
+      />
     </div>
   );
 }

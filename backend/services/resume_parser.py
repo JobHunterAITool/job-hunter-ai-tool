@@ -214,7 +214,7 @@ def extract_location(text: str) -> str:
     return "Unknown"
 
 
-def extract_experience_years(text: str) -> str:
+def extract_experience_years(text: str) -> int:
     """Extract years of experience."""
 
     text_lower = text.lower()
@@ -226,7 +226,7 @@ def extract_experience_years(text: str) -> str:
     )
 
     if year_matches:
-        return str(max(int(year) for year in year_matches))
+        return max(int(year) for year in year_matches)
 
     current_year = 2026
 
@@ -250,7 +250,7 @@ def extract_experience_years(text: str) -> str:
         if end_year >= start_year:
             total_years += end_year - start_year
 
-    return str(total_years)
+    return total_years
 
 
 def parse_resume_profile(

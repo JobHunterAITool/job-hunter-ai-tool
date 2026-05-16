@@ -39,6 +39,13 @@ class SearchRequest(BaseModel):
         return normalized_skills
 
 
+class ResumeProfile(BaseModel):
+    job_title: str
+    skills: list[str]
+    location: str
+    experience_level: int
+
+
 class RankedJobResult(BaseModel):
     title: str
     company: str
@@ -72,3 +79,4 @@ class UploadResumeResponse(BaseModel):
     filename: str
     message: str
     extracted_text_preview: Optional[str] = None
+    profile: Optional[ResumeProfile] = None

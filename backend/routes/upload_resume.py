@@ -78,4 +78,5 @@ async def upload_resume(file: UploadFile = File(...)):
             "Document parsing is a placeholder and will be expanded in a later milestone."
         ),
         extracted_text_preview=preview,
+        profile=profile,
     )
