@@ -76,7 +76,7 @@ def _job_doc(index: int) -> dict:
         "company": f"Company {index}",
         "location": "Remote",
         "skills": ["Python", "FastAPI"],
-        "experience_level": "Mid",
+        "experience_level": 3,
     }
 
 
@@ -85,7 +85,7 @@ def _search_payload() -> dict:
         "job_title": "Backend Engineer",
         "skills": ["Python", "FastAPI"],
         "location": "Remote",
-        "experience_level": "Mid",
+        "experience_level": 3,
     }
 
 
@@ -154,7 +154,7 @@ def test_search_returns_422_for_invalid_payload(client: TestClient) -> None:
         "job_title": "   ",
         "skills": [],
         "location": "Remote",
-        "experience_level": "Mid",
+        "experience_level": 3,
     }
     response = client.post("/search", json=payload)
     assert response.status_code == 422

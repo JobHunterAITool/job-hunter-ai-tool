@@ -47,6 +47,41 @@ def _normalize_skills(skills: Any) -> list[str]:
     return [str(skills).strip()] if str(skills).strip() else []
 
 
+def _normalize_experience_level(experience_level: Any) -> int | None:
+    """Normalize experience_level to years of experience as an int."""
+    if experience_level is None or experience_level == "":
+        return None
+    if isinstance(experience_level, bool):
+        return None
+    if isinstance(experience_level, int):
+        return experience_level
+    if isinstance(experience_level, float) and experience_level.is_integer():
+        return int(experience_level)
+    if isinstance(experience_level, str):
+        stripped = experience_level.strip()
+        if not stripped:
+            return None
+        try:
+            return int(stripped)
+        except ValueError:
+            legacy_levels = {
+                "entry": 0,
+                "junior": 1,
+                "mid": 3,
+                "senior": 5,
+                "lead": 8,
+            }
+            return legacy_levels.get(stripped.lower())
+    return None
+
+
+def _l2_normalize(scores: list[float]) -> list[float]:
+    norm = np.linalg.norm(scores)
+    if norm == 0:
+        return [0.0 for _ in scores]
+    return (np.array(scores) / norm).tolist()
+
+
 def build_user_text(user_profile: dict[str, Any]) -> str:
     """Build ranking text from a user profile dictionary.
     Supported keys: user_text, resume_text, job_title, skills, location,
@@ -54,13 +89,17 @@ def build_user_text(user_profile: dict[str, Any]) -> str:
     """
     normalized_skills = _normalize_skills(user_profile.get("skills"))
     skill_text = " ".join(normalized_skills)
+    experience_level = _normalize_experience_level(user_profile.get("experience_level"))
 
     parts = [
         user_profile.get("user_text", "") or user_profile.get("resume_text", ""),
         user_profile.get("job_title", ""),
         skill_text,
         user_profile.get("location", ""),
-        user_profile.get("experience_level", ""),
+        (
+            f"{experience_level} years experience"
+            if experience_level is not None else ""
+        ),
     ]
 
     return " ".join(str(part).strip() for part in parts if str(part).strip())
@@ -109,9 +148,7 @@ def _print_debug_overlaps(
                 "rank": index,
                 "job_id": job.get("_id"),
                 "title": job.get("title", ""),
-                "score": float(job.get("score", 0.0)),  # final_score
-                "tfidf_score": float(job.get("tfidf_score", 0.0)),
-                "skill_score": float(job.get("skill_score", 0.0)),
+                "score": float(job.get("score", 0.0)),
                 "matched_skills": job.get("matched_skills", []),
                 "matched_terms": overlap,
             },
@@ -137,7 +174,7 @@ def rank_jobs(
             "job_title": str,
             "skills": list[str] or comma-separated str,
             "location": str,
-            "experience_level": int or str, # Depends on FE implementation
+            "experience_level": int  # years of experience
         }
 
     jobs : list[dict]
@@ -225,20 +262,13 @@ def rank_jobs(
     except ValueError:
         scores = [0.0] * len(candidate_jobs)
 
-    def l2_norm(scores):
-        norm = np.linalg.norm(scores)
-        if norm == 0:
-            return [0.0 for _ in scores]
-        return (np.array(scores) / norm).tolist()
-
-    scores_l2norm = l2_norm(scores)
-
     user_skills = set(s.lower() for s in _normalize_skills(user_profile.get("skills")))
 
     alpha = 0.4  # weight for skill score
 
-    ranked = []
-    for job, score, s_l2norm in zip(candidate_jobs, scores, scores_l2norm):
+    scored_jobs = []
+    raw_final_scores = []
+    for job, score in zip(candidate_jobs, scores):
         job_copy = dict(job)
 
         job_skills = set(s.lower() for s in _normalize_skills(job.get("skills")))
@@ -249,27 +279,30 @@ def rank_jobs(
             if user_skills else 0.0
         )
 
-        final_score = (1 - alpha) * s_l2norm + alpha * skill_score
+        final_score = (1 - alpha) * score + alpha * skill_score
 
         job_copy["matched_skills"] = matched_skills
         job_copy["matched_skills_count"] = len(matched_skills)
 
         job_copy["tfidf_score"] = float(score)
-        job_copy["l2norm_score"] = float(s_l2norm)
         job_copy["skill_score"] = float(skill_score)
-        job_copy["score"] = float(final_score)
+        job_copy["raw_final_score"] = float(final_score)
 
-        ranked.append(job_copy)
+        scored_jobs.append(job_copy)
+        raw_final_scores.append(float(final_score))
 
-        # sort once and reuse
-        ranked_sorted = sorted(ranked, key=lambda job: job["score"], reverse=True)
+    normalized_final_scores = _l2_normalize(raw_final_scores)
+    for job, normalized_score in zip(scored_jobs, normalized_final_scores):
+        job["score"] = float(normalized_score)
 
-        # debug AFTER final scores are computed
-        if debug:
-            _print_debug_overlaps(
-                user_terms,
-                ranked_sorted,
-                limit=max(0, debug_top_n),
-            )
+    ranked_sorted = sorted(scored_jobs, key=lambda job: job["score"], reverse=True)
+
+    # debug AFTER final scores are computed
+    if debug:
+        _print_debug_overlaps(
+            user_terms,
+            ranked_sorted,
+            limit=max(0, debug_top_n),
+        )
 
     return ranked_sorted

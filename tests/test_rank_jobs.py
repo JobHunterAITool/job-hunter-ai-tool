@@ -50,7 +50,7 @@ class RankJobsTests(unittest.TestCase):
                 "job_title": "Backend Engineer",
                 "skills": ["Python", "FastAPI"],
                 "location": "Remote",
-                "experience_level": "Mid",
+                "experience_level": 3,
             },
             jobs,
         )
@@ -66,13 +66,23 @@ class RankJobsTests(unittest.TestCase):
                 "job_title": "Backend Engineer",
                 "skills": "Python, FastAPI, SQL",
                 "location": "Remote",
-                "experience_level": "Mid",
+                "experience_level": 3,
             },
             jobs,
         )
         self.assertEqual(len(ranked), 1)
         self.assertIn("score", ranked[0])
         self.assertGreater(ranked[0]["score"], 0.0)
+
+    def test_final_scores_are_l2_normalized(self) -> None:
+        """Returned scores are L2-normalized after final score blending."""
+        jobs = [
+            {"_id": "1", "title": "Backend Engineer", "skills": ["Python"]},
+            {"_id": "2", "title": "API Engineer", "skills": ["FastAPI"]},
+        ]
+        ranked = rank_jobs({"skills": ["Python", "FastAPI"]}, jobs)
+        score_norm = sum(job["score"] ** 2 for job in ranked) ** 0.5
+        self.assertAlmostEqual(score_norm, 1.0)
 
     def test_raises_for_empty_user_profile(self) -> None:
         """Raises ValueError if user profile is empty."""

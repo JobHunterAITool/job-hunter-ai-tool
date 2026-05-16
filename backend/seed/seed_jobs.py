@@ -48,7 +48,7 @@ def _normalize_seed_job(job: dict[str, Any], index: int) -> dict[str, Any]:
         "location": location,
         "skills": skills,
         # Needed for current /jobs response model compatibility.
-        "experience_level": str(job.get("experience_level") or "Mid"),
+        "experience_level": int(job.get("experience_level") or 0),
     }
 
     if "description" in job:
