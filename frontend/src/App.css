@@ -311,14 +311,38 @@ button:disabled {
 }
 
 .resume-preview {
+  position: relative;
+  overflow: hidden;
+
   margin-top: 1.25rem;
   padding: 1.2rem 1.25rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, #f8fbff 100%);
-  border: 1px solid rgba(148, 163, 184, 0.22);
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.96) 0%,
+    #f8fbff 100%
+  );
+
+  border: 1px solid rgba(148,163,184,0.22);
   border-radius: 18px;
+
   box-shadow:
-    0 10px 24px rgba(15, 23, 42, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    0 10px 24px rgba(15,23,42,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+.resume-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+
+  background: linear-gradient(
+    90deg,
+    #2563eb,
+    #4f46e5,
+    #7c3aed
+  );
 }
 
 .resume-preview h3 {
@@ -332,7 +356,6 @@ button:disabled {
   margin: 0;
   white-space: pre-line;
   font-family: inherit;
-  font-size: 0.95rem;
   line-height: 1.6;
   color: #475569;
 }
