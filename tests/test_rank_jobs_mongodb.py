@@ -7,8 +7,7 @@ from ml.rank_jobs import rank_jobs
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MONGODB_FIXTURE_PATHS = [
-    PROJECT_ROOT / "pulled_jobs_from_mongdodb.json",
-    PROJECT_ROOT / "pulled_jobs_from_mongodb.json",
+    PROJECT_ROOT / "pipeline" / "pulled_jobs_from_mongodb.json",
 ]
 OUTPUT_PATH = PROJECT_ROOT / "tests" / "outputs" / "ranked_jobs_mongodb_response.json"
 
@@ -48,7 +47,7 @@ class RankJobsMongoDBDataTests(unittest.TestCase):
                     "software engineering",
                 ],
                 "location": "Remote",
-                "experience_level": "Internship",
+                "experience_level": 0,
             },
             self.MONGODB_JOBS,
         )
@@ -71,7 +70,7 @@ class RankJobsMongoDBDataTests(unittest.TestCase):
 
         top_result = ranked[0]
         self.assertIn("tfidf_score", top_result)
-        self.assertIn("l2norm_score", top_result)
+        self.assertIn("raw_final_score", top_result)
         self.assertIn("skill_score", top_result)
         self.assertIn("matched_skills", top_result)
 
@@ -107,7 +106,7 @@ class RankJobsMongoDBDataTests(unittest.TestCase):
         profile = {
             "job_title": "Software Engineer",
             "skills": "computer science, python, data analysis",
-            "experience_level": "Entry Level",
+            "experience_level": 0,
         }
 
         ranked_once = rank_jobs(profile, self.MONGODB_JOBS)
