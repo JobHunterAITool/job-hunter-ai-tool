@@ -17,6 +17,29 @@ and content type for debugging. There are delays between requests to avoid getti
 so the original ingestion data stays untouched in case there are errors supplementing the data. 
 
 
+Adzuna API Limits (Free Tier):
+Per Minute: 25 requests
+Per Day: 250 requests
+Per Week: 1000 requests
+Per Month: 2500 requests
+Maximum Results Per API Call: 1000
+
+Ingestion Guardrails Implemented:
+The ingestion script now enforces free-tier pacing and request caps so local runs do not exceed quota accidentally.
+
+Configurable environment variables:
+ADZUNA_REQUESTS_PER_RUN_CAP
+Defaults to 200 and is clamped to the free-tier daily max (250).
+
+ADZUNA_MAX_PAGES_PER_CATEGORY
+Defaults to 2 pages per category.
+
+Example (PowerShell):
+$env:ADZUNA_REQUESTS_PER_RUN_CAP = "150"
+$env:ADZUNA_MAX_PAGES_PER_CATEGORY = "3"
+python ingestion.py
+
+
 
 Below is a sample response from the Adzuna API, and then after is the api response schema. The top section contains metadata about the request, including the total number of records available. The mean field represents the average salary across all returned records.
 Individual job records are located under the "results" field.

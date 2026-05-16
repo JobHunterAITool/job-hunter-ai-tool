@@ -9,41 +9,33 @@ the real ML model is connected.
 from typing import Any, Dict, List
 
 from backend.models.schemas import SearchRequest
+from ml.rank_jobs import rank_jobs as ml_rank_jobs
 
 
-def rank_jobs_stub(
+def _search_request_to_user_profile(search_input: SearchRequest) -> Dict[str, Any]:
+    """Convert SearchRequest from frontend to user_profile dict for ML ranking.
+
+    Maps frontend SearchRequest fields to the user_profile dictionary format
+    expected by ml.rank_jobs.rank_jobs().
+    """
+    return {
+        "job_title": search_input.job_title,
+        "skills": search_input.skills,
+        "location": search_input.location,
+        "experience_level": search_input.experience_level,
+    }
+
+
+def rank_jobs(
     search_input: SearchRequest,
     jobs: List[Dict[str, Any]],
     top_n: int = 10,
 ) -> List[Dict[str, Any]]:
-    """Assign fake descending scores and return ranked results for UI integration.
+    """Rank jobs using the ML ranking model.
 
-    TODO(ML): Replace this scoring logic with the real model while keeping the
-    same function signature so route wiring does not need to change.
+    Adapter that converts SearchRequest to user_profile dict format and calls
+    the real rank_jobs() implementation. Returns top-N ranked results.
     """
-    # Normalize user skill inputs for simple case-insensitive matching.
-    keywords = {skill.strip().lower() for skill in search_input.skills}
-    scored_jobs: List[Dict[str, Any]] = []
-
-    for index, job in enumerate(jobs):
-        job_skills = job.get("skills", []) or []
-        matched_skills = [skill for skill in job_skills if skill.lower() in keywords]
-
-        # Deterministic descending baseline score for frontend testing.
-        base_score = 0.99 - (index * 0.05)
-        skill_bonus = 0.05 * len(matched_skills)
-        score = max(0.0, min(1.0, base_score + skill_bonus))
-
-        scored_jobs.append(
-            {
-                "title": job.get("title", "Unknown"),
-                "company": job.get("company", "Unknown"),
-                "location": job.get("location", "Unknown"),
-                "score": round(score, 2),
-                "matched_skills": matched_skills,
-            }
-        )
-
-    # Highest score first so frontend receives already-sorted recommendations.
-    scored_jobs.sort(key=lambda item: item["score"], reverse=True)
-    return scored_jobs[:top_n]
+    user_profile = _search_request_to_user_profile(search_input)
+    ranked_jobs = ml_rank_jobs(user_profile, jobs)
+    return ranked_jobs[:top_n]

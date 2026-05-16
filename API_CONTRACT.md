@@ -1,157 +1,96 @@
 # API Contract
+
 **Project:** The Job Hunting AI Web Tool  
 **Frontend:** React + Vite  
-**Backend:** FastAPI  
+**Backend:** FastAPI (single deployable app, modular monolith)  
 **Data Format:** JSON  
 **Base URL (local development):** http://localhost:8000
 
+**Milestone 1 Input Mode:**
+- Primary: send plain text profile input (typed or pasted resume text) to `POST /search`.
+- Stretch goal: use `POST /upload-resume` for PDF/DOCX parsing.
+
 ---
 
-# API Endpoints
+## Contract Scope
+
+- This document defines the external frontend-to-backend API contract.
+- Internal module boundaries (`ranking`, `resume_parser`, DB helpers) are implementation details inside the same FastAPI app.
+- No separate ML microservice API is part of the public contract in this phase.
+
+## Non-Goals (Current Phase)
+
+- No inter-service HTTP/gRPC contracts.
+- No message queue or event bus contract.
+- No independent ML deployment contract.
+
+---
+
+## API Endpoints
 
 | Method | Endpoint | Purpose |
 |------|------|------|
-| POST | /upload-resume | Upload and preview a resume |
+| POST | /upload-resume | Upload and preview a resume (stretch goal for PR #1) |
 | POST | /search | Search and rank job results |
 | GET | /jobs | Retrieve paginated job listings |
 | GET | /health | Confirm backend availability |
 
 ---
 
-# 1. POST /upload-resume
+## 1. POST /upload-resume (Stretch Goal)
 
-## Purpose
+### Purpose
 Accept a resume file uploaded from the frontend.
 
----
+> Note: This endpoint is optional so that it does not block core search functionality.
 
-## Request
-
-Content-Type:
-
-multipart/form-data
-
-Form field:
+### Request
+Content-Type: `multipart/form-data`
 
 | Field | Type | Description |
 |------|------|-------------|
-| file | file | Resume file (.pdf or .docx) |
+| file | file | Resume file (`.pdf` or `.docx`) |
 
----
-
-## Example Request
-
-```javascript
-const formData = new FormData();
-formData.append("file", selectedFile);
-
-await axios.post("/upload-resume", formData);
-```
-
----
-
-## Success Response
-
-Status: 200 OK
+### Success Response (200)
 
 ```json
 {
   "filename": "resume.pdf",
   "message": "Resume uploaded successfully",
-  "text": "Software developer with Python and React experience..."
+  "text": "Software developer with Python and React experience...",
+  "extracted_text_preview": "Software developer with Python and React experience..."
 }
 ```
 
----
-
-## Response Fields
+### Response Fields
 
 | Field | Type | Description |
 |------|------|-------------|
-| filename | string | Original uploaded file name |
-| message | string | Status message returned by the server |
-| text | string or null | Short preview of extracted text |
+| filename | string | Original uploaded filename |
+| message | string | Status message |
+| text | string or null | Text preview used by the frontend |
+| extracted_text_preview | string or null | Backward-compatible alias during transition |
+
+### Errors
+
+- `400` invalid file type
+- `413` file too large
+- `422` validation/parsing failure
+- `500` unexpected server error
 
 ---
 
-## Error Responses
+## 2. POST /search
 
-### Invalid File Type
-Status: 400 Bad Request
+### Purpose
+Accept structured search input and return ranked job results.
 
-```json
-{
-  "error": "Invalid file type",
-  "detail": "Only PDF or DOCX files are supported"
-}
-```
-
-### File Too Large
-Status: 413 Payload Too Large
+### Request
+Content-Type: `application/json`
 
 ```json
 {
-  "error": "File too large",
-  "detail": "Maximum upload size is 5 MB"
-}
-```
-
-### Validation Error
-Status: 422 Unprocessable Entity
-
-```json
-{
-  "error": "Validation error",
-  "detail": "The uploaded file could not be processed"
-}
-```
-
-### Server Error
-Status: 500 Internal Server Error
-
-```json
-{
-  "error": "Server error",
-  "detail": "An unexpected= error occurred while uploading the resume"
-}
-```
-
----
-
-## Notes
-
-Supported file types:
-
-.pdf  
-.docx  
-
-If parsing fails or no text is found, "text" will be null.  
-
-If the uploaded file exceeds the allowed size limit, the backend should return:
-
-413 Payload Too Large
-
----
-
-# 2. POST /search
-
-## Purpose
-Accept structured search input from the frontend and return ranked job results.
-
-The backend retrieves job postings from MongoDB and applies a ranking service to compute relevance scores.  
-
----
-
-## Request
-
-Content-Type:
-
-application/json
-
-### Request Body
-
-```json
-{
+  "profile_text": "Python developer with FastAPI and React experience...",
   "job_title": "Software Engineer",
   "skills": ["Python", "React"],
   "location": "Remote",
@@ -159,132 +98,72 @@ application/json
 }
 ```
 
----
+`profile_text` is required for PR 1 and accepts multiline freeform text.
 
-## Request Fields
+### Request Fields
 
 | Field | Type | Description |
 |------|------|-------------|
-| job_title | string | Desired role title |
-| skills | string[] | List of user skills |
-| location | string | Preferred job location |
-| experience_level | string | Desired experience level |
+| profile_text | string | Required freeform profile text (typed or pasted resume text) |
+| job_title | string | Optional desired role title |
+| skills | string[] | Optional list of user skills |
+| location | string | Optional preferred job location |
+| experience_level | string | Optional desired experience level |
 
----
-
-## Success Response
-
-Status: 200 OK
+### Success Response (200)
 
 ```json
 {
   "results": [
     {
-      "id": "job_10234", 
+      "id": "job_10234",
       "title": "Software Engineer",
       "company": "Amazon",
       "location": "Remote",
       "score": 0.99,
       "matched_skills": ["Python"]
-    },
-    {
-      "id": "job_10235",
-      "title": "Full Stack Engineer",
-      "company": "Airbnb",
-      "location": "San Francisco, CA",
-      "score": 0.94,
-      "matched_skills": ["Python", "React"]
     }
   ]
 }
 ```
 
----
-
-## Response Fields
+### Job Result Object
 
 | Field | Type | Description |
 |------|------|-------------|
-| results | array | Ranked job search results |
-
----
-
-## Job Result Object
-
-| Field | Type | Description |
-|------|------|-------------|
-| id | string | Unique job identifier |
+| id | string | Stable job identifier |
 | title | string | Job title |
 | company | string | Company name |
 | location | string | Job location |
-| score | number | Relevance score between 0 and 1 |
-| matched_skills | string[] | Skills shared between user input and job listing |
+| score | number | Relevance score in `[0,1]` |
+| matched_skills | string[] | Overlap between input skills and job skills |
+
+### Error Responses
+
+- `400` invalid request body
+- `422` validation error
+- `500` unexpected server error
+
+### Notes (Stub Phase)
+
+- Ranking is currently module-based and may use placeholder scoring while ML evolves.
+- Request shape and response shape should remain stable for frontend integration.
 
 ---
 
-## Error Responses
+## 3. GET /jobs
 
-### Invalid Request Body
-Status: 400 Bad Request
+### Purpose
+Return paginated job postings from MongoDB.
 
-```json
-{
-  "error": "Invalid request",
-  "detail": "One or more request fields are missing or invalid"
-}
-```
-
-### Validation Error
-Status: 422 Unprocessable Entity
-
-```json
-{
-  "error": "Validation error",
-  "detail": "Request body does not match the required schema"
-}
-```
-
-### Server Error
-Status: 500 Internal Server Error
-
-```json
-{
-  "error": "Server error",
-  "detail": "An unexpected error occurred while processing the search request"
-}
-```
-
----
-
-# 3. GET /jobs
-
-## Purpose
-Return a list of job postings stored in MongoDB.
-
----
-
-## Request
-
-Method:
-
-GET
-
-Query Parameters:
+### Query Parameters
 
 | Parameter | Type | Description |
 |----------|------|-------------|
-| page | integer | Page number (default: 1) |
-| limit | integer | Number of jobs per page (default: 20) |
+| page | integer | Page number (default: `1`) |
+| limit | integer | Jobs per page (default: `20`) |
 
----
-
-## Example Request
-
-GET /jobs?page=1&limit=10
-
----
-
-## Success Response
+### Success Response (200)
 
 ```json
 {
@@ -304,9 +183,7 @@ GET /jobs?page=1&limit=10
 }
 ```
 
----
-
-## Response Fields
+### Response Fields
 
 | Field | Type | Description |
 |------|------|-------------|
@@ -315,9 +192,7 @@ GET /jobs?page=1&limit=10
 | total | number | Total number of jobs available |
 | results | array | Job documents for the requested page |
 
----
-
-## Job Object
+### Job Object
 
 | Field | Type | Description |
 |------|------|-------------|
@@ -328,42 +203,19 @@ GET /jobs?page=1&limit=10
 | skills | string[] | Skills associated with the posting |
 | experience_level | string | Experience level for the role |
 
----
+### Error Responses
 
-## Error Responses
-
-### Invalid Query Parameters
-Status: 400 Bad Request
-
-```json
-{
-  "error": "Invalid query parameters",
-  "detail": "Page and limit must be positive integers"
-}
-```
-
-### Server Error
-Status: 500 Internal Server Error
-
-```json
-{
-  "error": "Server error",
-  "detail": "An unexpected error occurred while retrieving jobs"
-}
-```
+- `400` invalid query parameters
+- `500` unexpected server error
 
 ---
 
-# 4. GET /health
+## 4. GET /health
 
-## Purpose
-Provide a simple endpoint the frontend or developers can use to confirm that the backend service is running.
+### Purpose
+Provide a lightweight availability check.
 
----
-
-## Success Response
-
-Status: 200 OK
+### Success Response (200)
 
 ```json
 {
@@ -371,19 +223,13 @@ Status: 200 OK
 }
 ```
 
----
+### Compatibility Note
 
-## Response Fields
-
-| Field | Type | Description |
-|------|------|-------------|
-| status | string | Backend health status |
+`GET /` may also return a health payload during active development for backward compatibility, but `GET /health` is the canonical contract endpoint.
 
 ---
 
-# Standard Error Response Format
-
-All API errors should follow this structure:
+## Standard Error Response Format
 
 ```json
 {
@@ -394,52 +240,49 @@ All API errors should follow this structure:
 
 ---
 
-# Shared Validation Rules
+## Shared Validation Rules
 
-Accepted Resume File Types:
+PR 1 profile input:
 
-.pdf  
-.docx  
+- `profile_text` is required on `POST /search`.
+- `profile_text` may contain multiline pasted resume text.
 
-Recommended Upload Limit:
+Accepted resume file types (stretch goal upload path):
 
-5 MB maximum file size
+- `.pdf`
+- `.docx`
 
----
+Recommended upload limit:
 
-# Frontend Responsibilities
-
-The frontend should:
-- show loading indicators during API requests
-- display error messages for failed requests
-- validate file type before uploading resumes
-- handle null resume preview values safely
-- support empty search results
+- 5 MB maximum file size
 
 ---
 
-# Backend Responsibilities
+## Backend Responsibilities (Contract Stability)
 
-The backend should:
-- always return JSON responses
-- avoid returning HTML error pages
-- provide clear error messages for invalid requests
-- maintain stable request and response formats during development
+- Keep endpoint paths and payload shapes stable across module refactors.
+- Return JSON-only responses.
+- Provide clear validation errors.
+
+## Frontend Responsibilities
+
+- Show loading and error states.
+- Collect freeform profile text before calling `POST /search`.
+- Validate file type before uploading resumes (stretch goal path).
+- Handle null `text` / preview values safely.
+- Treat `id` as stable result identity.
 
 ---
 
-# Team Agreement
+## Team Agreement
 
 To prevent frontend/backend integration issues:
 
-1. Endpoint names will remain:
-   POST /upload-resume  
-   POST /search  
-   GET /jobs  
-   GET /health
-
-2. Request and response field names will remain stable unless the team agrees to changes.
-
+1. Endpoint names remain stable:
+  - `POST /upload-resume` (stretch goal)
+  - `POST /search`
+  - `GET /jobs`
+  - `GET /health`
+2. Request and response field names remain stable unless the team agrees to changes.
 3. Backend changes affecting request or response structures must be communicated before implementation.
-
-4. Frontend API responses must follow this contract.
+4. Frontend integration must follow this contract document.

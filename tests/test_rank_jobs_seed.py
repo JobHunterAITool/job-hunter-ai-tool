@@ -14,44 +14,39 @@ class RankJobsSeedDataTests(unittest.TestCase):
     SEED_JOBS = _load_seed_jobs()
 
     def test_seed_data_loads(self) -> None:
-        print(f"\nseed job count: {len(self.SEED_JOBS)}")
+        """Seed jobs data loads and is a non-empty list."""
         self.assertTrue(self.SEED_JOBS)
         self.assertIsInstance(self.SEED_JOBS, list)
 
     def test_ranked_output_has_valid_shape_and_score_range(self) -> None:
-        ranked = rank_jobs("python backend fastapi sql docker", self.SEED_JOBS)
-
+        """Ranking seed jobs returns correct shape and score range."""
+        ranked = rank_jobs({"skills": ["python", "backend", "fastapi", "sql", "docker"]}, self.SEED_JOBS)
+        # Export ranked jobs for debugging
+        with open("tests/ranked_jobs_seed_debug.json", "w", encoding="utf-8") as f:
+            json.dump(ranked, f, indent=2, ensure_ascii=False)
         self.assertEqual(len(ranked), len(self.SEED_JOBS))
         self.assertTrue(all("score" in job for job in ranked))
         self.assertTrue(all(isinstance(job["score"], float) for job in ranked))
         self.assertTrue(all(0.0 <= job["score"] <= 1.0 for job in ranked))
 
-        top_preview = [
-            {"_id": job.get("_id"), "score": round(job["score"], 4)}
-            for job in ranked[:5]
-        ]
-        print("\ntop 5 (python/backend query):", top_preview)
-
     def test_backend_profile_surfaces_relevant_top_result(self) -> None:
+        """A realistic backend profile query surfaces relevant jobs at the top."""
         ranked = rank_jobs(
-            "backend engineer python fastapi rest api microservices sql postgresql docker kubernetes",
+            {
+                "skills": ["backend", "python", "fastapi", "sql", "docker", "kubernetes"]
+            },
             self.SEED_JOBS,
         )
-
-        print("\ntop backend result:", {"_id": ranked[0].get("_id"), "title": ranked[0].get("title"), "score": round(ranked[0]["score"], 4)})
         top_text = json.dumps(ranked[0]).lower()
         self.assertTrue(any(term in top_text for term in ["backend", "python", "fastapi", "api"]))
 
     def test_ranking_is_deterministic_for_same_input(self) -> None:
+        """Ranking is deterministic for the same input and seed data."""
         query = "machine learning engineer python pytorch tensorflow nlp"
-
-        ranked_once = rank_jobs(query, self.SEED_JOBS)
-        ranked_twice = rank_jobs(query, self.SEED_JOBS)
-
+        ranked_once = rank_jobs({"user_text": query}, self.SEED_JOBS)
+        ranked_twice = rank_jobs({"user_text": query}, self.SEED_JOBS)
         ids_once = [job.get("_id") for job in ranked_once]
         ids_twice = [job.get("_id") for job in ranked_twice]
-        print("\nfirst 10 ids (run 1):", ids_once[:10])
-        print("first 10 ids (run 2):", ids_twice[:10])
         self.assertEqual(ids_once, ids_twice)
 
 
