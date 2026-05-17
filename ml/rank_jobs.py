@@ -136,9 +136,9 @@ def _normalized_skill_set(skills: Any) -> set[str]:
 def _sectioned_skill_score(
     user_skills: set[str],
     job: dict[str, Any],
-) -> tuple[float, list[str], list[str], list[str]]:
+) -> tuple[float, float, float, list[str], list[str], list[str]]:
     if not user_skills:
-        return 0.0, [], [], []
+        return 0.0, 0.0, 0.0, [], [], []
 
     job_skills = _normalized_skill_set(job.get("skills"))
     description = job.get("job_description_text", "") or job.get("description", "")
@@ -149,6 +149,8 @@ def _sectioned_skill_score(
     sectioned_matches = required_matches | preferred_matches
     general_matches = job_skills & user_skills
     general_only_matches = general_matches - sectioned_matches
+    required_skill_score = len(required_matches) / len(user_skills)
+    preferred_skill_score = len(preferred_matches) / len(user_skills)
 
     if sectioned_matches:
         weighted_match_count = (
@@ -163,6 +165,8 @@ def _sectioned_skill_score(
     matched_skills = sorted(general_matches | sectioned_matches)
     return (
         skill_score,
+        required_skill_score,
+        preferred_skill_score,
         matched_skills,
         sorted(required_matches),
         sorted(preferred_matches),
@@ -306,7 +310,7 @@ def rank_jobs(
 
     user_skills = _normalized_skill_set(user_profile.get("skills"))
 
-    alpha = 0.4  # weight for skill score
+    alpha = 0.8  # weight for skill score
 
     scored_jobs = []
     raw_final_scores = []
@@ -315,13 +319,12 @@ def rank_jobs(
 
         (
             skill_score,
+            required_skill_score,
+            preferred_skill_score,
             matched_skills,
             matched_required_skills,
             matched_preferred_skills,
-        ) = _sectioned_skill_score(
-            user_skills,
-            job,
-        )
+        ) = _sectioned_skill_score(user_skills, job)
 
         final_score = (1 - alpha) * score + alpha * skill_score
 
@@ -332,6 +335,8 @@ def rank_jobs(
 
         job_copy["tfidf_score"] = float(score)
         job_copy["skill_score"] = float(skill_score)
+        job_copy["required_skill_score"] = float(required_skill_score)
+        job_copy["preferred_skill_score"] = float(preferred_skill_score)
         job_copy["raw_final_score"] = float(final_score)
 
         scored_jobs.append(job_copy)

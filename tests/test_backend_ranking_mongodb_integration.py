@@ -19,6 +19,18 @@ OUTPUT_PATH = (
     / "outputs"
     / "ranked_jobs_mongodb_backend_integration.json"
 )
+APPENDED_RANKER_FIELDS = (
+    "score",
+    "matched_skills",
+    "matched_required_skills",
+    "matched_preferred_skills",
+    "matched_skills_count",
+    "tfidf_score",
+    "skill_score",
+    "required_skill_score",
+    "preferred_skill_score",
+    "raw_final_score",
+)
 
 
 def _load_mongodb_jobs() -> list[dict]:
@@ -33,6 +45,44 @@ def _load_mongodb_jobs() -> list[dict]:
 
     expected_paths = ", ".join(path.name for path in MONGODB_FIXTURE_PATHS)
     raise FileNotFoundError(f"Expected one of these fixtures: {expected_paths}")
+
+
+def _job_identity(job: dict) -> dict:
+    return {
+        "_id": job.get("_id"),
+        "id": job.get("id"),
+        "title": job.get("title"),
+        "company": job.get("company"),
+        "location": job.get("location"),
+    }
+
+
+def _appended_ranker_fields(job: dict) -> dict:
+    return {
+        field: job.get(field)
+        for field in APPENDED_RANKER_FIELDS
+        if field in job
+    }
+
+
+def _ranker_export_payload(
+    search_request: SearchRequest,
+    candidate_count: int,
+    ranked_jobs: list[dict],
+) -> dict:
+    return {
+        "search_request": search_request.model_dump(),
+        "candidate_count": candidate_count,
+        "returned_to_backend_count": len(ranked_jobs),
+        "appended_ranker_fields": list(APPENDED_RANKER_FIELDS),
+        "jobs_before_backend_return": [
+            {
+                **_job_identity(job),
+                "appended_fields": _appended_ranker_fields(job),
+            }
+            for job in ranked_jobs
+        ],
+    }
 
 
 def test_backend_adapter_ranks_mongodb_jobs_without_mongo() -> None:
@@ -60,7 +110,15 @@ def test_backend_adapter_ranks_mongodb_jobs_without_mongo() -> None:
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(
-        json.dumps(ml_jobs_returned_to_backend, indent=2, ensure_ascii=False),
+        json.dumps(
+            _ranker_export_payload(
+                search_request,
+                candidate_count=len(jobs),
+                ranked_jobs=ml_jobs_returned_to_backend,
+            ),
+            indent=2,
+            ensure_ascii=False,
+        ),
         encoding="utf-8",
     )
 
@@ -73,6 +131,13 @@ def test_backend_adapter_ranks_mongodb_jobs_without_mongo() -> None:
     assert all("score" in job for job in ranked_jobs)
     assert all(isinstance(job["score"], float) for job in ranked_jobs)
     assert all(0.0 <= job["score"] <= 1.0 for job in ranked_jobs)
+    assert all("tfidf_score" in job for job in ranked_jobs)
+    assert all("skill_score" in job for job in ranked_jobs)
+    assert all("required_skill_score" in job for job in ranked_jobs)
+    assert all("preferred_skill_score" in job for job in ranked_jobs)
+    assert all("raw_final_score" in job for job in ranked_jobs)
+    assert all("matched_required_skills" in job for job in ranked_jobs)
+    assert all("matched_preferred_skills" in job for job in ranked_jobs)
 
     scores = [job["score"] for job in ranked_jobs]
     assert scores == sorted(scores, reverse=True), "Expected descending score order"

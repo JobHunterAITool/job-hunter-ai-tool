@@ -167,7 +167,7 @@ def test_search_response_time_against_200_job_corpus(
         "job_title": "Backend Engineer",
         "skills": ["Python", "FastAPI", "SQL", "Docker", "Kubernetes"],
         "location": "Remote",
-        "experience_level": "Mid",
+        "experience_level": 3,
     }
 
     warmup_response = client.post("/search", json=payload)
@@ -252,7 +252,7 @@ def test_search_returns_422_for_oversized_payload(client: TestClient) -> None:
         "job_title": "Backend Engineer",
         "skills": [f"Skill {index}" for index in range(26)],
         "location": "Remote",
-        "experience_level": "Mid",
+        "experience_level": 3,
     }
 
     response = client.post("/search", json=payload)

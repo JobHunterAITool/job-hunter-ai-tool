@@ -151,6 +151,8 @@ class RankJobsTests(unittest.TestCase):
 
         self.assertEqual(result[0]["matched_required_skills"], ["python", "sql"])
         self.assertEqual(result[0]["matched_preferred_skills"], ["docker"])
+        self.assertAlmostEqual(result[0]["required_skill_score"], 2 / 3)
+        self.assertAlmostEqual(result[0]["preferred_skill_score"], 1 / 3)
         self.assertEqual(
             result[0]["matched_skills"],
             ["docker", "python", "sql"],
