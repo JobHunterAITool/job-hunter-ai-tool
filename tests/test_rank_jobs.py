@@ -131,6 +131,32 @@ class RankJobsTests(unittest.TestCase):
         self.assertIn("skill-phrase-match", ranked_ids)
         self.assertEqual(result[0]["_id"], "skill-phrase-match")
 
+    def test_matches_required_and_preferred_skills_from_description_sections(self) -> None:
+        """Required/preferred sections contribute separate skill match fields."""
+        jobs = [
+            {
+                "_id": "sectioned",
+                "title": "Platform Engineer",
+                "job_description_text": """
+                Requirements:
+                Python and SQL experience.
+
+                Nice to Have:
+                Docker experience.
+                """,
+            }
+        ]
+
+        result = rank_jobs({"skills": ["Python", "SQL", "Docker"]}, jobs)
+
+        self.assertEqual(result[0]["matched_required_skills"], ["python", "sql"])
+        self.assertEqual(result[0]["matched_preferred_skills"], ["docker"])
+        self.assertEqual(
+            result[0]["matched_skills"],
+            ["docker", "python", "sql"],
+        )
+        self.assertAlmostEqual(result[0]["skill_score"], 7 / 12)
+
 
 
 if __name__ == "__main__":

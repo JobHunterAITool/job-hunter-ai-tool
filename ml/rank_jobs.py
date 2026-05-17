@@ -16,6 +16,8 @@ import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+from ml.skills_parser import match_skills_by_section
+
 
 _MAX_CANDIDATES = 200
 _TOKEN_RE = re.compile(r"[A-Za-z0-9]+")
@@ -125,6 +127,46 @@ def _job_to_text(job: dict[str, Any]) -> str:
 
 def _keyword_overlap_score(user_terms: set[str], job_text: str) -> int:
     return len(user_terms & _tokenize(job_text))
+
+
+def _normalized_skill_set(skills: Any) -> set[str]:
+    return {skill.lower() for skill in _normalize_skills(skills)}
+
+
+def _sectioned_skill_score(
+    user_skills: set[str],
+    job: dict[str, Any],
+) -> tuple[float, list[str], list[str], list[str]]:
+    if not user_skills:
+        return 0.0, [], [], []
+
+    job_skills = _normalized_skill_set(job.get("skills"))
+    description = job.get("job_description_text", "") or job.get("description", "")
+    section_matches = match_skills_by_section(user_skills, description)
+
+    required_matches = set(section_matches["required"])
+    preferred_matches = set(section_matches["preferred"])
+    sectioned_matches = required_matches | preferred_matches
+    general_matches = job_skills & user_skills
+    general_only_matches = general_matches - sectioned_matches
+
+    if sectioned_matches:
+        weighted_match_count = (
+            0.75 * len(required_matches)
+            + 0.25 * len(preferred_matches)
+            + 0.50 * len(general_only_matches)
+        )
+        skill_score = min(weighted_match_count / len(user_skills), 1.0)
+    else:
+        skill_score = len(general_matches) / len(user_skills)
+
+    matched_skills = sorted(general_matches | sectioned_matches)
+    return (
+        skill_score,
+        matched_skills,
+        sorted(required_matches),
+        sorted(preferred_matches),
+    )
 
 
 def _print_debug_overlaps(
@@ -262,7 +304,7 @@ def rank_jobs(
     except ValueError:
         scores = [0.0] * len(candidate_jobs)
 
-    user_skills = set(s.lower() for s in _normalize_skills(user_profile.get("skills")))
+    user_skills = _normalized_skill_set(user_profile.get("skills"))
 
     alpha = 0.4  # weight for skill score
 
@@ -271,17 +313,21 @@ def rank_jobs(
     for job, score in zip(candidate_jobs, scores):
         job_copy = dict(job)
 
-        job_skills = set(s.lower() for s in _normalize_skills(job.get("skills")))
-        matched_skills = sorted(user_skills & job_skills)
-
-        skill_score = (
-            len(matched_skills) / max(len(user_skills), 1)
-            if user_skills else 0.0
+        (
+            skill_score,
+            matched_skills,
+            matched_required_skills,
+            matched_preferred_skills,
+        ) = _sectioned_skill_score(
+            user_skills,
+            job,
         )
 
         final_score = (1 - alpha) * score + alpha * skill_score
 
         job_copy["matched_skills"] = matched_skills
+        job_copy["matched_required_skills"] = matched_required_skills
+        job_copy["matched_preferred_skills"] = matched_preferred_skills
         job_copy["matched_skills_count"] = len(matched_skills)
 
         job_copy["tfidf_score"] = float(score)
