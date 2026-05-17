@@ -31,23 +31,25 @@ The application was created using:
 
 The frontend directory is organized as follows:
 
-```text
 frontend/
 ├── public/
 ├── src/
-│   ├── assets/
-│   ├── components/
-│       ├── JobResults.jsx
-│       ├── ResumeUpload.jsx
-│       ├── SearchForm.jsx
-│   ├── services
-│       ├── api.js
-│   ├── App.css
-│   ├── App.jsx
-│   ├── index.css
-│   └── main.jsx
+│ ├── assets/
+│ ├── components/
+│ │ ├── __tests__/
+│ │ │ ├── JobResults.test.jsx
+│ │ │ ├── ResumeUpload.test.jsx
+│ │ │ └── SearchForm.test.jsx
+│ │ ├── JobResults.jsx
+│ │ ├── ResumeUpload.jsx
+│ │ └── SearchForm.jsx
+│ ├── services/
+│ │ └── api.js
+│ ├── App.css
+│ ├── App.jsx
+│ ├── index.css
+│ └── main.jsx
 ├── eslint.config.js
-├── index.html
 ├── package-lock.json
 ├── package.json
 ├── README.md
@@ -156,25 +158,46 @@ To preview the production build locally:
 
 npm run preview
 
+
 ## Frontend Testing
 
-The frontend includes automated tests for key UI components using **Vitest** and **React Testing Library**. These tools allow the application to simulate user interactions and verify that components behave correctly.
+The frontend includes automated tests for key UI components using **Vitest** and **React Testing Library**. These tests simulate user interactions, mocked API responses, loading states, error states, and rendered output without requiring the backend server to be running.
 
-The current test suite focuses on the `ResumeUpload` component, which allows users to upload a PDF or DOCX resume and preview extracted text returned from the backend.
+The current test suite covers:
+
+- `ResumeUpload.jsx`
+- `SearchForm.jsx`
+- `JobResults.jsx`
 
 ### Test Coverage
 
 The `ResumeUpload` component tests verify that:
 
-- The component renders correctly in the interface
-- An error message appears when attempting to upload without selecting a file
-- Valid **PDF** files are accepted and displayed
-- Valid **DOCX** files are accepted and displayed
+- The component renders correctly
+- An error message appears when uploading without selecting a file
+- Valid **PDF** and **DOCX** files are accepted
 - Invalid file types are rejected
-- Successful uploads display the returned resume preview
+- Successful uploads display returned resume preview text
 - Upload failures display an appropriate error message
 
-These tests simulate file uploads and API responses using mocked service calls, allowing the component behavior to be validated without requiring the backend server to be running.
+The `SearchForm` component tests verify that:
+
+- The search form renders correctly
+- Input fields update when a user types
+- Search requests send the correct payload to the API
+- Old results and errors are cleared before a new search starts
+- Inputs and the submit button are disabled while loading
+- Search errors are handled correctly
+
+The `JobResults` component tests verify that:
+
+- The ranked results section renders correctly
+- The loading state appears during a search
+- Error messages are displayed when a request fails
+- The initial empty state appears before a search
+- The no-results message appears after a completed search with no matches
+- Job result cards display title, company, location, score, and matched skills
+- Jobs with no matched skills display `None`
 
 ### Running Tests
 
@@ -184,7 +207,15 @@ Navigate to the frontend directory and run:
 cd frontend
 npm install
 npm run test
+```
 
+Vitest runs in watch mode by default and automatically reruns tests when files change.
+
+To run the test suite once and exit:
+
+```bash
+npm run test -- --run
+```
 
 # Summary
 
