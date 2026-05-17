@@ -28,23 +28,39 @@ app = FastAPI(
 )
 logger = logging.getLogger(__name__)
 
+DEFAULT_CORS_ORIGINS = (
+    "http://localhost:3000,"
+    "http://127.0.0.1:3000,"
+    "http://localhost:5173,"
+    "http://127.0.0.1:5173"
+)
+ALLOWED_CORS_METHODS = ["GET", "POST", "OPTIONS"]
+ALLOWED_CORS_HEADERS = ["Authorization", "Content-Type"]
 
-origins = [
-    origin.strip()
-    for origin in os.getenv(
-        "CORS_ORIGINS",
-        "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173",
-    ).split(",")
-    if origin.strip()
-]
+
+def _parse_cors_origins(raw_origins: str) -> list[str]:
+    """Return explicit frontend origins and reject wildcard CORS entries."""
+    parsed_origins = []
+    for origin in raw_origins.split(","):
+        normalized = origin.strip()
+        if not normalized:
+            continue
+        if normalized == "*":
+            logger.warning("Ignoring wildcard CORS origin while credentials are enabled.")
+            continue
+        parsed_origins.append(normalized)
+    return parsed_origins
+
+
+origins = _parse_cors_origins(os.getenv("CORS_ORIGINS", DEFAULT_CORS_ORIGINS))
 
 # CORS is required so our React frontend can call this API from localhost.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=ALLOWED_CORS_METHODS,
+    allow_headers=ALLOWED_CORS_HEADERS,
 )
 
 app.include_router(jobs_router)
