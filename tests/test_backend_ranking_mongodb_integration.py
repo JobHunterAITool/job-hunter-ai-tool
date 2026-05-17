@@ -12,6 +12,7 @@ from ml.rank_jobs import rank_jobs as ml_rank_jobs
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MONGODB_FIXTURE_PATHS = [
     PROJECT_ROOT / "pipeline" / "pulled_jobs_from_mongodb.json",
+    PROJECT_ROOT / "pulled_jobs_from_mongodb.json",
 ]
 OUTPUT_PATH = (
     PROJECT_ROOT
