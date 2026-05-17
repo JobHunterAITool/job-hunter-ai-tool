@@ -12,10 +12,12 @@ files_deleted = 0
 
 for file in os.listdir():
     should_delete = (
-        file.startswith("jobs_") and (file.endswith(".txt") or file.endswith(".json"))) or (
-        file.startswith("enriched_jobs_") and (file.endswith(".txt") or file.endswith(".json"))) or (
-        file.startswith("blocked_urls_jobs_") and file.endswith(".json") )
-
+        file.endswith(".json")
+        or file.endswith(".jsonl")
+        or (file.startswith("jobs_") and file.endswith(".txt"))
+        or (file.startswith("enriched_jobs_") and file.endswith(".txt"))
+        or (file.startswith("enriched_stream_jobs_") and file.endswith(".txt"))
+    )
     if should_delete:
         os.remove(file)
         files_deleted += 1
