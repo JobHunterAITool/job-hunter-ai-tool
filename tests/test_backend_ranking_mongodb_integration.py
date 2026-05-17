@@ -11,8 +11,7 @@ from ml.rank_jobs import rank_jobs as ml_rank_jobs
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MONGODB_FIXTURE_PATHS = [
-    PROJECT_ROOT / "puled_jobs_from_mongodb.json",
-    PROJECT_ROOT / "pulled_jobs_from_mongodb.json",
+    PROJECT_ROOT / "pipeline" / "pulled_jobs_from_mongodb.json",
 ]
 OUTPUT_PATH = (
     PROJECT_ROOT
@@ -44,7 +43,7 @@ def test_backend_adapter_ranks_mongodb_jobs_without_mongo() -> None:
         job_title="Software Engineer Intern",
         skills=["Computer Science", "Python", "Data Analysis"],
         location="Remote",
-        experience_level="Internship",
+        experience_level=0,
     )
 
     print("\nINPUT (SearchRequest):")

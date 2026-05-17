@@ -23,7 +23,7 @@ def test_backend_adapter_ranks_seed_jobs_without_mongo() -> None:
         job_title="Backend Engineer",
         skills=["Python", "FastAPI", "Docker"],
         location="Remote",
-        experience_level="Mid",
+        experience_level=3,
     )
 
     print("\nINPUT (SearchRequest):")

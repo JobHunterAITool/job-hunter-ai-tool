@@ -12,7 +12,7 @@ from pathlib import Path
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
 from backend.models.schemas import UploadResumeResponse
-from backend.services.resume_parser import extract_text_preview
+from backend.services.resume_parser import build_text_preview, parse_resume_profile
 
 router = APIRouter(tags=["resume"])
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ SUPPORTED_RESUME_EXTENSIONS = {".pdf", ".docx"}
 
 @router.post("/upload-resume", response_model=UploadResumeResponse)
 async def upload_resume(file: UploadFile = File(...)):
-    """Upload a resume and return a placeholder parse preview for PR#1."""
+    """Upload a resume and return a structured parse preview."""
     if not file.filename:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -36,7 +36,6 @@ async def upload_resume(file: UploadFile = File(...)):
         )
 
     try:
-        # Read uploaded file bytes so parser service can handle PDF or DOCX formats.
         file_bytes = await file.read()
     except Exception:
         logger.exception("Failed to read uploaded resume file: %s", file.filename)
@@ -52,8 +51,19 @@ async def upload_resume(file: UploadFile = File(...)):
         )
 
     try:
-        # This is intentionally lightweight for PR#1 and will expand in later sprints.
-        preview = extract_text_preview(file.filename, file_bytes)
+        profile = parse_resume_profile(file.filename, file_bytes)
+
+        if not profile:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Could not extract text from uploaded resume.",
+            )
+
+        preview = build_text_preview(profile)
+
+    except HTTPException:
+        raise
+
     except Exception:
         logger.exception("Resume parsing failed for file: %s", file.filename)
         raise HTTPException(
@@ -68,4 +78,5 @@ async def upload_resume(file: UploadFile = File(...)):
             "Document parsing is a placeholder and will be expanded in a later milestone."
         ),
         extracted_text_preview=preview,
+        profile=profile,
     )

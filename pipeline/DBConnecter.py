@@ -35,11 +35,11 @@ def find_enriched_jobs_file():
     candidates = []
 
     for file in os.listdir():
-        if file.startswith("enriched_jobs_") and file.endswith(".json"):
+        if file.startswith("enriched_stream_jobs_") and file.endswith(".json"):
             candidates.append(file)
 
     if not candidates:
-        raise FileNotFoundError("No enriched_jobs_*.json file found")
+        raise FileNotFoundError("No enriched_stream_jobs_*.json file found")
 
     # sort by most recently modified file first
     candidates.sort(key=lambda file_name: os.path.getmtime(file_name), reverse=True)
