@@ -44,7 +44,7 @@ export default function SearchForm({
         .map((skill) => skill.trim())
         .filter(Boolean),
       location,
-      experience_level: experience, // backend still expects this field
+      experience_level: Number.parseInt(experience, 10),
     };
 
     try {
@@ -114,7 +114,12 @@ export default function SearchForm({
         </button>
       </form>
 
-      <ResumeUpload />
+      <ResumeUpload
+        onResults={onResults}
+        onLoadingChange={onLoadingChange}
+        onError={onError}
+        onHasSearchedChange={onHasSearchedChange}
+      />
     </div>
   );
 }

@@ -222,3 +222,5 @@ pipeline/enriched_jobs_*
 
 # Testing outputs
 tests/outputs/
+
+pulled_jobs_*

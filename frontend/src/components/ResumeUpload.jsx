@@ -9,26 +9,25 @@
  */
 
 import { useState } from "react";
-import { uploadResume } from "../services/api";
+import { uploadResume, searchJobs } from "../services/api";
 
-export default function ResumeUpload() {
+export default function ResumeUpload({
+  onResults,
+  onLoadingChange,
+  onError,
+  onHasSearchedChange,
+}) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState("");
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
-  /**
-   * Validate resume file type.
-   */
   function isValidResumeFile(file) {
     const fileName = file.name.toLowerCase();
     return fileName.endsWith(".pdf") || fileName.endsWith(".docx");
   }
 
-  /**
-   * Handle file selection from drag/drop or browse.
-   */
   function handleSelectedFile(file) {
     if (!file) return;
 
@@ -43,9 +42,6 @@ export default function ResumeUpload() {
     setSelectedFile(file);
   }
 
-  /**
-   * Handle file drop event.
-   */
   function handleDrop(e) {
     e.preventDefault();
     setIsDragging(false);
@@ -54,9 +50,6 @@ export default function ResumeUpload() {
     handleSelectedFile(droppedFile);
   }
 
-  /**
-   * Upload resume to backend.
-   */
   async function handleUpload(e) {
     e.preventDefault();
 
@@ -69,6 +62,11 @@ export default function ResumeUpload() {
     setPreview("");
     setIsUploading(true);
 
+    if (onResults) onResults([]);
+    if (onError) onError("");
+    if (onHasSearchedChange) onHasSearchedChange(true);
+    if (onLoadingChange) onLoadingChange(true);
+
     try {
       const data = await uploadResume(selectedFile);
 
@@ -77,10 +75,23 @@ export default function ResumeUpload() {
           "No preview text could be extracted."
       );
 
+      if (data.profile) {
+        const response = await searchJobs(data.profile);
+        const searchResults = Array.isArray(response)
+          ? response
+          : response.results || [];
+
+        if (onResults) onResults(searchResults);
+      }
     } catch (uploadError) {
+      if (onResults) onResults([]);
       setError(uploadError.message || "Something went wrong.");
+      if (onError) {
+        onError(uploadError.message || "Something went wrong.");
+      }
     } finally {
       setIsUploading(false);
+      if (onLoadingChange) onLoadingChange(false);
     }
   }
 
@@ -133,9 +144,7 @@ export default function ResumeUpload() {
       {preview && (
         <div className="resume-preview">
           <h3>Resume Preview</h3>
-          <p style={{ whiteSpace: "pre-line" }}>
-            {preview}
-          </p>
+          <p style={{ whiteSpace: "pre-line" }}>{preview}</p>
         </div>
       )}
     </div>
