@@ -14,7 +14,7 @@ This backend provides:
 - FastAPI
 - Uvicorn
 - PyMongo
-- MongoDB (local)
+- MongoDB (local or Atlas)
 - Optional parsing dependencies: `pdfplumber`, `python-docx`
 
 ## Project Structure
@@ -41,7 +41,7 @@ backend/
 ## Prerequisites
 
 - Python 3.10+ (recommended: Python 3.11+)
-- Local MongoDB Community Server running on `mongodb://localhost:27017`
+- Local MongoDB Community Server running on `mongodb://localhost:27017`, or a MongoDB Atlas connection string
 - Optional: `mongosh` to inspect data
 
 ## 1) Start MongoDB Locally
@@ -114,9 +114,9 @@ Copy-Item backend\.env.example backend\.env
 Current environment variables:
 
 - `MONGO_URI` default: `mongodb://localhost:27017`
-- `MONGO_DB_NAME` default: `job_ai_tool`
-- `JOBS_COLLECTION_NAME` default: `jobs`
-- `CORS_ORIGINS` default: `http://localhost:3000,http://127.0.0.1:3000`
+- `MONGO_DB_NAME` default: `job_hunter_ai`
+- `JOBS_COLLECTION_NAME` default: `job_postings`
+- `CORS_ORIGINS` default: `http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173`
 
 You can edit `backend/.env` if your local MongoDB uses a different URI or DB name.
 
@@ -132,6 +132,38 @@ Expected startup behavior:
 - App boots successfully.
 - Startup hook checks `job_ai_tool.jobs`.
 - If empty, 10 seed jobs are inserted.
+
+## Production Deployment
+
+Deploy from the repository root so imports from both `backend` and `ml` resolve.
+The repo includes a root `requirements.txt`, `Procfile`, and `render.yaml` for
+hosts such as Render or Railway.
+
+Build command:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start command:
+
+```bash
+uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+```
+
+Required production environment variables:
+
+- `MONGO_URI`: MongoDB Atlas connection string
+- `MONGO_DB_NAME`: `job_hunter_ai`
+- `JOBS_COLLECTION_NAME`: `job_postings`
+- `CORS_ORIGINS`: deployed Vercel frontend URL, for example `https://your-app.vercel.app`
+- `MONGO_SERVER_SELECTION_TIMEOUT_MS`: optional, defaults to `10000`
+
+After deployment, give the frontend the backend URL. The Vite frontend should set:
+
+```text
+VITE_API_BASE_URL=https://your-backend-host.example.com
+```
 
 ## 6) Verify It Is Running
 
