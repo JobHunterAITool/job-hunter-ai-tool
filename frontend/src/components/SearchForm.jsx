@@ -19,19 +19,28 @@ export default function SearchForm({
   onHasSearchedChange,
   isLoading,
 }) {
-  /* Local component state for form inputs */
   const [jobTitle, setJobTitle] = useState("");
   const [skills, setSkills] = useState("");
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState("");
+  const [resumeResetKey, setResumeResetKey] = useState(0);
 
   /**
-   * Handle form submission.
+   * Clear manual search inputs after resume upload.
    */
+  function clearSearchFields() {
+    setJobTitle("");
+    setSkills("");
+    setLocation("");
+    setExperience("");
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
 
-    /* Reset stale UI state before starting a new request */
+    /* Clear resume preview after manual search */
+    setResumeResetKey((prev) => prev + 1);
+
     onResults([]);
     onError("");
     onHasSearchedChange(true);
@@ -49,6 +58,7 @@ export default function SearchForm({
 
     try {
       const response = await searchJobs(payload);
+
       const searchResults = Array.isArray(response)
         ? response
         : response.results || [];
@@ -70,7 +80,6 @@ export default function SearchForm({
       <form onSubmit={handleSubmit}>
         <h2>Job Search</h2>
 
-        {/* Job title input */}
         <input
           placeholder="Job Title"
           value={jobTitle}
@@ -79,7 +88,6 @@ export default function SearchForm({
           required
         />
 
-        {/* Skills input */}
         <input
           placeholder="Skills (comma separated)"
           value={skills}
@@ -88,7 +96,6 @@ export default function SearchForm({
           required
         />
 
-        {/* Location input */}
         <input
           placeholder="Location"
           value={location}
@@ -97,7 +104,6 @@ export default function SearchForm({
           required
         />
 
-        {/* Years of experience typed input */}
         <input
           type="number"
           placeholder="Years of Experience"
@@ -108,13 +114,14 @@ export default function SearchForm({
           required
         />
 
-        {/* Submit button */}
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Searching..." : "Search Jobs"}
         </button>
       </form>
 
       <ResumeUpload
+        resetKey={resumeResetKey}
+        onClearSearchFields={clearSearchFields}
         onResults={onResults}
         onLoadingChange={onLoadingChange}
         onError={onError}
