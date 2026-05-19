@@ -19,6 +19,14 @@ logger = logging.getLogger(__name__)
 SUPPORTED_RESUME_EXTENSIONS = {".pdf", ".docx"}
 
 
+def extract_text_preview(filename: str, file_bytes: bytes) -> str | None:
+    """Extract a structured resume preview for the upload response."""
+    profile = parse_resume_profile(filename, file_bytes)
+    if not profile:
+        return None
+    return build_text_preview(profile)
+
+
 @router.post("/upload-resume", response_model=UploadResumeResponse)
 async def upload_resume(file: UploadFile = File(...)):
     """Upload a resume and return a structured parse preview."""
@@ -51,19 +59,7 @@ async def upload_resume(file: UploadFile = File(...)):
         )
 
     try:
-        profile = parse_resume_profile(file.filename, file_bytes)
-
-        if not profile:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Could not extract text from uploaded resume.",
-            )
-
-        preview = build_text_preview(profile)
-
-    except HTTPException:
-        raise
-
+        preview = extract_text_preview(file.filename, file_bytes)
     except Exception:
         logger.exception("Resume parsing failed for file: %s", file.filename)
         raise HTTPException(
@@ -78,5 +74,4 @@ async def upload_resume(file: UploadFile = File(...)):
             "Document parsing is a placeholder and will be expanded in a later milestone."
         ),
         extracted_text_preview=preview,
-        profile=profile,
     )
