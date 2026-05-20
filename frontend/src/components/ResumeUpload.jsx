@@ -8,10 +8,12 @@
  * Project: Job Hunter AI Tool
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { uploadResume, searchJobs } from "../services/api";
 
 export default function ResumeUpload({
+  resetKey,
+  onClearSearchFields,
   onResults,
   onLoadingChange,
   onError,
@@ -22,6 +24,16 @@ export default function ResumeUpload({
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+
+  /**
+   * Clear upload UI when a normal search is performed.
+   */
+  useEffect(() => {
+    setSelectedFile(null);
+    setPreview("");
+    setError("");
+    setIsDragging(false);
+  }, [resetKey]);
 
   function isValidResumeFile(file) {
     const fileName = file.name.toLowerCase();
@@ -70,6 +82,11 @@ export default function ResumeUpload({
     try {
       const data = await uploadResume(selectedFile);
 
+      /* Clear manual search fields after resume upload */
+      if (onClearSearchFields) {
+        onClearSearchFields();
+      }
+
       setPreview(
         data.extracted_text_preview ||
           "No preview text could be extracted."
@@ -77,21 +94,29 @@ export default function ResumeUpload({
 
       if (data.profile) {
         const response = await searchJobs(data.profile);
+
         const searchResults = Array.isArray(response)
           ? response
           : response.results || [];
 
-        if (onResults) onResults(searchResults);
+        if (onResults) {
+          onResults(searchResults);
+        }
       }
     } catch (uploadError) {
       if (onResults) onResults([]);
+
       setError(uploadError.message || "Something went wrong.");
+
       if (onError) {
         onError(uploadError.message || "Something went wrong.");
       }
     } finally {
       setIsUploading(false);
-      if (onLoadingChange) onLoadingChange(false);
+
+      if (onLoadingChange) {
+        onLoadingChange(false);
+      }
     }
   }
 
@@ -101,7 +126,9 @@ export default function ResumeUpload({
 
       <form className="resume-upload-form" onSubmit={handleUpload}>
         <div
-          className={`resume-drop-zone ${isDragging ? "drag-active" : ""}`}
+          className={`resume-drop-zone ${
+            isDragging ? "drag-active" : ""
+          }`}
           onDragOver={(e) => {
             e.preventDefault();
             setIsDragging(true);
@@ -118,10 +145,13 @@ export default function ResumeUpload({
 
             <label className="file-select-label">
               Browse Files
+
               <input
                 type="file"
                 accept=".pdf,.docx"
-                onChange={(e) => handleSelectedFile(e.target.files[0])}
+                onChange={(e) =>
+                  handleSelectedFile(e.target.files[0])
+                }
                 hidden
               />
             </label>
@@ -144,6 +174,7 @@ export default function ResumeUpload({
       {preview && (
         <div className="resume-preview">
           <h3>Resume Preview</h3>
+
           <p style={{ whiteSpace: "pre-line" }}>{preview}</p>
         </div>
       )}

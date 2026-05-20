@@ -37,5 +37,5 @@ def rank_jobs(
     the real rank_jobs() implementation. Returns top-N ranked results.
     """
     user_profile = _search_request_to_user_profile(search_input)
-    ranked_jobs = ml_rank_jobs(user_profile, jobs)
+    ranked_jobs = ml_rank_jobs(user_profile, jobs, debug=False)
     return ranked_jobs[:top_n]

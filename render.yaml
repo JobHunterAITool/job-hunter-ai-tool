@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: job-hunter-ai-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: job_hunter_ai
+      - key: JOBS_COLLECTION_NAME
+        value: job_postings
+      - key: CORS_ORIGINS
+        sync: false
+      - key: MONGO_SERVER_SELECTION_TIMEOUT_MS
+        value: "10000"

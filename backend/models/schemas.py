@@ -51,6 +51,19 @@ class SearchRequest(BaseModel):
             normalized_skills.append(normalized_skill)
         return normalized_skills
 
+    @field_validator("experience_level", mode="before")
+    @classmethod
+    def _validate_experience_level(cls, value: object) -> str:
+        if value is None or (isinstance(value, str) and not value.strip()):
+            raise ValueError("experience_level must be a non-empty string")
+        if isinstance(value, (int, float)):
+            if isinstance(value, float) and not value.is_integer():
+                raise ValueError("experience_level must be an integer-like number or string")
+            return str(int(value))
+        if isinstance(value, str):
+            return value.strip()
+        raise ValueError("experience_level must be a string or integer")
+
 
 class ResumeProfile(BaseModel):
     job_title: str
