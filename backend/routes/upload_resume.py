@@ -2,8 +2,8 @@
 Author: Michael Mart
 Class: CS 467
 Project: The Job Hunting AI Web Tool
-Description: Optional resume upload endpoint for PR#1. Right now this returns
-a simple extracted-text preview and will be expanded in later milestones.
+Description: Resume upload endpoint that parses PDF and DOCX resumes,
+returns a structured resume profile, and builds a readable preview.
 """
 
 import logging
@@ -16,15 +16,23 @@ from backend.services.resume_parser import build_text_preview, parse_resume_prof
 
 router = APIRouter(tags=["resume"])
 logger = logging.getLogger(__name__)
+
 SUPPORTED_RESUME_EXTENSIONS = {".pdf", ".docx"}
 
 
-def extract_text_preview(filename: str, file_bytes: bytes) -> str | None:
-    """Extract a structured resume preview for the upload response."""
+def parse_resume_upload(filename: str, file_bytes: bytes):
+    """Parse an uploaded resume and return both the profile and preview text."""
     profile = parse_resume_profile(filename, file_bytes)
+
     if not profile:
-        return None
-    return build_text_preview(profile)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Could not extract text from uploaded resume.",
+        )
+
+    preview = build_text_preview(profile)
+
+    return profile, preview
 
 
 @router.post("/upload-resume", response_model=UploadResumeResponse)
@@ -59,7 +67,11 @@ async def upload_resume(file: UploadFile = File(...)):
         )
 
     try:
-        preview = extract_text_preview(file.filename, file_bytes)
+        profile, preview = parse_resume_upload(file.filename, file_bytes)
+
+    except HTTPException:
+        raise
+
     except Exception:
         logger.exception("Resume parsing failed for file: %s", file.filename)
         raise HTTPException(
@@ -69,9 +81,7 @@ async def upload_resume(file: UploadFile = File(...)):
 
     return UploadResumeResponse(
         filename=file.filename,
-        message=(
-            "Resume uploaded successfully. "
-            "Document parsing is a placeholder and will be expanded in a later milestone."
-        ),
+        message="Resume uploaded successfully.",
         extracted_text_preview=preview,
+        profile=profile,
     )
