@@ -26,7 +26,7 @@ class SearchRequest(BaseModel):
         examples=[["Python", "AWS"]],
     )
     location: str = Field(..., min_length=1, max_length=120, examples=["Remote"])
-    experience_level: int = Field(..., ge=0, examples=[3])
+    experience_level: int = Field(..., ge=0, le=80, examples=[3])
 
     @field_validator("job_title", "location", mode="before")
     @classmethod
