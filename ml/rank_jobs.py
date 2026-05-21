@@ -141,28 +141,63 @@ def _sectioned_skill_score(
         return 0.0, 0.0, 0.0, [], [], []
 
     job_skills = _normalized_skill_set(job.get("skills"))
-    description = job.get("job_description_text", "") or job.get("description", "")
-    section_matches = match_skills_by_section(user_skills, description)
+
+    description = (
+        job.get("job_description_text", "")
+        or job.get("description", "")
+    )
+
+    section_matches = match_skills_by_section(
+        user_skills,
+        description,
+    )
 
     required_matches = set(section_matches["required"])
     preferred_matches = set(section_matches["preferred"])
+
     sectioned_matches = required_matches | preferred_matches
     general_matches = job_skills & user_skills
     general_only_matches = general_matches - sectioned_matches
+
     required_skill_score = len(required_matches) / len(user_skills)
     preferred_skill_score = len(preferred_matches) / len(user_skills)
 
-    if sectioned_matches:
-        weighted_match_count = (
-            0.75 * len(required_matches)
-            + 0.25 * len(preferred_matches)
-            + 0.50 * len(general_only_matches)
+    required_count = len(required_matches)
+    preferred_count = len(preferred_matches)
+    general_count = len(general_only_matches)
+
+    weighted_components = []
+    weight_total = 0.0
+
+    # Only include populated categories
+    if required_count > 0:
+        weighted_components.append(0.75 * required_count)
+        weight_total += 0.75
+
+    if preferred_count > 0:
+        weighted_components.append(0.25 * preferred_count)
+        weight_total += 0.25
+
+    if general_count > 0:
+        weighted_components.append(0.50 * general_count)
+        weight_total += 0.50
+
+    if weight_total > 0:
+        weighted_match_count = sum(weighted_components)
+
+        normalized_match_count = (
+            weighted_match_count / weight_total
         )
-        skill_score = min(weighted_match_count / len(user_skills), 1.0)
+
+        skill_score = min(
+            normalized_match_count / len(user_skills),
+            1.0,
+        )
     else:
-        skill_score = len(general_matches) / len(user_skills)
+        skill_score = 0.0
 
     matched_skills = sorted(general_matches | sectioned_matches)
+
     return (
         skill_score,
         required_skill_score,
