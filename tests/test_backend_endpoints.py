@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from fastapi.testclient import TestClient
 
 import backend.main as main_app
@@ -375,11 +375,22 @@ def test_jobs_returns_500_and_logs_when_db_fails(
 def test_upload_resume_happy_path(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    parsed_profile = {
+        "job_title": "Backend Engineer",
+        "skills": ["Python", "FastAPI"],
+        "location": "Remote",
+        "experience_level": 3,
+    }
+
     monkeypatch.setattr(
         upload_route,
-        "extract_text_preview",
-        lambda _filename, _bytes: "Backend Engineer Python FastAPI",
+        "parse_resume_upload",
+        lambda _filename, _bytes: (
+            parsed_profile,
+            "Backend Engineer Python FastAPI",
+        ),
     )
+
     response = client.post(
         "/upload-resume",
         files={"file": ("resume.pdf", b"fake bytes", "application/pdf")},
@@ -389,18 +400,27 @@ def test_upload_resume_happy_path(
     body = response.json()
     assert body["filename"] == "resume.pdf"
     assert body["extracted_text_preview"] == "Backend Engineer Python FastAPI"
+    assert body["profile"] == parsed_profile
 
 
-def test_upload_resume_empty_preview_result(
+def test_upload_resume_returns_400_when_no_text_extractable(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(upload_route, "extract_text_preview", lambda _filename, _bytes: None)
+    def raise_no_text_error(_filename: str, _file_bytes: bytes):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Could not extract text from uploaded resume.",
+        )
+
+    monkeypatch.setattr(upload_route, "parse_resume_upload", raise_no_text_error)
+
     response = client.post(
         "/upload-resume",
         files={"file": ("resume.docx", b"fake bytes", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")},
     )
-    assert response.status_code == 200
-    assert response.json()["extracted_text_preview"] is None
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Could not extract text from uploaded resume."
 
 
 def test_upload_resume_returns_415_for_unsupported_extension(client: TestClient) -> None:
@@ -429,7 +449,7 @@ def test_upload_resume_returns_500_and_logs_on_parser_error(
     def raise_parser_error(_filename: str, _file_bytes: bytes):
         raise RuntimeError("parser crashed")
 
-    monkeypatch.setattr(upload_route, "extract_text_preview", raise_parser_error)
+    monkeypatch.setattr(upload_route, "parse_resume_upload", raise_parser_error)
     with caplog.at_level(logging.ERROR):
         response = client.post(
             "/upload-resume",
