@@ -1,1 +1,0 @@
-"""Pipeline helpers used by ingestion scripts and the backend."""
