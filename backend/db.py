@@ -1,7 +1,7 @@
 """
 MongoDB helper module for backend routes.
 
-The backend reuses the Pipeline Mongo connector so API reads and Pipeline writes
+The backend reuses the pipeline Mongo connector so API reads and pipeline writes
 target the same database and collection.
 """
 
@@ -15,9 +15,9 @@ BACKEND_DIR = Path(__file__).resolve().parent
 load_dotenv(BACKEND_DIR / ".env")
 load_dotenv()
 
-from Pipeline.DBConnecter import MONGO_DB_NAME  # noqa: E402
-from Pipeline.DBConnecter import get_jobs_collection as get_pipeline_jobs_collection  # noqa: E402
-from Pipeline.DBConnecter import get_mongo_client  # noqa: E402
+from pipeline.DBConnecter import MONGO_DB_NAME  # noqa: E402
+from pipeline.DBConnecter import get_jobs_collection as get_pipeline_jobs_collection  # noqa: E402
+from pipeline.DBConnecter import get_mongo_client  # noqa: E402
 
 
 def get_database() -> Database:
