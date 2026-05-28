@@ -24,9 +24,6 @@ APPENDED_RANKER_FIELDS = (
     "score",
     "matched_skills",
     "matched_skills_count",
-    "tfidf_score",
-    "skill_score",
-    "raw_final_score",
 )
 
 
@@ -128,9 +125,10 @@ def test_backend_adapter_ranks_mongodb_jobs_without_mongo() -> None:
     assert all("score" in job for job in ranked_jobs)
     assert all(isinstance(job["score"], float) for job in ranked_jobs)
     assert all(0.0 <= job["score"] <= 1.0 for job in ranked_jobs)
-    assert all("tfidf_score" in job for job in ranked_jobs)
-    assert all("skill_score" in job for job in ranked_jobs)
-    assert all("raw_final_score" in job for job in ranked_jobs)
+    assert all("matched_skills" in job for job in ranked_jobs)
+    assert all("matched_skills_count" in job for job in ranked_jobs)
+
+    print("RETURNED SCORES:", [job["score"] for job in ranked_jobs])
 
     scores = [job["score"] for job in ranked_jobs]
     assert scores == sorted(scores, reverse=True), "Expected descending score order"

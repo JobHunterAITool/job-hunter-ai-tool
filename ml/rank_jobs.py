@@ -181,7 +181,7 @@ def rank_jobs(
         score. Each posting is a shallow copy of the input posting with one
         additional field injected::
 
-            "score": float   # L2-normalized cosine similarity in [0.0, 1.0]
+            "score": float   # blended relevance score in [0.0, 1.0]
 
         The caller (backend POST /search handler) is responsible for slicing
         the top-N results before returning them to the frontend.
@@ -232,35 +232,31 @@ def rank_jobs(
 
     try:
         tfidf_matrix = TfidfVectorizer(stop_words="english").fit_transform(corpus)
-        scores = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).flatten().tolist()
+        raw_scores = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).flatten().tolist()
     except ValueError:
-        scores = [0.0] * len(candidate_jobs)
+        raw_scores = [0.0] * len(candidate_jobs)
 
+    tfidf_scores = _l2_normalize(raw_scores)
     user_skills = _normalized_skill_set(user_profile.get("skills"))
 
     alpha = 0.8  # weight for skill score
 
     scored_jobs = []
-    raw_final_scores = []
-    for job, score in zip(candidate_jobs, scores):
+    for job, tfidf_score in zip(candidate_jobs, tfidf_scores):
         job_copy = dict(job)
 
         skill_score, matched_skills = _skill_score(user_skills, job)
-        final_score = (1 - alpha) * score + alpha * skill_score
+        final_score = (1 - alpha) * tfidf_score + alpha * skill_score
 
         job_copy["matched_skills"] = matched_skills
         job_copy["matched_skills_count"] = len(matched_skills)
 
-        job_copy["tfidf_score"] = float(score)
+        job_copy["tfidf_score"] = float(tfidf_score)
         job_copy["skill_score"] = float(skill_score)
         job_copy["raw_final_score"] = float(final_score)
+        job_copy["score"] = float(final_score)
 
         scored_jobs.append(job_copy)
-        raw_final_scores.append(float(final_score))
-
-    normalized_final_scores = _l2_normalize(raw_final_scores)
-    for job, normalized_score in zip(scored_jobs, normalized_final_scores):
-        job["score"] = float(normalized_score)
 
     ranked_sorted = sorted(scored_jobs, key=lambda job: job["score"], reverse=True)
 
