@@ -47,34 +47,6 @@ def _normalize_skills(skills: Any) -> list[str]:
     return [str(skills).strip()] if str(skills).strip() else []
 
 
-def _normalize_experience_level(experience_level: Any) -> int | None:
-    """Normalize experience_level to years of experience as an int."""
-    if experience_level is None or experience_level == "":
-        return None
-    if isinstance(experience_level, bool):
-        return None
-    if isinstance(experience_level, int):
-        return experience_level
-    if isinstance(experience_level, float) and experience_level.is_integer():
-        return int(experience_level)
-    if isinstance(experience_level, str):
-        stripped = experience_level.strip()
-        if not stripped:
-            return None
-        try:
-            return int(stripped)
-        except ValueError:
-            legacy_levels = {
-                "entry": 0,
-                "junior": 1,
-                "mid": 3,
-                "senior": 5,
-                "lead": 8,
-            }
-            return legacy_levels.get(stripped.lower())
-    return None
-
-
 def _l2_normalize(scores: list[float]) -> list[float]:
     norm = np.linalg.norm(scores)
     if norm == 0:
@@ -84,22 +56,16 @@ def _l2_normalize(scores: list[float]) -> list[float]:
 
 def build_user_text(user_profile: dict[str, Any]) -> str:
     """Build ranking text from a user profile dictionary.
-    Supported keys: user_text, resume_text, job_title, skills, location,
-    experience_level.
+    Supported keys: user_text, resume_text, job_title, skills, location.
     """
     normalized_skills = _normalize_skills(user_profile.get("skills"))
     skill_text = " ".join(normalized_skills)
-    experience_level = _normalize_experience_level(user_profile.get("experience_level"))
 
     parts = [
         user_profile.get("user_text", "") or user_profile.get("resume_text", ""),
         user_profile.get("job_title", ""),
         skill_text,
         user_profile.get("location", ""),
-        (
-            f"{experience_level} years experience"
-            if experience_level is not None else ""
-        ),
     ]
 
     return " ".join(str(part).strip() for part in parts if str(part).strip())
@@ -131,79 +97,17 @@ def _normalized_skill_set(skills: Any) -> set[str]:
     return {skill.lower() for skill in _normalize_skills(skills)}
 
 
-def _sectioned_skill_score(
-    user_skills: set[str],
-    job: dict[str, Any],
-) -> tuple[float, float, float, list[str], list[str], list[str]]:
+def _skill_score(user_skills: set[str], job: dict[str, Any]) -> tuple[float, list[str]]:
     if not user_skills:
-        return 0.0, 0.0, 0.0, [], [], []
+        return 0.0, []
 
-    job_skills = _normalized_skill_set(job.get("skills"))
+    job_skills = _normalized_skill_set(job.get("skills", []))
+    if not job_skills:
+        return 0.0, []
 
-    description = (
-        job.get("job_description_text", "")
-        or job.get("description", "")
-    )
-
-    section_matches = match_skills_by_section(
-        user_skills,
-        description,
-    )
-
-    required_matches = set(section_matches["required"])
-    preferred_matches = set(section_matches["preferred"])
-
-    sectioned_matches = required_matches | preferred_matches
-    general_matches = job_skills & user_skills
-    general_only_matches = general_matches - sectioned_matches
-
-    required_skill_score = len(required_matches) / len(user_skills)
-    preferred_skill_score = len(preferred_matches) / len(user_skills)
-
-    required_count = len(required_matches)
-    preferred_count = len(preferred_matches)
-    general_count = len(general_only_matches)
-
-    weighted_components = []
-    weight_total = 0.0
-
-    # Only include populated categories
-    if required_count > 0:
-        weighted_components.append(0.75 * required_count)
-        weight_total += 0.75
-
-    if preferred_count > 0:
-        weighted_components.append(0.25 * preferred_count)
-        weight_total += 0.25
-
-    if general_count > 0:
-        weighted_components.append(0.50 * general_count)
-        weight_total += 0.50
-
-    if weight_total > 0:
-        weighted_match_count = sum(weighted_components)
-
-        normalized_match_count = (
-            weighted_match_count / weight_total
-        )
-
-        skill_score = min(
-            normalized_match_count / len(user_skills),
-            1.0,
-        )
-    else:
-        skill_score = 0.0
-
-    matched_skills = sorted(general_matches | sectioned_matches)
-
-    return (
-        skill_score,
-        required_skill_score,
-        preferred_skill_score,
-        matched_skills,
-        sorted(required_matches),
-        sorted(preferred_matches),
-    )
+    matched_skills = sorted(user_skills & job_skills)
+    skill_score = len(matched_skills) / len(job_skills)
+    return skill_score, matched_skills
 
 
 def _print_debug_overlaps(
@@ -237,7 +141,7 @@ def _print_debug_overlaps(
 def rank_jobs(
     user_profile: dict[str, Any],
     jobs: list[dict[str, Any]],
-    debug: bool = True,
+    debug: bool = False,
     debug_top_n: int = 5,
 ) -> list[dict[str, Any]]:
     """Rank a list of job documents by relevance to the user's profile text.
@@ -253,7 +157,7 @@ def rank_jobs(
             "job_title": str,
             "skills": list[str] or comma-separated str,
             "location": str,
-            "experience_level": int  # years of experience
+
         }
 
     jobs : list[dict]
@@ -350,26 +254,14 @@ def rank_jobs(
     for job, score in zip(candidate_jobs, scores):
         job_copy = dict(job)
 
-        (
-            skill_score,
-            required_skill_score,
-            preferred_skill_score,
-            matched_skills,
-            matched_required_skills,
-            matched_preferred_skills,
-        ) = _sectioned_skill_score(user_skills, job)
-
+        skill_score, matched_skills = _skill_score(user_skills, job)
         final_score = (1 - alpha) * score + alpha * skill_score
 
         job_copy["matched_skills"] = matched_skills
-        job_copy["matched_required_skills"] = matched_required_skills
-        job_copy["matched_preferred_skills"] = matched_preferred_skills
         job_copy["matched_skills_count"] = len(matched_skills)
 
         job_copy["tfidf_score"] = float(score)
         job_copy["skill_score"] = float(skill_score)
-        job_copy["required_skill_score"] = float(required_skill_score)
-        job_copy["preferred_skill_score"] = float(preferred_skill_score)
         job_copy["raw_final_score"] = float(final_score)
 
         scored_jobs.append(job_copy)
