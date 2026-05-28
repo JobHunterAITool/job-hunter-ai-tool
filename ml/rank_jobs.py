@@ -16,8 +16,6 @@ import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from ml.skills_parser import match_skills_by_section
-
 
 _MAX_CANDIDATES = 200
 _TOKEN_RE = re.compile(r"[A-Za-z0-9]+")
