@@ -24,10 +24,6 @@ def _normalize_text(text: str) -> str:
     return " ".join(_TOKEN_RE.findall(str(text or "").lower()))
 
 
-def _spacy_preprocess(text: str) -> str:
-    return _normalize_text(text)
-
-
 def _normalize_skills(skills: Any) -> list[str]:
     if skills is None:
         return []
