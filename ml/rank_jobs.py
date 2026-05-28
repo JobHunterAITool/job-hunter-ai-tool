@@ -12,7 +12,6 @@ import numpy as np
 from collections.abc import Iterable
 from typing import Any
 
-import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -21,20 +20,12 @@ _MAX_CANDIDATES = 200
 _TOKEN_RE = re.compile(r"[A-Za-z0-9]+")
 
 
-# Load spaCy (lightweight config)
-_nlp = spacy.load("en_core_web_sm", disable=["ner", "parser"])
+def _normalize_text(text: str) -> str:
+    return " ".join(_TOKEN_RE.findall(str(text or "").lower()))
 
 
 def _spacy_preprocess(text: str) -> str:
-    doc = _nlp(text.lower())
-    tokens = [
-        token.lemma_
-        for token in doc
-        if not token.is_stop
-        and not token.is_punct
-        and token.is_alpha
-    ]
-    return " ".join(tokens)
+    return _normalize_text(text)
 
 
 def _normalize_skills(skills: Any) -> list[str]:
@@ -72,7 +63,7 @@ def build_user_text(user_profile: dict[str, Any]) -> str:
 
 
 def _tokenize(text: str) -> set[str]:
-    return set(_spacy_preprocess(text).split())
+    return set(_normalize_text(text).split())
 
 
 def _job_to_text(job: dict[str, Any]) -> str:
@@ -214,7 +205,7 @@ def rank_jobs(
     if not query_text_raw:
         raise ValueError("user_profile must include non-empty ranking fields")
 
-    query_text = _spacy_preprocess(query_text_raw)
+    query_text = _normalize_text(query_text_raw)
 
     if not jobs:
         raise ValueError("jobs list must not be empty")
@@ -233,7 +224,7 @@ def rank_jobs(
         candidate_jobs = [job for _, job in candidate_jobs]
 
     candidate_texts = [
-        _spacy_preprocess(_job_to_text(job))
+        _normalize_text(_job_to_text(job))
         for job in candidate_jobs
     ]
 
