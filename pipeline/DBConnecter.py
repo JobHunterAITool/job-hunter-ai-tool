@@ -1,106 +1,120 @@
-import json
-import os
-from functools import lru_cache
-from pathlib import Path
-
+# pip install "pymongo[srv]" python-dotenv certifi
 import certifi
 from dotenv import load_dotenv
 from pymongo import MongoClient, UpdateOne
-from pymongo.collection import Collection
+from datetime import datetime, timezone
+import json
+import os
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-PIPELINE_DIR = Path(__file__).resolve().parent
-
-load_dotenv(PROJECT_ROOT / "backend" / ".env")
 load_dotenv()
 
-DEFAULT_MONGO_URI = (
-    "mongodb+srv://rjalija_db_user:"
-    "Rsi1T8mBvNOtBQAI@cluster0.xmvpzab.mongodb.net/?appName=Cluster0"
+
+# I will make this an environmental variable or mask it in some way, but since repo is private its a string for now
+connection_str = "mongodb+srv://rjalija_db_user:Rsi1T8mBvNOtBQAI@cluster0.xmvpzab.mongodb.net/?appName=Cluster0"
+#db_user
+#J9eKhr9CbGsDfrX6
+
+client = MongoClient(
+    connection_str,
+    tlsCAFile=certifi.where(),
+    serverSelectionTimeoutMS=10000
 )
-MONGO_URI = os.getenv("MONGO_URI", DEFAULT_MONGO_URI)
-MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "job_hunter_ai")
-JOBS_COLLECTION_NAME = os.getenv("JOBS_COLLECTION_NAME", "job_postings")
-MONGO_SERVER_SELECTION_TIMEOUT_MS = int(
-    os.getenv("MONGO_SERVER_SELECTION_TIMEOUT_MS", "10000")
-)
+
+client.admin.command("ping")
+print("Connected to MongoDB Atlas")
 
 
-@lru_cache(maxsize=1)
-def get_mongo_client() -> MongoClient:
-    """Return a shared MongoDB client configured from environment variables."""
-    client_options = {
-        "serverSelectionTimeoutMS": MONGO_SERVER_SELECTION_TIMEOUT_MS,
-    }
-    if MONGO_URI.startswith("mongodb+srv://"):
-        client_options["tlsCAFile"] = certifi.where()
-
-    return MongoClient(MONGO_URI, **client_options)
+# name the database and collection here
+# these do not need to already exist in Atlas
+# MongoDB will create them once we insert data
+db = client["job_hunter_ai"]
+jobs_collection = db["job_postings"]
+backup_collection = db["backup"]
 
 
-def get_jobs_collection() -> Collection:
-    """Return the configured jobs collection."""
-    return get_mongo_client()[MONGO_DB_NAME][JOBS_COLLECTION_NAME]
+# backup the existing job_postings collection before changing it
+def backup_job_postings():
+    existing_jobs = list(jobs_collection.find({}))
+
+    if not existing_jobs:
+        print("No existing job postings found to backup.")
+        return
+
+    # clear the old backup first
+    # this makes backup a snapshot of job_postings right before this script runs
+    backup_collection.delete_many({})
+
+    backup_time = datetime.now(timezone.utc)
+
+    for job in existing_jobs:
+        job["backup_created_at"] = backup_time
+
+    backup_collection.insert_many(existing_jobs)
+
+    print(f"Backed up {len(existing_jobs)} existing job postings.")
 
 
 # find the most recent enriched jobs file from the local folder
 def find_enriched_jobs_file():
     candidates = []
 
-    for file in os.listdir(PIPELINE_DIR):
-        if file.startswith("enriched_jobs_") and file.endswith(".json"):
-            candidates.append(PIPELINE_DIR / file)
+    for file in os.listdir():
+        if file.startswith("enriched_stream_jobs_") and file.endswith(".json"):
+            candidates.append(file)
 
     if not candidates:
-        raise FileNotFoundError("No enriched_jobs_*.json file found")
+        raise FileNotFoundError("No enriched_stream_jobs_*.json file found")
 
     # sort by most recently modified file first
-    candidates.sort(key=lambda file_name: file_name.stat().st_mtime, reverse=True)
+    candidates.sort(key=lambda file_name: os.path.getmtime(file_name), reverse=True)
     return candidates[0]
 
 
-def load_latest_enriched_jobs() -> None:
-    """Load the newest enriched jobs JSON file into MongoDB."""
-    client = get_mongo_client()
-    client.admin.command("ping")
-    print("Connected to MongoDB")
+# read in the enriched jobs file
+jobs_file = find_enriched_jobs_file()
 
-    jobs_collection = get_jobs_collection()
-    jobs_file = find_enriched_jobs_file()
+with open(jobs_file, "r", encoding="utf-8") as file:
+    jobs = json.load(file)
 
-    with jobs_file.open("r", encoding="utf-8") as file:
-        jobs = json.load(file)
+print(f"Loaded {len(jobs)} jobs from {jobs_file}")
 
-    print(f"Loaded {len(jobs)} jobs from {jobs_file}")
 
-    # This stops us from inserting the same job over and over again.
-    jobs_collection.create_index("id", unique=True)
+# create a unique index on the job id
+# this should stop us from inserting the same job over and over again
+jobs_collection.create_index("id", unique=True)
 
-    operations = []
-    for job in jobs:
-        job_id = job.get("id")
 
-        if not job_id:
-            continue
+# backup what is already in job_postings before we insert or update anything
+backup_job_postings()
 
-        # Upsert means: update the existing document or insert it if missing.
-        operations.append(
-            UpdateOne(
-                {"id": job_id},
-                {"$set": job},
-                upsert=True,
-            )
+
+# build the list of MongoDB operations
+operations = []
+
+for job in jobs:
+    job_id = job.get("id")
+
+    # if there is no job id, skip it since we need something unique to match on
+    if not job_id:
+        continue
+
+    # upsert means: if the job id already exists, update the existing record
+    # otherwise insert it as a new record
+    operations.append(
+        UpdateOne(
+            {"id": job_id},
+            {"$set": job},
+            upsert=True
         )
-
-    if operations:
-        result = jobs_collection.bulk_write(operations)
-
-        print(f"Matched existing jobs: {result.matched_count}")
-        print(f"Inserted new jobs: {result.upserted_count}")
-        print(f"Updated jobs: {result.modified_count}")
-    else:
-        print("No valid jobs found to insert.")
+    )
 
 
-if __name__ == "__main__":
-    load_latest_enriched_jobs()
+# push the data to MongoDB Atlas
+if operations:
+    result = jobs_collection.bulk_write(operations)
+
+    print(f"Matched existing jobs: {result.matched_count}")
+    print(f"Inserted new jobs: {result.upserted_count}")
+    print(f"Updated jobs: {result.modified_count}")
+else:
+    print("No valid jobs found to insert.")
