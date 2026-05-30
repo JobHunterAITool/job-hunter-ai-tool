@@ -1,0 +1,104 @@
+================================================================================
+SAMPLE RESUME FOR LIVE DEMO - Frontend Resume Upload
+================================================================================
+
+JOHN ALEX SMITH
+Remote | john.alex.smith@email.com | (555) 123-4567
+LinkedIn: linkedin.com/in/johnalexsmith | GitHub: github.com/johnalexsmith
+
+================================================================================
+PROFESSIONAL SUMMARY
+================================================================================
+
+Motivated Computer Science student seeking a Software Engineer Intern position 
+in a remote environment. Passionate about software development with strong 
+foundational knowledge in Python programming and data analysis. Eager to apply 
+academic knowledge to real-world projects and contribute to innovative software 
+solutions.
+
+================================================================================
+TECHNICAL SKILLS
+================================================================================
+
+Programming Languages:
+  • Python (intermediate level)
+  • Java
+  • C++
+
+Core Competencies:
+  • Computer Science fundamentals
+  • Data Analysis and visualization
+  • Problem-solving and algorithmic thinking
+  • Object-oriented programming
+
+Tools & Frameworks:
+  • Git version control
+  • Jupyter Notebooks
+  • NumPy, Pandas (Python data analysis libraries)
+  • VS Code
+
+================================================================================
+EDUCATION
+================================================================================
+
+Bachelor of Science in Computer Science
+State University, Expected Graduation: May 2025
+GPA: 3.6/4.0
+Relevant Coursework: Data Structures, Algorithms, Database Design, 
+  Software Engineering, Discrete Mathematics
+
+================================================================================
+EXPERIENCE
+================================================================================
+
+IT Support Assistant
+Tech Help Services, Inc. | June 2024 - Present | Remote
+  • Provide technical support to 50+ users with software and hardware issues
+  • Document solutions to improve knowledge base
+  • Troubleshoot Python script execution issues for research team
+
+Academic Tutor - Computer Science
+State University Peer Tutoring Center | January 2024 - Present | Remote
+  • Tutor 10+ students weekly in introductory Computer Science courses
+  • Explain Python programming concepts and data structures
+  • Review code and provide constructive feedback on assignments
+
+Data Analysis Project - Academic Work
+State University | February 2024 - April 2024
+  • Performed exploratory data analysis using Python and Pandas
+  • Cleaned and visualized datasets containing 100,000+ records
+  • Generated insights and statistical summaries for project report
+
+================================================================================
+PROJECTS
+================================================================================
+
+Python CLI Data Analysis Tool
+  • Developed command-line application in Python for CSV data processing
+  • Implemented data filtering, sorting, and statistical analysis features
+  • Used NumPy and Pandas for efficient data manipulation
+
+Computer Science Study Guide Web App
+  • Built interactive study platform for Computer Science concepts
+  • Covered algorithms, data structures, and problem-solving techniques
+  • Helped 20+ students improve grades
+
+================================================================================
+CERTIFICATIONS & ACHIEVEMENTS
+================================================================================
+
+  • Dean's List (Fall 2023, Spring 2024)
+  • Python Programming Certificate - Online Course
+  • Completed "Data Analysis with Python" specialization course
+
+================================================================================
+INTERESTS & ADDITIONAL INFO
+================================================================================
+
+  • Interested in remote work opportunities
+  • Entry-level position seeking first internship experience
+  • Available for 40-hour/week full-time internship during summer 2025
+  • Willing to relocate or work remotely
+  • Active in Computer Science club at university
+
+================================================================================
